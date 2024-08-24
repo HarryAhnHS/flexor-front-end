@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { checkAuth } from './services/checkAuth'; // A utility function to check if user is logged in
 
-function App() {
-  const [count, setCount] = useState(0)
+import UnauthenticatedPage from './pages/UnauthenticatedPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import ProfilePage from './pages/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+  useEffect(() => {
+    // Check if the user is authenticated on component mount
+    checkAuth().then(isAuth => setIsAuthenticated(isAuth));
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>; // Or a loading spinner
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Routes for authenticated users */}
+        <Route
+          path="/profile"
+          element={isAuthenticated ? <ProfilePage/> : <Navigate to="/login" />}
+        />
 
-export default App
+        {/* Routes for unauthenticated users */}
+        <Route path="/" element={<UnauthenticatedPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+
+        {/* Catch-all route for handling invalid routes */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
