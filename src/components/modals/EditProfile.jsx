@@ -3,7 +3,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } 
 
 const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
     const [formData, setFormData] = useState({ username: '', bio: '' });
+    const [profilePictureFile, setProfilePictureFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
+
     const [usernameError, setUsernameError] = useState("");
+
 
     // Update formData when modal opens or currentUser changes
     useEffect(() => {
@@ -13,6 +17,7 @@ const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
                 bio: user.bio || '',
             });
             setUsernameError('');
+            setImagePreview(user.profilePictureUrl);
         }
     }, [open, user]);
 
@@ -21,10 +26,22 @@ const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      setProfilePictureFile(file);
+      if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setImagePreview(reader.result);
+          };
+          reader.readAsDataURL(file);
+      }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-        await handleSubmit(formData);
+        await handleSubmit(formData, profilePictureFile);
         handleClose();
     }
     catch(error) {
@@ -40,6 +57,27 @@ const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
       <DialogTitle>Update Your Profile</DialogTitle>
       <DialogContent>
         <form onSubmit={handleFormSubmit}>
+          {imagePreview && (
+              <div className="mt-4 flex justify-center">
+                  <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-24 h-24 rounded-full object-cover"
+                  />
+              </div>
+          )}
+          <input
+              type="file"
+              accept="image/*"
+              id="profile-picture-input"
+              onChange={handleFileChange}
+              className="hidden"
+          />
+          <label htmlFor="profile-picture-input">
+              <Button variant="outlined" component="span" color="primary" className="w-full">
+                  Upload Profile Picture
+              </Button>
+          </label>
           <TextField
             autoFocus
             margin="dense"

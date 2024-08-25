@@ -18,9 +18,20 @@ const ProfilePage = () => {
   // Modal stuff
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => setIsModalOpen(false);
-
-  const handleEditSubmit = async (formData) => {
+  const handleEditSubmit = async (formData, profilePictureFile) => {
     try {
+      if (profilePictureFile) {
+        // Create FormData for the profile picture
+        const pictureData = new FormData();
+        pictureData.append('profilePhoto', profilePictureFile);
+
+        // Submit the profile picture
+        await api.put('/images/profile-picture', pictureData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+      }
       const response  = await api.put(`/users/${userId}`, formData);
       setProfileMeta(response.data.user);
       handleModalClose(); 
