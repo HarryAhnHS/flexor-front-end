@@ -8,6 +8,12 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 

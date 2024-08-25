@@ -22,7 +22,7 @@ const Navbar = () => {
           <Link to="/feed">Feed</Link>
         </div>
         <div className="text-lg font-semibold">
-          <Link to="/feed">Profile</Link>
+          <Link to="/profile">Profile</Link>
         </div>
         <div>
             <button
