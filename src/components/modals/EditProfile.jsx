@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, CircularProgress } from '@mui/material';
+import api from '../../services/api';
 
-const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
+const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta }) => {
     const [formData, setFormData] = useState({ username: '', bio: '' });
     const [profilePictureFile, setProfilePictureFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
 
-    const [usernameError, setUsernameError] = useState("");
+    const [loading, setLoading] = useState(false);
 
+    const [usernameError, setUsernameError] = useState("");
+    const [fileError, setFileError] = useState("");
 
     // Update formData when modal opens or currentUser changes
     useEffect(() => {
@@ -17,13 +20,14 @@ const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
                 bio: user.bio || '',
             });
             setUsernameError('');
+            setFileError('');
             setImagePreview(user.profilePictureUrl);
         }
     }, [open, user]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleFileChange = (e) => {
@@ -40,73 +44,103 @@ const EditProfileModal = ({ open, handleClose, handleSubmit, user }) => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-        await handleSubmit(formData, profilePictureFile);
-        handleClose();
+      // Conditionally update profile picture
+      if (profilePictureFile) {
+        const pictureData = new FormData();
+        pictureData.append('profilePicture', profilePictureFile);
+        await api.put('/images/profile-picture', pictureData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+      }
+      const response  = await api.put(`/users/${userId}`, formData);
+      setProfileMeta(response.data.user);
+      handleModalClose(); 
+    } 
+    catch (error) {
+      console.error('Error submitting form:', error);
+      if (error.response.data.error === "Username is already taken") {
+        setUsernameError(error.response.data.error);
+      }
+      if (error.response.data.message === "Invalid file type") {
+        setFileError("Invalid file type - only png, jpeg, gif, webp, svg, bmp allowed");
+      }
     }
-    catch(error) {
-        // Set username error if it exists in the error response
-        if (error.response.data.error === "Username is already taken") {
-            setUsernameError(error.response.data.error);
-        }
+    finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleModalClose}>
       <DialogTitle>Update Your Profile</DialogTitle>
       <DialogContent>
         <form onSubmit={handleFormSubmit}>
-          {imagePreview && (
-              <div className="mt-4 flex justify-center">
-                  <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-24 h-24 rounded-full object-cover"
-                  />
+          {loading 
+            ? 
+              <div className="flex justify-center mt-4">
+                  <CircularProgress /> {/* MUI loading spinner */}
               </div>
-          )}
-          <input
-              type="file"
-              accept="image/*"
-              id="profile-picture-input"
-              onChange={handleFileChange}
-              className="hidden"
-          />
-          <label htmlFor="profile-picture-input">
-              <Button variant="outlined" component="span" color="primary" className="w-full">
-                  Upload Profile Picture
-              </Button>
-          </label>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="username"
-            label="Username"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.username}
-            onChange={handleChange}
-            error={!!usernameError}
-            helperText={usernameError}
-          />
-          <TextField
-            margin="dense"
-            name="bio"
-            label="Bio (optional)"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={4}
-            value={formData.bio}
-            onChange={handleChange}
-          />
+            :
+              <>
+                {imagePreview && (
+                    <div className="mt-4 flex justify-center">
+                        <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-24 h-24 rounded-full object-cover"
+                        />
+                    </div>
+                )}
+                <input
+                    type="file"
+                    accept="image/*"
+                    id="profilePicture"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
+                <label htmlFor="profilePicture">
+                    <Button variant="outlined" component="span" color="primary" className="w-full">
+                        Upload Profile Picture
+                    </Button>
+                    { fileError && 
+                      <p className='text-center text-red-600'>{fileError}</p>
+                    }
+                </label>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="username"
+                  label="Username"
+                  type="text"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.username}
+                  onChange={handleChange}
+                  error={!!usernameError}
+                  helperText={usernameError}
+                />
+                <TextField
+                  margin="dense"
+                  name="bio"
+                  label="Bio (optional)"
+                  type="text"
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  value={formData.bio}
+                  onChange={handleChange}
+                />
+              </>
+          }
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleModalClose} color="primary">
           Cancel
         </Button>
         <Button type="submit" onClick={handleFormSubmit} color="primary">

@@ -22,6 +22,12 @@ const Navbar = () => {
           <Link to="/feed">Feed</Link>
         </div>
         <div className="text-lg font-semibold">
+          <Link to="/new-post">+ Post</Link>
+        </div>
+        <div className="text-lg font-semibold">
+            <Link to="/new-realm">+ Realm</Link>
+        </div>
+        <div className="text-lg font-semibold">
           <Link to="/profile">Profile</Link>
         </div>
         <div>

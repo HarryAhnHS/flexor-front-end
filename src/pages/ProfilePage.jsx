@@ -9,6 +9,8 @@ const ProfilePage = () => {
   const [profileMeta, setProfileMeta] = useState({});
   const [posts, setPosts] = useState([]);
   const [selectedTab, setSelectedTab] = useState('posts'); // Default tab
+
+
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -18,35 +20,12 @@ const ProfilePage = () => {
   // Modal stuff
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => setIsModalOpen(false);
-  const handleEditSubmit = async (formData, profilePictureFile) => {
-    try {
-      if (profilePictureFile) {
-        // Create FormData for the profile picture
-        const pictureData = new FormData();
-        pictureData.append('profilePhoto', profilePictureFile);
-
-        // Submit the profile picture
-        await api.put('/images/profile-picture', pictureData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-      }
-      const response  = await api.put(`/users/${userId}`, formData);
-      setProfileMeta(response.data.user);
-      handleModalClose(); 
-    } 
-    catch (error) {
-      console.error('Error submitting form:', error);
-      throw error; // To modal parent
-    }
-  };
 
   useEffect(() => {
     const fetchMetaData = async () => {
       try {
         const response = await api.get(`/users/${userId}`);
-        console.log(response);
+        console.log('Profile meta response:', response);
         setProfileMeta(response.data.user);
       } catch (error) {
         console.error('Error fetching profile meta', error);
@@ -100,9 +79,10 @@ const ProfilePage = () => {
               {profileMeta &&
                 (<EditProfileModal
                   open={isModalOpen}
-                  handleClose={handleModalClose}
-                  handleSubmit={handleEditSubmit}
+                  handleModalClose={handleModalClose}
                   user={profileMeta}
+                  userId={userId}
+                  setProfileMeta={setProfileMeta}
                 />)
               }
             </div>
