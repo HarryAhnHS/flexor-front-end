@@ -4,7 +4,7 @@ import api from "../services/api";
 
 const Realms = () => {
     const [realms, setRealms] = useState([]);
-    const [joinedRealms, setJoinedRealms] = useState(new Set()); // To keep track of joined realms
+    const [joinedRealms, setJoinedRealms] = useState(new Set());
 
     const userId = localStorage.getItem('userId');
 

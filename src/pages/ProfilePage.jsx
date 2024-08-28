@@ -35,16 +35,19 @@ const ProfilePage = () => {
       try {
         let response;
         if (selectedTab === 'posts') {
-          response = await api.get(`/${userId}/posts`);
-        } else if (selectedTab === 'liked') {
-          response = await api.get(`/${userId}/liked`);
-        } else if (selectedTab === 'commented') {
-          response = await api.get(`/${userId}/commented`);
+          response = await api.get(`/users/${userId}/posts`);
+        } 
+        else if (selectedTab === 'liked') {
+          response = await api.get(`/users/${userId}/liked`);
+        } 
+        else if (selectedTab === 'commented') {
+          response = await api.get(`/users/${userId}/commented`);
         }
 
         console.log('Posts Response:', response);
         setPosts(response.data.posts);
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error fetching posts data', error);
       }
     };
@@ -115,7 +118,7 @@ const ProfilePage = () => {
           </div>
         </section>
   
-        {/* Post Content */}
+        {/* Post Selection */}
         <section className="profile-stats mt-4">
           <div className="tabs flex space-x-4">
             <button
@@ -139,10 +142,11 @@ const ProfilePage = () => {
           </div>
         </section>
 
+        {/* Post Content */}
         <section className="profile-content mt-4">
           <h2 className="text-2xl font-semibold">{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Posts</h2>
           <div className="posts-list mt-4">
-            {posts.length ? (
+            {posts ? (
               posts.map(post => (
                 <PostPreview post={post} key={post.id}/>
               ))
