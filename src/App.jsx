@@ -14,6 +14,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import NewRealmPage from './pages/NewRealmPage';
 import NewPostPage from './pages/NewPostPage';
+import Realms from './pages/Realms';
 
 
 const App = () => {
@@ -43,6 +44,10 @@ const App = () => {
         <Route
           path="/new-post"
           element={isAuthenticated ? <NewPostPage/> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/realms"
+          element={isAuthenticated ? <Realms/> : <Navigate to="/login" />}
         />
 
         {/* Routes for unauthenticated users */}
