@@ -144,9 +144,9 @@ const ProfilePage = () => {
 
         {/* Post Content */}
         <section className="profile-content mt-4">
-          <h2 className="text-2xl font-semibold">{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Posts</h2>
+          <h2 className="text-2xl font-semibold">{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}</h2>
           <div className="posts-list mt-4">
-            {posts ? (
+            {posts.length !== 0 ? (
               posts.map(post => (
                 <PostPreview post={post} key={post.id}/>
               ))

@@ -60,8 +60,11 @@ const PostPreview = ({post}) => {
 
     return (
         <div key={post.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold mb-2">{post.title}</h3>
-            {post.content && <p className="text-gray-800 mb-4">{post.content}</p>}
+            <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-semibold mb-2">{post.title}</h3>
+                <h3 className="text-gray">Posted under {post.realm.name}</h3>
+            </div>
+            {post.text && <p className="text-gray-800 mb-4">{post.text}</p>}
             {post.images && post.images.length > 0 && (
                 <div className="flex flex-wrap gap-4 mb-4">
                     {post.images.map((image, index) => (
