@@ -7,15 +7,12 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
-
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
 import NewRealmPage from './pages/NewRealmPage';
 import NewPostPage from './pages/NewPostPage';
 import Realms from './pages/Realms';
 import EditPostPage from './pages/EditPostPage';
+import Post from './pages/Post';
+import Realm from './pages/Realm';
 
 
 const App = () => {
@@ -53,6 +50,14 @@ const App = () => {
         <Route
           path="/realms"
           element={isAuthenticated ? <Realms/> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/realms/:realmId"
+          element={isAuthenticated ? <Realm /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/posts/:postId"
+          element={isAuthenticated ? <Post /> : <Navigate to="/login" />}
         />
 
         {/* Routes for unauthenticated users */}

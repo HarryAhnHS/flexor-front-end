@@ -1,5 +1,6 @@
 const ImageViewer = ({ imageUrl, onClose }) => {
     const handleOutsideClick = (e) => {
+        e.stopPropagation();
         // If the click is on the backdrop (outside the image), trigger onClose
         if (e.target === e.currentTarget) {
             onClose();
@@ -8,7 +9,7 @@ const ImageViewer = ({ imageUrl, onClose }) => {
 
     return (
         <div 
-            onClick={handleOutsideClick} 
+            onClick={(e) => handleOutsideClick(e)} 
             className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75"
         >
             <div className="relative">

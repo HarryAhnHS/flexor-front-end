@@ -157,7 +157,7 @@ const ProfilePage = () => {
           {posts.length > 0 ? (
               selectedTab === 'drafts'
                 ? posts.map(post => <DraftPreview post={post} key={post.id} />)
-                : posts.map(post => <PostPreview post={post} key={post.id} />)
+                : posts.map(post => <PostPreview post={post} posts={posts} setPosts={setPosts} key={post.id} />)
             ) : (
               <p>No posts to display</p>
             )}
