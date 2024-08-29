@@ -43,7 +43,7 @@ const DraftPreview = ({post}) => {
                             key={index} 
                             src={image.url} 
                             alt={`Post Image ${index + 1}`} 
-                            className="w-32 h-32 object-cover rounded-md" 
+                            className="w-32 h-32 object-cover rounded-md cursor-pointer" 
                             onClick={() => handleImageClick(image.url)}
                         />
                     ))}
