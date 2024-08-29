@@ -1,15 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import Select from 'react-select';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 const EditPostPage = () => {
-    const navigate = useNavigate();
     const { postId } = useParams();
     const [formData, setFormData] = useState({});
     const [selectedRealm, setSelectedRealm] = useState({});
     const [userRealms, setUserRealms] = useState([]);
+
+    const [postImagesIds, setPostImagesIds] = useState([]);
     const [postImages, setPostImages] = useState([]);
+
     const [publishError, setPublishError] = useState(null);
     const [realmError, setRealmError] = useState(null);
     const [fileError, setFileError] = useState(null);
@@ -27,14 +30,21 @@ const EditPostPage = () => {
             published: response.data.post.published,
         }
         setFormData(postData);
+
+        // For value for select form
         setSelectedRealm({
             value: response.data.post.realm.id,
             label: response.data.post.realm.name,
         })
 
-        const imagesData = (response.data.post.images).map((image) => image.url);
-        setPostImages(imagesData);
-      } catch (error) {
+        // Initialize images
+        const imagesUrls = (response.data.post.images).map((image) => image.url);
+        const imagesIds = (response.data.post.images).map((image) => image.id);
+        setPostImages(imagesUrls);
+        setPostImagesIds(imagesIds);
+
+      } 
+      catch (error) {
         console.error('Error initializing post:', error);
       }
     }
@@ -65,11 +75,15 @@ const EditPostPage = () => {
   };
 
   const handleImageUpload = async (e) => {
+    const id = uuidv4();
+    setPostImagesIds([...postImagesIds, id]);
+
     const file = e.target.files[0];
     const uploadData = new FormData();
     uploadData.append('image', file);
+    uploadData.append('id', id);
     try {
-      const response = await api.post(`/images/${postId}`, uploadData, {
+      const response = await api.post(`/images/`, uploadData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -96,6 +110,7 @@ const EditPostPage = () => {
       const response = await api.put(`/posts/${postId}`, {
         ...formData,
         published,
+        imageIds: postImagesIds
       });
       if (response.status === 200) {
         window.location.href = '/profile';
@@ -107,7 +122,7 @@ const EditPostPage = () => {
 
   const handleCancel = async () => {
     try {
-        navigate(-1);
+        window.location.href = '/profile';
     } 
     catch (error) {
         console.error('Error canceling update post:', error);
@@ -159,21 +174,25 @@ const EditPostPage = () => {
                         label: selectedOption.label,
                     })
                 }}
+                isSearchable={true}
                 className="mt-1"
                 />
               {realmError && <p className="text-red-500 text-sm mt-2">{realmError}</p>}
             </div>
             <div className="mb-4">
-              <label htmlFor="images" className="block text-sm font-medium text-gray-700">
-                Upload Images:
-              </label>
-              <input
+            <label
+                htmlFor="images"
+                className="inline-block p-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+            >
+                Upload Images
+            </label>
+            <input
                 type="file"
                 id="images"
                 accept="image/*"
                 onChange={handleImageUpload}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-              />
+                className="hidden"
+            />
               { fileError && 
                 <p className='text-center text-red-600'>{fileError}</p>
               }

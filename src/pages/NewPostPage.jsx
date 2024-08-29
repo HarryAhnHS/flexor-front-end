@@ -39,7 +39,6 @@ const NewPostPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
-      ...formData,
       [name]: value,
     });
   };
@@ -128,20 +127,24 @@ const NewPostPage = () => {
                 onChange={(selectedOption) =>
                   setFormData({ ...formData, realmId: selectedOption.value })
                 }
+                isSearchable={true}
                 className="mt-1"
               />
               {realmError && <p className="text-red-500 text-sm mt-2">{realmError}</p>}
             </div>
             <div className="mb-4">
-              <label htmlFor="images" className="block text-sm font-medium text-gray-700">
-                Upload Images:
+              <label
+                  htmlFor="images"
+                  className="inline-block p-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+              >
+                  Upload Images
               </label>
               <input
-                type="file"
-                id="images"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  type="file"
+                  id="images"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
               />
               { fileError && 
                 <p className='text-center text-red-600'>{fileError}</p>
