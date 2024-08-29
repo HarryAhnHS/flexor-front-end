@@ -4,17 +4,15 @@ import api from '../services/api';
 import EditProfileModal from '../components/modals/EditProfile';
 import Navbar from '../components/Navbar';
 import PostPreview from '../components/PostPreview';
+import DraftPreview from '../components/DraftPreview';
 
 const ProfilePage = () => {
   const [profileMeta, setProfileMeta] = useState({});
   const [posts, setPosts] = useState([]);
-  const [selectedTab, setSelectedTab] = useState('posts'); // Default tab
-
-
+  const [selectedTab, setSelectedTab] = useState('posts');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Get logged user Id
   const userId = localStorage.getItem("userId");
 
   // Modal stuff
@@ -22,6 +20,7 @@ const ProfilePage = () => {
   const handleModalClose = () => setIsModalOpen(false);
 
   useEffect(() => {
+    console.log("useEffect running", selectedTab);
     const fetchMetaData = async () => {
       try {
         const response = await api.get(`/users/${userId}`);
@@ -31,33 +30,44 @@ const ProfilePage = () => {
         console.error('Error fetching profile meta', error);
       }
     };
+  
     const fetchPostsData = async () => {
       try {
         let response;
-        if (selectedTab === 'posts') {
-          response = await api.get(`/users/${userId}/posts`);
-        } 
-        else if (selectedTab === 'liked') {
-          response = await api.get(`/users/${userId}/liked`);
-        } 
-        else if (selectedTab === 'commented') {
-          response = await api.get(`/users/${userId}/commented`);
+        switch (selectedTab) {
+          case 'posts':
+            response = await api.get(`/users/${userId}/posts`);
+            break;
+          case 'liked':
+            response = await api.get(`/users/${userId}/liked`);
+            break;
+          case 'commented':
+            response = await api.get(`/users/${userId}/commented`);
+            break;
+          case 'drafts':
+            response = await api.get(`/users/${userId}/drafts`);
+            break;
+          default:
+            response = { data: { posts: [] } }; // Fallback in case of unexpected tab
+            break;
         }
-
-        console.log('Posts Response:', response);
+        console.log(`${selectedTab} Posts Response:`, response);
         setPosts(response.data.posts);
       } 
       catch (error) {
         console.error('Error fetching posts data', error);
       }
     };
-
+  
     if (userId) {
       fetchMetaData();
       fetchPostsData();
       setLoading(false);
     }
   }, [userId, selectedTab]);
+  
+  console.log(selectedTab);
+  console.log("Posts", posts);
 
   if (loading) return <div>Loading...</div>;
 
@@ -100,14 +110,6 @@ const ProfilePage = () => {
               <p className="text-gray-500">Posts</p>
             </div>
             <div className="stat-item text-center">
-              <h2 className="text-lg font-semibold">{profileMeta._count?.likes || 0}</h2>
-              <p className="text-gray-500">Likes</p>
-            </div>
-            <div className="stat-item text-center">
-              <h2 className="text-lg font-semibold">{profileMeta._count?.comments || 0}</h2>
-              <p className="text-gray-500">Comments</p>
-            </div>
-            <div className="stat-item text-center">
               <h2 className="text-lg font-semibold">{profileMeta._count?.followers || 0}</h2>
               <p className="text-gray-500">Followers</p>
             </div>
@@ -139,6 +141,12 @@ const ProfilePage = () => {
             >
               Commented
             </button>
+            <button
+              className={`tab-button ${selectedTab === 'drafts' ? 'border' : ''}`}
+              onClick={() => setSelectedTab('drafts')}
+            >
+              Drafts
+            </button>
           </div>
         </section>
 
@@ -146,10 +154,10 @@ const ProfilePage = () => {
         <section className="profile-content mt-4">
           <h2 className="text-2xl font-semibold">{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}</h2>
           <div className="posts-list mt-4">
-            {posts.length !== 0 ? (
-              posts.map(post => (
-                <PostPreview post={post} key={post.id}/>
-              ))
+          {posts.length > 0 ? (
+              selectedTab === 'drafts'
+                ? posts.map(post => <DraftPreview post={post} key={post.id} />)
+                : posts.map(post => <PostPreview post={post} key={post.id} />)
             ) : (
               <p>No posts to display</p>
             )}

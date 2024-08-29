@@ -1,26 +1,44 @@
-import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import Select from 'react-select';
-
-const NewPostPage = () => {
-  const [userRealms, setUserRealms] = useState([]);
-  const [formData, setFormData] = useState({
-    realmId: '',
-    title: '',
-    text: '',
-    published: false,
-  });
-  const [postImagesIds, setPostImagesIds] = useState([]);
-  const [postImages, setPostImages] = useState([]);
-  const [publishError, setPublishError] = useState(null);
-  const [realmError, setRealmError] = useState(null);
-  const [fileError, setFileError] = useState(null);
+import { useNavigate, useParams } from 'react-router-dom';
+const EditPostPage = () => {
+    const navigate = useNavigate();
+    const { postId } = useParams();
+    const [formData, setFormData] = useState({});
+    const [selectedRealm, setSelectedRealm] = useState({});
+    const [userRealms, setUserRealms] = useState([]);
+    const [postImages, setPostImages] = useState([]);
+    const [publishError, setPublishError] = useState(null);
+    const [realmError, setRealmError] = useState(null);
+    const [fileError, setFileError] = useState(null);
 
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
+    async function initializePost() {
+      try {
+        const response = await api.get(`/posts/${postId}`);
+        const postData = {
+            realmId: response.data.post.realm.id,
+            title: response.data.post.title,
+            text: response.data.post.text,
+            published: response.data.post.published,
+        }
+        setFormData(postData);
+        setSelectedRealm({
+            value: response.data.post.realm.id,
+            label: response.data.post.realm.name,
+        })
+
+        const imagesData = (response.data.post.images).map((image) => image.url);
+        setPostImages(imagesData);
+      } catch (error) {
+        console.error('Error initializing post:', error);
+      }
+    }
+
     async function getUserJoinedRealms() {
       try {
         const realms = await api.get(`/users/${userId}/joined`);
@@ -33,8 +51,10 @@ const NewPostPage = () => {
         setRealmError('Failed to load realms');
       }
     }
+
+    initializePost();
     getUserJoinedRealms();
-  }, [userId]);
+  }, [userId, postId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -45,15 +65,11 @@ const NewPostPage = () => {
   };
 
   const handleImageUpload = async (e) => {
-    const id = uuidv4();
-    setPostImagesIds([...postImagesIds, id]);
-
     const file = e.target.files[0];
     const uploadData = new FormData();
     uploadData.append('image', file);
-    uploadData.append('id', id);
     try {
-      const response = await api.post(`/images/`, uploadData, {
+      const response = await api.post(`/images/${postId}`, uploadData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -77,12 +93,11 @@ const NewPostPage = () => {
     }
 
     try {
-      const response = await api.post(`/posts/`, {
+      const response = await api.put(`/posts/${postId}`, {
         ...formData,
         published,
-        imageIds: postImagesIds
       });
-      if (response.status === 201) {
+      if (response.status === 200) {
         window.location.href = '/profile';
       }
     } catch (error) {
@@ -91,15 +106,23 @@ const NewPostPage = () => {
   };
 
   const handleCancel = async () => {
-      window.location.href = '/profile';
+    try {
+        navigate(-1);
+    } 
+    catch (error) {
+        console.error('Error canceling update post:', error);
+    }
   };
 
+  console.log(userRealms);
+  console.log(formData);
+  console.log(selectedRealm);
   return (
     <>
       <Navbar />
       <div className="p-8 bg-gray-100 min-h-screen">
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-6">Create Post</h2>
+          <h2 className="text-2xl font-bold mb-6">Edit Post</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
@@ -121,15 +144,23 @@ const NewPostPage = () => {
               </label>
               <Select
                 name="realmId"
+                value={selectedRealm}
                 options={userRealms.map((realm) => ({
-                  value: realm.id,
-                  label: realm.name,
+                    value: realm.id,
+                    label: realm.name
                 }))}
-                onChange={(selectedOption) =>
-                  setFormData({ ...formData, realmId: selectedOption.value })
-                }
+                onChange={(selectedOption) => {
+                    setFormData({
+                        ...formData,
+                        realmId: selectedOption.value
+                    });
+                    setSelectedRealm({
+                        value: selectedOption.value,
+                        label: selectedOption.label,
+                    })
+                }}
                 className="mt-1"
-              />
+                />
               {realmError && <p className="text-red-500 text-sm mt-2">{realmError}</p>}
             </div>
             <div className="mb-4">
@@ -177,13 +208,13 @@ const NewPostPage = () => {
                 type="button"
                 onClick={(e) => handleSubmit(e, false)}
                 className="w-1/3 py-2 px-4 bg-gray-600 text-white font-semibold rounded-md shadow hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                Save as Draft
+                Archive as Draft
               </button>
               <button
                 type="button"
                 onClick={(e) => handleSubmit(e, true)}
                 className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                Publish Post
+                Publish
               </button>
               <button
                 type="button"
@@ -200,4 +231,4 @@ const NewPostPage = () => {
   );
 };
 
-export default NewPostPage;
+export default EditPostPage;

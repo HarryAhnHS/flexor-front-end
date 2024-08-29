@@ -15,6 +15,7 @@ import '@fontsource/roboto/700.css';
 import NewRealmPage from './pages/NewRealmPage';
 import NewPostPage from './pages/NewPostPage';
 import Realms from './pages/Realms';
+import EditPostPage from './pages/EditPostPage';
 
 
 const App = () => {
@@ -44,6 +45,10 @@ const App = () => {
         <Route
           path="/new-post"
           element={isAuthenticated ? <NewPostPage/> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/edit-post/:postId"
+          element={isAuthenticated ? <EditPostPage/> : <Navigate to="/login" />}
         />
         <Route
           path="/realms"

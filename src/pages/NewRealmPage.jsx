@@ -53,7 +53,7 @@ const NewRealmPage = () => {
                 const pictureData = new FormData();
                 pictureData.append('realmPicture', realmPictureFile);
                 
-                await api.put(`/${realmId}/realmPicture`, pictureData, {
+                await api.put(`/images/${realmId}/realm-picture`, pictureData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -70,7 +70,7 @@ const NewRealmPage = () => {
               setNameError(error.response.data.error);
             }
             if (error.response.data.message === "Invalid file type") {
-              setFileError("Invalid file type - only png, jpeg, gif, webp, svg, bmp allowed");
+              setFileError("Invalid file type - only png, jpeg, and gif allowed");
             }
         }
         finally {
@@ -98,7 +98,7 @@ const NewRealmPage = () => {
                             <img
                                 src={imagePreview}
                                 alt="Preview"
-                                className="w-24 h-24 rounded-full object-cover"
+                                className="w-64 h-48 object-cover"
                             />
                         </div>
                         )}
