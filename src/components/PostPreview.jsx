@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const PostPreview = ({ post, posts, setPosts }) => {
     const [liked, setLiked] = useState(null);
+    const [commentsCount, setCommentsCount] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const userId = localStorage.getItem('userId');
     const navigate = useNavigate();
@@ -19,7 +20,18 @@ const PostPreview = ({ post, posts, setPosts }) => {
                 console.error('Error getting liked user Ids:', error);
             }
         };
+        const getPostCommentsCount = async () => {
+            try {
+                const response = await api.get(`/posts/${post.id}/comments/count`);
+                setCommentsCount(response.data.count);
+            } 
+            catch (error) {
+                console.error("Error fetching comment count:", error);
+            }
+        }
+
         getLikedState();
+        getPostCommentsCount();
     }, [posts, post.id, userId]);
 
     const handleImageClick = (e, imageUrl) => {
@@ -99,7 +111,7 @@ const PostPreview = ({ post, posts, setPosts }) => {
             )}
             <div className="post-meta text-gray-600 flex items-center space-x-4">
                 <span>Likes: {post._count?.likes}</span>
-                <span>Comments: {post._count?.comments}</span>
+                <span>Comments: {commentsCount}</span>
                 <button 
                     onClick={(e) => handleLikeClick(e)} 
                     className={`py-2 px-4 rounded-md font-semibold focus:outline-none ${liked ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'}`}

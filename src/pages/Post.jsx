@@ -8,6 +8,7 @@ import Comment from "../components/Comment";
 const PostPage = () => {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
+    const [commentsCount, setCommentsCount] = useState(null);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
@@ -35,9 +36,19 @@ const PostPage = () => {
                 console.error("Error fetching like status:", error);
             }
         };
+        const getPostCommentsCount = async () => {
+            try {
+                const response = await api.get(`/posts/${postId}/comments/count`);
+                setCommentsCount(response.data.count);
+            } 
+            catch (error) {
+                console.error("Error fetching comment count:", error);
+            }
+        }
 
         fetchPost();
         fetchLikeStatus();
+        getPostCommentsCount();
     }, [postId, userId]);
 
     const handleImageClick = (e, imageUrl) => {
@@ -61,6 +72,7 @@ const PostPage = () => {
             });
             setComments([...comments, response.data.comment]);
             setNewComment("");
+            setCommentsCount((prevCount) => prevCount + 1);
         } catch (error) {
             console.error("Error adding comment:", error);
         }
@@ -82,16 +94,9 @@ const PostPage = () => {
         }
     };
 
-    const renderNestedComments = (nestedComments) => {
-        return nestedComments.map((nestedComment) => (
-            <Comment
-                key={nestedComment.id}
-                comment={nestedComment}
-                renderNestedComments={renderNestedComments}
-            />
-        ));
-    };
 
+    console.log(post);
+    console.log(comments);
     return (
         <>
             <Navbar />
@@ -123,7 +128,7 @@ const PostPage = () => {
                                 {liked ? 'Liked' : 'Like'}
                             </button>
                                 <span>Likes: {post._count?.likes}</span>
-                                <span>Comments: {post._count?.comments || 0}</span>
+                                <span>Comments: {commentsCount}</span>
                             </div>
                         </div>
 
@@ -152,7 +157,8 @@ const PostPage = () => {
                                         <Comment
                                             key={comment.id}
                                             comment={comment}
-                                            renderNestedComments={renderNestedComments}
+                                            setComments={setComments}
+                                            setCommentsCount={setCommentsCount}
                                         />
                                     ))
                                 ) : (
