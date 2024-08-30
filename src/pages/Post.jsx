@@ -156,8 +156,7 @@ const PostPage = () => {
                                     comments.map((comment) => (
                                         <Comment
                                             key={comment.id}
-                                            comment={comment}
-                                            setComments={setComments}
+                                            commentId={comment.id}
                                             setCommentsCount={setCommentsCount}
                                         />
                                     ))
