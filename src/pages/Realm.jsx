@@ -8,6 +8,9 @@ const Realm = () => {
     const { realmId } = useParams();
     const [realm, setRealm] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [joined, setJoined] = useState(null);
+
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         const fetchRealm = async () => {
@@ -30,53 +33,94 @@ const Realm = () => {
             }
         };
 
+        async function fetchJoinedStatus() {
+            try {
+                const response = await api.get(`/realms/${realmId}/joiners`);
+                const usersJoined = response.data.users.map(user => user.id);
+                setJoined(usersJoined.includes(userId));
+            }
+            catch(error) {
+                console.error("Error fetching realm", error);
+            }
+        }
+
         fetchRealm();
         fetchPosts();
-    }, [realmId]);
+        fetchJoinedStatus();
+    }, [realmId, userId]);
+
+    const handleJoinRealm = async (e, realmId) => {
+        e.stopPropagation();
+        try {
+            if (!joined) {
+                await api.post(`realms/${realmId}/join`);
+            } else {
+                await api.delete(`realms/${realmId}/join`);
+            }
+            setJoined(prev => !prev);
+        } catch (error) {
+            console.error("Error joining realm:", error);
+        }
+    };
 
     return (
         <>
             <Navbar />
-            <div className="container mx-auto p-6">
+            <div className="bg-gray-100 min-h-screen p-6">
                 {realm && (
-                    <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-                        <div className="flex items-center mb-4">
+                    <div className="container mx-auto flex bg-white shadow-md rounded-lg p-6">
+                        {/* Realm Image */}
+                        <div className="w-1/3 md:w-1/4">
                             <img
                                 src={realm.realmPictureUrl}
                                 alt={`${realm.name} picture`}
-                                className="w-16 h-16 rounded-full object-cover mr-4"
+                                className="w-full h-auto object-cover rounded-lg"
                             />
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">{realm.name}</h1>
-                                <p className="text-gray-600">{realm.description}</p>
-                                <p className="text-gray-500 text-sm mt-1">
-                                    Created by @{realm.creator.username}
-                                </p>
-                            </div>
                         </div>
-
-                        {/* Realm Meta */}
-                        <div className="flex space-x-4 text-gray-600 mt-2">
-                            <div>
-                                <span className="font-semibold">{realm._count.posts}</span> Posts
-                            </div>
-                            <div>
-                                <span className="font-semibold">{realm._count.joined}</span> Members
+                        
+                        {/* Realm Info */}
+                        <div className="w-2/3 md:w-3/4 ml-6">
+                            <div className="flex flex-col justify-between h-full">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-900">{realm.name}</h1>
+                                    <p className="text-gray-600">{realm.description}</p>
+                                    <p className="text-gray-500 text-sm mt-1">
+                                        Created by @{realm.creator.username}
+                                    </p>
+                                </div>
+                                <div className="flex space-x-4 text-gray-600 mt-4">
+                                    <div>
+                                        <span className="font-semibold">{realm._count.posts}</span> Posts
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold">{realm._count.joined}</span> Members
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={(e) => handleJoinRealm(e, realmId)}
+                                    className={`mt-4 px-4 py-2 rounded-md text-white ${
+                                        joined ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    }`}
+                                >
+                                    {joined ? 'Joined' : 'Join'}
+                                </button>
                             </div>
                         </div>
                     </div>
                 )}
 
                 {/* Posts Section */}
-                <div className="bg-white shadow-md rounded-lg p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Posts</h2>
-                    {posts.length > 0 ? (
-                        posts.map((post) => (
-                            <PostPreview key={post.id} postId={post.id} />
-                        ))
-                    ) : (
-                        <p className="text-gray-600">No posts available in this realm.</p>
-                    )}
+                <div className="container mx-auto mt-6">
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Posts</h2>
+                        {posts.length > 0 ? (
+                            posts.map((post) => (
+                                <PostPreview key={post.id} postId={post.id} />
+                            ))
+                        ) : (
+                            <p className="text-gray-600">No posts available in this realm.</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </>
