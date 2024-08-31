@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
 const DraftPreview = ({postId}) => {
+
     const [post, setPost] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const userId = localStorage.getItem('userId');

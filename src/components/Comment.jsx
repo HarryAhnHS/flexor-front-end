@@ -98,6 +98,7 @@ const Comment = ({ commentId, setCommentsCount }) => {
             setCommentsCount((prevCount) => prevCount + 1);
             setReply("");
             setShowReplyInput(false);
+            setShowNestedComments(true);
         } catch (error) {
             console.error("Error replying to comment:", error);
         }

@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'; // For redirecting after l
 
 const Navbar = () => {
   const navigate = useNavigate(); // For programmatic navigation
+  const userId = localStorage.getItem('userId');
 
   // Logout function
   const handleLogout = async () => {
@@ -31,7 +32,7 @@ const Navbar = () => {
             <Link to="/new-realm">+ Realm</Link>
         </div>
         <div className="text-lg font-semibold">
-          <Link to="/profile">Profile</Link>
+          <Link to={`/profile/${userId}`}>Profile</Link>
         </div>
         <div>
             <button

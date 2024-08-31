@@ -4,7 +4,7 @@ import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
-const PostPreview = ({ postId }) => {
+const PostPreview = ({ postId, isEditable }) => {
     const [post, setPost] = useState(null);
     const [liked, setLiked] = useState(null);
     const [commentsCount, setCommentsCount] = useState(null);
@@ -17,12 +17,11 @@ const PostPreview = ({ postId }) => {
             try {
                 const response = await api.get(`/posts/${postId}`);
                 setPost(response.data.post);
-            }
-            catch(error) {
+            } catch (error) {
                 console.error('Error getting post', error);
             }
-
         };
+
         const fetchLikedState = async () => {
             try {
                 const response = await api.get(`/posts/${postId}/liked`);
@@ -32,15 +31,15 @@ const PostPreview = ({ postId }) => {
                 console.error('Error getting liked user Ids:', error);
             }
         };
+
         const fetchPostCommentsCount = async () => {
             try {
                 const response = await api.get(`/posts/${postId}/comments/count`);
                 setCommentsCount(response.data.count);
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error("Error fetching comment count:", error);
             }
-        }
+        };
 
         fetchPost();
         fetchLikedState();
@@ -61,18 +60,17 @@ const PostPreview = ({ postId }) => {
         try {
             if (liked) {
                 await api.delete(`/posts/${postId}/like`);
-                const updatedPost = {...post};
+                const updatedPost = { ...post };
                 updatedPost._count.likes--;
                 setPost(updatedPost);
             } else {
                 await api.post(`/posts/${postId}/like`);
-                const updatedPost = {...post};
+                const updatedPost = { ...post };
                 updatedPost._count.likes++;
                 setPost(updatedPost);
             }
             setLiked(prevLiked => !prevLiked);
-        } 
-        catch (error) {
+        } catch (error) {
             console.error('Error toggling like:', error);
         }
     };
@@ -86,8 +84,7 @@ const PostPreview = ({ postId }) => {
         e.stopPropagation();
         try {
             await api.delete(`/posts/${postId}`);
-        } 
-        catch (error) {
+        } catch (error) {
             console.error('Error deleting post:', error);
         }
     };
@@ -95,10 +92,10 @@ const PostPreview = ({ postId }) => {
     const redirectToPost = (e) => {
         e.stopPropagation();
         navigate(`/posts/${postId}`);
-    }
+    };
 
     const formatTime = (dt) => {
-        return formatDistanceToNow(new Date(dt), {addSuffix: true});
+        return formatDistanceToNow(new Date(dt), { addSuffix: true });
     };
 
     return (
@@ -134,7 +131,7 @@ const PostPreview = ({ postId }) => {
                     {liked ? 'Liked' : 'Like'}
                 </button>
 
-                {post?.authorId === userId && (
+                {isEditable && (
                     <div className="space-x-4">
                         <button onClick={(e) => handleEditClick(e)} className="text-blue-500">
                             Edit
@@ -147,7 +144,7 @@ const PostPreview = ({ postId }) => {
             </div>
 
             {selectedImage && (
-                <ImageViewer imageUrl={selectedImage} onClose={(e) => closeImage(e)} />
+                <ImageViewer imageUrl={selectedImage} onClose={closeImage} />
             )}
         </div>
     );

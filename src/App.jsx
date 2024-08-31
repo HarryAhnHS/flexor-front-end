@@ -13,6 +13,7 @@ import Realms from './pages/Realms';
 import EditPostPage from './pages/EditPostPage';
 import Post from './pages/Post';
 import Realm from './pages/Realm';
+import Feed from './pages/Feed';
 
 
 const App = () => {
@@ -32,7 +33,7 @@ const App = () => {
       <Routes>
         {/* Routes for authenticated users */}
         <Route
-          path="/profile"
+          path="/profile/:userId"
           element={isAuthenticated ? <ProfilePage/> : <Navigate to="/login" />}
         />
         <Route
@@ -58,6 +59,10 @@ const App = () => {
         <Route
           path="/posts/:postId"
           element={isAuthenticated ? <Post /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/feed"
+          element={isAuthenticated ? <Feed /> : <Navigate to="/login" />}
         />
 
         {/* Routes for unauthenticated users */}
