@@ -3,11 +3,15 @@ import { formatDistanceToNow } from "date-fns";
 import api from "../services/api";
 
 const Comment = ({ commentId, setCommentsCount }) => {
+    const [commentLiked, setCommentLiked] = useState(null);
+
     const [comment, setComment] = useState({});
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [reply, setReply] = useState("");
     const [nestedComments, setNestedComments] = useState(null);
     const [showNestedComments, setShowNestedComments] = useState(false);
+
+    const userId = localStorage.getItem("userId");
 
     useEffect(() => {
         console.log("Comment use effect running")
@@ -31,10 +35,43 @@ const Comment = ({ commentId, setCommentsCount }) => {
                     console.error("Error fetching nested comments:", error);
                 }
             }
-        }
+        };
+
+        const fetchLikeStatus = async () => {
+            try {
+                const response = await api.get(`/comments/${commentId}/liked`);
+                const usersLiked = response.data.users.map(user => user.id);
+                setCommentLiked(usersLiked.includes(userId));
+            } 
+            catch (error) {
+                console.error("Error fetching like status:", error);
+            }
+        };
+
         fetchComment();
         fetchNestedComments();
-    }, [showNestedComments, nestedComments, commentId]);
+        fetchLikeStatus();
+    }, [showNestedComments, nestedComments, commentId, userId]);
+
+    const handleLikeClick = async (e) => {
+        e.stopPropagation();
+        try {
+            if (commentLiked) {
+                await api.delete(`/comments/${commentId}/like`);
+                const updatedComment = {...comment};
+                updatedComment._count.likes--;
+                setComment(updatedComment);
+            } else {
+                await api.post(`/comments/${commentId}/like`);
+                const updatedComment = {...comment};
+                updatedComment._count.likes++;
+                setComment(updatedComment);
+            }
+            setCommentLiked(prevLiked => !prevLiked);
+        } catch (error) {
+            console.error('Error toggling like:', error);
+        }
+    };
 
     const handleReplyClick = () => {
         setShowReplyInput(!showReplyInput);
@@ -89,6 +126,15 @@ const Comment = ({ commentId, setCommentsCount }) => {
                 <span className="px-2 text-base text-gray-500">&#x2022;</span>
                 <span className="text-sm text-gray-500">
                     {comment?.createdAt && formatTime(comment?.createdAt)}
+                </span>
+                <button 
+                    onClick={(e) => handleLikeClick(e)} 
+                    className={`py-2 px-4 rounded-md font-semibold focus:outline-none ${commentLiked ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'}`}
+                >
+                    {commentLiked ? 'Liked' : 'Like'}
+                </button>
+                <span className="text-sm text-gray-500">
+                    {comment._count?.likes}
                 </span>
             </div>
             <p className="text-gray-800 mt-3">{comment?.comment}</p>
