@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 const PostPreview = ({ postId }) => {
     const [post, setPost] = useState(null);
@@ -96,11 +97,18 @@ const PostPreview = ({ postId }) => {
         navigate(`/posts/${postId}`);
     }
 
+    const formatTime = (dt) => {
+        return formatDistanceToNow(new Date(dt), {addSuffix: true});
+    };
+
     return (
         <div key={post?.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={(e) => redirectToPost(e)}>
             <div className="flex items-center justify-between">
                 <h3 className="text-2xl font-semibold mb-2">{post?.title}</h3>
-                <h3 className="text-gray">Posted under {post?.realm.name}</h3>
+                <div>
+                    <h3 className="text-gray">Posted under {post?.realm.name}</h3>
+                    <p>{post?.createdAt && formatTime(post?.createdAt)}</p>
+                </div>
             </div>
             {post?.text && <p className="text-gray-800 mb-4">{post?.text}</p>}
             {post?.images && post?.images.length > 0 && (
