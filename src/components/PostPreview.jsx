@@ -3,7 +3,8 @@ import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 
-const PostPreview = ({ post, posts, setPosts }) => {
+const PostPreview = ({ postId }) => {
+    const [post, setPost] = useState(null);
     const [liked, setLiked] = useState(null);
     const [commentsCount, setCommentsCount] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -11,18 +12,28 @@ const PostPreview = ({ post, posts, setPosts }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const getLikedState = async () => {
+        const fetchPost = async () => {
             try {
-                const response = await api.get(`/posts/${post.id}/liked`);
+                const response = await api.get(`/posts/${postId}`);
+                setPost(response.data.post);
+            }
+            catch(error) {
+                console.error('Error getting post', error);
+            }
+
+        };
+        const fetchLikedState = async () => {
+            try {
+                const response = await api.get(`/posts/${postId}/liked`);
                 const usersLiked = response.data.usersWhoLikedPost.map(user => user.id);
                 setLiked(usersLiked.includes(userId));
             } catch (error) {
                 console.error('Error getting liked user Ids:', error);
             }
         };
-        const getPostCommentsCount = async () => {
+        const fetchPostCommentsCount = async () => {
             try {
-                const response = await api.get(`/posts/${post.id}/comments/count`);
+                const response = await api.get(`/posts/${postId}/comments/count`);
                 setCommentsCount(response.data.count);
             } 
             catch (error) {
@@ -30,9 +41,10 @@ const PostPreview = ({ post, posts, setPosts }) => {
             }
         }
 
-        getLikedState();
-        getPostCommentsCount();
-    }, [posts, post.id, userId]);
+        fetchPost();
+        fetchLikedState();
+        fetchPostCommentsCount();
+    }, [postId, userId]);
 
     const handleImageClick = (e, imageUrl) => {
         e.stopPropagation();
@@ -47,37 +59,32 @@ const PostPreview = ({ post, posts, setPosts }) => {
         e.stopPropagation();
         try {
             if (liked) {
-                await api.delete(`/posts/${post.id}/like`);
-                const updatedPost = [...posts].find((p) => p.id === post.id);
+                await api.delete(`/posts/${postId}/like`);
+                const updatedPost = {...post};
                 updatedPost._count.likes--;
-                const updatedPosts = posts.map((p) => {
-                    return (p.id === post.id) ? updatedPost : p;
-                })
-                setPosts(updatedPosts);
+                setPost(updatedPost);
             } else {
-                await api.post(`/posts/${post.id}/like`);
-                const updatedPost = [...posts].find((p) => p.id === post.id);
+                await api.post(`/posts/${postId}/like`);
+                const updatedPost = {...post};
                 updatedPost._count.likes++;
-                const updatedPosts = posts.map((p) => {
-                    return (p.id === post.id) ? updatedPost : p;
-                })
-                setPosts(updatedPosts);
+                setPost(updatedPost);
             }
             setLiked(prevLiked => !prevLiked);
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error toggling like:', error);
         }
     };
 
     const handleEditClick = (e) => {
         e.stopPropagation();
-        navigate(`/edit-post/${post.id}`);
+        navigate(`/edit-post/${postId}`);
     };
 
     const handleDeleteClick = async (e) => {
         e.stopPropagation();
         try {
-            await api.delete(`/posts/${post.id}`);
+            await api.delete(`/posts/${postId}`);
         } 
         catch (error) {
             console.error('Error deleting post:', error);
@@ -86,19 +93,19 @@ const PostPreview = ({ post, posts, setPosts }) => {
 
     const redirectToPost = (e) => {
         e.stopPropagation();
-        navigate(`/posts/${post.id}`);
+        navigate(`/posts/${postId}`);
     }
 
     return (
-        <div key={post.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={(e) => redirectToPost(e)}>
+        <div key={post?.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={(e) => redirectToPost(e)}>
             <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-semibold mb-2">{post.title}</h3>
-                <h3 className="text-gray">Posted under {post.realm.name}</h3>
+                <h3 className="text-2xl font-semibold mb-2">{post?.title}</h3>
+                <h3 className="text-gray">Posted under {post?.realm.name}</h3>
             </div>
-            {post.text && <p className="text-gray-800 mb-4">{post.text}</p>}
-            {post.images && post.images.length > 0 && (
+            {post?.text && <p className="text-gray-800 mb-4">{post?.text}</p>}
+            {post?.images && post?.images.length > 0 && (
                 <div className="flex flex-wrap gap-4 mb-4">
-                    {post.images.map((image, index) => (
+                    {post?.images.map((image, index) => (
                         <img 
                             key={index} 
                             src={image.url} 
@@ -110,7 +117,7 @@ const PostPreview = ({ post, posts, setPosts }) => {
                 </div>
             )}
             <div className="post-meta text-gray-600 flex items-center space-x-4">
-                <span>Likes: {post._count?.likes}</span>
+                <span>Likes: {post?._count.likes}</span>
                 <span>Comments: {commentsCount}</span>
                 <button 
                     onClick={(e) => handleLikeClick(e)} 
@@ -119,7 +126,7 @@ const PostPreview = ({ post, posts, setPosts }) => {
                     {liked ? 'Liked' : 'Like'}
                 </button>
 
-                {post.authorId === userId && (
+                {post?.authorId === userId && (
                     <div className="space-x-4">
                         <button onClick={(e) => handleEditClick(e)} className="text-blue-500">
                             Edit

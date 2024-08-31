@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 
-const DraftPreview = ({post}) => {
+const DraftPreview = ({postId}) => {
+    const [post, setPost] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
-
     const userId = localStorage.getItem('userId');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await api.get(`/posts/${postId}`);
+                setPost(response.data.post);
+            }
+            catch(error) {
+                console.error('Error getting post', error);
+            }
+        };
+        fetchPost();
+    }, [postId]);
 
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
@@ -18,27 +31,27 @@ const DraftPreview = ({post}) => {
     };
 
     const handleEditClick = () => {
-        navigate(`/edit-post/${post.id}`);
+        navigate(`/edit-post/${postId}`);
     };
 
     const handleDeleteClick = async () => {
         try {
-            await api.delete(`/posts/${post.id}`);
+            await api.delete(`/posts/${postId}`);
         } catch (error) {
             console.error('Error deleting post:', error);
         }
     };
 
     return (
-        <div key={post.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md">
+        <div key={post?.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-semibold mb-2">{post.title}</h3>
-                {post.realm ? <h3 className="text-gray">Posted under {post.realm.name}</h3> : null}
+                <h3 className="text-2xl font-semibold mb-2">{post?.title}</h3>
+                {post?.realm ? <h3 className="text-gray">Posted under {post?.realm.name}</h3> : null}
             </div>
-            {post.text && <p className="text-gray-800 mb-4">{post.text}</p>}
-            {post.images && post.images.length > 0 && (
+            {post?.text && <p className="text-gray-800 mb-4">{post?.text}</p>}
+            {post?.images && post?.images.length > 0 && (
                 <div className="flex flex-wrap gap-4 mb-4">
-                    {post.images.map((image, index) => (
+                    {post?.images.map((image, index) => (
                         <img 
                             key={index} 
                             src={image.url} 
@@ -50,7 +63,7 @@ const DraftPreview = ({post}) => {
                 </div>
             )}
             <div className="post-meta text-gray-600 flex items-center space-x-4">
-                {post.authorId === userId 
+                {post?.authorId === userId 
                     ? 
                         <div className="space-x-4">
                             <button onClick={handleEditClick} className="text-blue-500">
