@@ -83,19 +83,17 @@ const ProfilePage = () => {
     }
   }, [userId, selectedTab, loggedInUserId]);
 
-  console.log(profileMeta);
-
   const handleFollowToggle = async () => {
     try {
       if (followed) {
         await api.delete(`/users/${userId}/follow`);
-        const newMeta = {...profileMeta};
+        const newMeta = { ...profileMeta };
         newMeta._count.followers--;
         setProfileMeta(newMeta);
       } 
       else {
         await api.post(`/users/${userId}/follow`);
-        const newMeta = {...profileMeta};
+        const newMeta = { ...profileMeta };
         newMeta._count.followers++;
         setProfileMeta(newMeta);
       }
@@ -106,13 +104,14 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="text-center mt-8">Loading...</div>;
 
   return (
     <>
       <Navbar />
       <div className="profile-page container mx-auto p-4">
-        <div className="profile-header flex items-center space-x-4">
+        {/* Profile Header */}
+        <div className="profile-header flex items-center space-x-4 mb-4">
           <img
             src={profileMeta.profilePictureUrl}
             alt={`${profileMeta.username}'s profile`}
@@ -123,7 +122,12 @@ const ProfilePage = () => {
             <p className="text-gray-600">{profileMeta.bio || 'No bio available'}</p>
             {userId === loggedInUserId ? (
               <div>
-                <button onClick={handleModalOpen}>Edit Profile</button>
+                <button
+                  onClick={handleModalOpen}
+                  className="py-2 px-4 rounded bg-blue-500 text-white"
+                >
+                  Edit Profile
+                </button>
                 <EditProfileModal
                   open={isModalOpen}
                   handleModalClose={handleModalClose}
@@ -145,7 +149,8 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <section className="profile-stats mt-4">
+        {/* Profile Stats */}
+        <section className="profile-stats mb-4">
           <div className="stats-grid grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="stat-item text-center" >
               <h2 className="text-lg font-semibold">{profileMeta._count?.posts || 0}</h2>
@@ -162,29 +167,30 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        <section className="profile-stats mt-4">
-          <div className="tabs flex space-x-4">
+        {/* Tabs for Posts, Liked, Commented, Drafts */}
+        <section className="tabs mb-4">
+          <div className="tabs-buttons flex space-x-4">
             <button
-              className={`tab-button ${selectedTab === 'posts' ? 'border' : ''}`}
+              className={`px-4 py-2 rounded ${selectedTab === 'posts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
               onClick={() => setSelectedTab('posts')}
             >
               Posts
             </button>
             <button
-              className={`tab-button ${selectedTab === 'liked' ? 'border' : ''}`}
+              className={`px-4 py-2 rounded ${selectedTab === 'liked' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
               onClick={() => setSelectedTab('liked')}
             >
               Liked
             </button>
             <button
-              className={`tab-button ${selectedTab === 'commented' ? 'border' : ''}`}
+              className={`px-4 py-2 rounded ${selectedTab === 'commented' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
               onClick={() => setSelectedTab('commented')}
             >
               Commented
             </button>
             {userId === loggedInUserId && (
               <button
-                className={`tab-button ${selectedTab === 'drafts' ? 'border' : ''}`}
+                className={`px-4 py-2 rounded ${selectedTab === 'drafts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
                 onClick={() => setSelectedTab('drafts')}
               >
                 Drafts
@@ -193,11 +199,12 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        <section className="profile-content mt-4">
-          <h2 className="text-2xl font-semibold">
+        {/* Posts Content */}
+        <section className="profile-content">
+          <h2 className="text-2xl font-semibold mb-4">
             {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
           </h2>
-          <div className="posts-list mt-4">
+          <div className="posts-list">
             {posts.length > 0 ? (
               selectedTab === 'drafts'
                 ? posts.map(post => (
@@ -214,7 +221,9 @@ const ProfilePage = () => {
                     />
                   ))
             ) : (
-              <p>No posts to display</p>
+              <p className="text-gray-600 text-center mt-8">
+                No posts available.
+              </p>
             )}
           </div>
         </section>

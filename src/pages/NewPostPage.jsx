@@ -14,8 +14,9 @@ const NewPostPage = () => {
     text: '',
     published: false,
   });
-  const [postImagesIds, setPostImagesIds] = useState([]);
   const [postImages, setPostImages] = useState([]);
+  const [removedImages, setRemovedImages] = useState([]);
+
   const [publishError, setPublishError] = useState(null);
   const [realmError, setRealmError] = useState(null);
   const [fileError, setFileError] = useState(null);
@@ -30,7 +31,8 @@ const NewPostPage = () => {
         if (realms.data.realms.length === 0) {
           setRealmError('Join a realm to post');
         }
-      } catch (error) {
+      } 
+      catch (error) {
         console.error("Error fetching user's joined realms:", error);
         setRealmError('Failed to load realms');
       }
@@ -47,8 +49,6 @@ const NewPostPage = () => {
 
   const handleImageUpload = async (e) => {
     const id = uuidv4();
-    setPostImagesIds([...postImagesIds, id]);
-
     const file = e.target.files[0];
     const uploadData = new FormData();
     uploadData.append('image', file);
@@ -59,14 +59,18 @@ const NewPostPage = () => {
             'Content-Type': 'multipart/form-data'
         }
     });
-      const imageUrl = response.data.imageUrl;
-      setPostImages([...postImages, imageUrl]);
+      setPostImages([...postImages, response.data.image]);
     } 
     catch (error) {
       if (error.response.data.message === "Invalid file type") {
         setFileError("Invalid file type - only png, jpeg and gif allowed");
       }
     }
+  };
+
+  const handleImageDelete = async (image) => {
+    setPostImages(postImages.filter(i => i.id !== image.id));
+    setRemovedImages([...removedImages, image]);
   };
 
   const handleSubmit = async (e, published) => {
@@ -76,16 +80,23 @@ const NewPostPage = () => {
       setPublishError('Title and Realm are required to publish the post.');
       return;
     }
-
     try {
-      const response = await api.post(`/posts/`, {
+      // Post
+      await api.post(`/posts/`, {
         ...formData,
         published,
-        imageIds: postImagesIds
+        imageIds: postImages.map((image) => image.id),
       });
-      if (response.status === 201) {
-        navigate(`/profile/${userId}`);
-      }
+
+      // Delete removed images - parse into query
+      if (removedImages.length > 0) {
+          console.log("removing images");
+          const deleteIds = removedImages.map(image => image.id).join(',');
+          const deletePublicIds = removedImages.map(image => image.publicId).join(',');
+          await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
+      };
+
+      navigate(`/profile/${userId}`);
     } 
     catch (error) {
       console.error('Error saving post:', error);
@@ -95,6 +106,8 @@ const NewPostPage = () => {
   const handleCancel = () => {
     navigate(`/profile/${userId}`);
   };
+
+  console.log(postImages);
 
   return (
     <>
@@ -154,13 +167,21 @@ const NewPostPage = () => {
               }
               <div className="mt-4 flex flex-wrap">
                 {postImages &&
-                  postImages.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Uploaded ${index}`}
-                      className="w-24 h-24 object-cover rounded-lg mr-4 mb-4"
-                    />
+                  postImages.map((image) => (
+                    <div key={image.id} className="relative w-24 h-24 mr-4 mb-4">
+                      <img
+                        src={image.url}
+                        alt={`Uploaded ${image.id}`}
+                        className="object-cover w-full h-full rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleImageDelete(image)}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs focus:outline-none"
+                      >
+                        x
+                      </button>
+                    </div>
                   ))}
               </div>
             </div>
