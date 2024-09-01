@@ -62,29 +62,31 @@ const UserPreview = ({ userId }) => {
       onClick={() => navigate(`/profile/${userId}`)}
     >
       <div 
-        className="user-preview flex items-center space-x-4 p-4 hover:bg-gray-100 rounded-lg"
+        className="user-preview flex items-center justify-between space-x-4 p-4 hover:bg-gray-100 rounded-lg"
       >
         <div 
-          className="user-info flex-1"
+          className="user-info flex items-center gap-3"
           onMouseEnter={() => setHovered(true)} 
           onMouseLeave={() => setHovered(false)}
         >
           <img 
             src={user?.profilePictureUrl} 
             alt={`${user?.username}'s profile`} 
-            className="w-16 h-16 rounded-full object-cover"
+            className="w-12 h-12 rounded-full object-cover"
           />
-          <h2 className="text-xl font-semibold">{user?.username}</h2>
+          <h2 className="text-xl hover:underline">@{user?.username}</h2>
         </div>
-        <button 
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent navigating to the profile page when clicking follow/unfollow
-            handleFollowToggle();
-          }} 
-          className={`py-2 px-4 rounded-md font-semibold ${followed ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}
-        >
-          {followed ? 'Following' : 'Follow'}
-        </button>
+        {userId !== loggedInUserId && 
+            <button 
+            onClick={(e) => {
+                e.stopPropagation(); // Prevent navigating to the profile page when clicking follow/unfollow
+                handleFollowToggle();
+            }} 
+            className={`py-2 px-4 rounded-md font-semibold ${followed ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}
+            >
+            {followed ? 'Following' : 'Follow'}
+            </button>
+        }
       </div>
 
       {/* Hover Card with Additional User Details */}

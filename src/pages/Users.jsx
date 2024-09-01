@@ -48,8 +48,13 @@ const Users = ({ scenario }) => {
     <>
       <Navbar />
       <div className="user-listing-page container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">{`Users ${scenario.replace(/([A-Z])/g, ' $1').toLowerCase()}`}</h1>
-        <UsersList userIds={userIds} />
+        <h1 className="text-3xl font-bold mb-6">
+            Users
+        </h1>
+        {userIds.length > 0
+        ?   <UsersList userIds={userIds} />
+        :   <p>No users to display</p>
+        }
       </div>
     </>
   );

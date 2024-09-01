@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Comment = ({ commentId, setCommentsCount }) => {
+    const navigate = useNavigate();
     const [commentLiked, setCommentLiked] = useState(null);
 
     const [comment, setComment] = useState({});
@@ -118,12 +120,14 @@ const Comment = ({ commentId, setCommentsCount }) => {
     return (
         <div key={commentId} className="comment bg-gray-100 p-4 rounded-lg mb-4">
             <div className="flex items-center">
-                <img
-                    src={comment.user?.profilePictureUrl}
-                    className="w-[30px] h-[30px] object-cover rounded-full"
-                    alt="Profile"
-                />
-                <span className="text-base text-gray-500">@{comment.user?.username}</span>
+                <div className="flex items-center cursor-pointer hover:underline" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
+                    <img
+                        src={comment.user?.profilePictureUrl}
+                        className="w-[30px] h-[30px] object-cover rounded-full"
+                        alt="Profile"
+                    />
+                    <span className="text-base text-gray-500">@{comment.user?.username}</span>
+                </div>
                 <span className="px-2 text-base text-gray-500">&#x2022;</span>
                 <span className="text-sm text-gray-500">
                     {comment?.createdAt && formatTime(comment?.createdAt)}
@@ -134,7 +138,7 @@ const Comment = ({ commentId, setCommentsCount }) => {
                 >
                     {commentLiked ? 'Liked' : 'Like'}
                 </button>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 cursor-pointer" onClick={() => navigate(`/comments/${comment?.id}/liked`)}>
                     {comment._count?.likes}
                 </span>
             </div>

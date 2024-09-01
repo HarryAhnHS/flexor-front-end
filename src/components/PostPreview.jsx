@@ -25,7 +25,7 @@ const PostPreview = ({ postId, isEditable }) => {
         const fetchLikedState = async () => {
             try {
                 const response = await api.get(`/posts/${postId}/liked`);
-                const usersLiked = response.data.usersWhoLikedPost.map(user => user.id);
+                const usersLiked = response.data.users.map(user => user.id);
                 setLiked(usersLiked.includes(userId));
             } catch (error) {
                 console.error('Error getting liked user Ids:', error);

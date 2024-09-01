@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import PostPreview from "../components/PostPreview";
 import Navbar from "../components/Navbar";
 
 const Realm = () => {
+    const navigate = useNavigate();
     const { realmId } = useParams();
     const [realm, setRealm] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -92,7 +93,7 @@ const Realm = () => {
                                     <div>
                                         <span className="font-semibold">{realm._count.posts}</span> Posts
                                     </div>
-                                    <div>
+                                    <div className="cursor-pointer" onClick={() => navigate(`/realms/${realm.id}/joined`)}>
                                         <span className="font-semibold">{realm._count.joined}</span> Members
                                     </div>
                                 </div>

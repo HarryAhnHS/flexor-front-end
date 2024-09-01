@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Comment from "../components/Comment";
 
 const PostPage = () => {
+    const navigate = useNavigate();
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [commentsCount, setCommentsCount] = useState(null);
@@ -127,7 +128,7 @@ const PostPage = () => {
                             >
                                 {liked ? 'Liked' : 'Like'}
                             </button>
-                                <span>Likes: {post._count?.likes}</span>
+                                <span className="cursor-pointer" onClick={() => navigate(`/posts/${post.id}/liked`)}>Likes: {post._count?.likes}</span>
                                 <span>Comments: {commentsCount}</span>
                             </div>
                         </div>
