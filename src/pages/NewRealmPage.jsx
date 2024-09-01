@@ -21,8 +21,6 @@ const NewRealmPage = () => {
     useEffect(() => {
         setNameError('');
         setFileError('');
-        // Set preview as default image
-        setImagePreview("https://res.cloudinary.com/dr8iz6zig/image/upload/v1724372280/default_nwzykb.png");
     }, []);
     
     const handleChange = (e) => {
@@ -94,7 +92,7 @@ const NewRealmPage = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
-                                    Realm Picture:
+                                    Realm Picture (optional):
                                 </label>
                                 {imagePreview && (
                                     <div className="mt-4 flex justify-center">

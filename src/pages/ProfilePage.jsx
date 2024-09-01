@@ -4,9 +4,10 @@ import EditProfileModal from '../components/modals/EditProfile';
 import Navbar from '../components/Navbar';
 import PostPreview from '../components/PostPreview';
 import DraftPreview from '../components/DraftPreview';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const [profileMeta, setProfileMeta] = useState({});
   const [posts, setPosts] = useState([]);
   const [followed, setFollowed] = useState(null);
@@ -15,7 +16,7 @@ const ProfilePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { userId } = useParams();
-  const loggedInUserId = localStorage.getItem('userId'); // Get the logged-in user's ID
+  const loggedInUserId = localStorage.getItem('userId');
 
   // Modal handlers
   const handleModalOpen = () => setIsModalOpen(true);
@@ -90,11 +91,13 @@ const ProfilePage = () => {
         await api.delete(`/users/${userId}/follow`);
         const newMeta = {...profileMeta};
         newMeta._count.followers--;
-
-      } else {
+        setProfileMeta(newMeta);
+      } 
+      else {
         await api.post(`/users/${userId}/follow`);
         const newMeta = {...profileMeta};
         newMeta._count.followers++;
+        setProfileMeta(newMeta);
       }
       setFollowed(!followed);
     } 
@@ -144,15 +147,15 @@ const ProfilePage = () => {
 
         <section className="profile-stats mt-4">
           <div className="stats-grid grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="stat-item text-center">
+            <div className="stat-item text-center" >
               <h2 className="text-lg font-semibold">{profileMeta._count?.posts || 0}</h2>
               <p className="text-gray-500">Posts</p>
             </div>
-            <div className="stat-item text-center">
+            <div className="stat-item text-center cursor-pointer" onClick={() => navigate(`/users/${userId}/followers`)}>
               <h2 className="text-lg font-semibold">{profileMeta._count?.followers || 0}</h2>
               <p className="text-gray-500">Followers</p>
             </div>
-            <div className="stat-item text-center">
+            <div className="stat-item text-center cursor-pointer" onClick={() => navigate(`/users/${userId}/following`)}>
               <h2 className="text-lg font-semibold">{profileMeta._count?.following || 0}</h2>
               <p className="text-gray-500">Following</p>
             </div>

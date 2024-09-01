@@ -14,6 +14,7 @@ import EditPostPage from './pages/EditPostPage';
 import Post from './pages/Post';
 import Realm from './pages/Realm';
 import Feed from './pages/Feed';
+import Users from './pages/Users';
 
 
 const App = () => {
@@ -64,6 +65,14 @@ const App = () => {
           path="/feed"
           element={isAuthenticated ? <Feed /> : <Navigate to="/login" />}
         />
+
+        {/* User list routes */}
+        <Route path="/posts/:id/liked" element={<Users scenario="likedPost" />} />
+        <Route path="/comments/:id/liked" element={<Users scenario="likedComment" />} />
+        <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
+        <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
+        <Route path="/users/:id/following" element={<Users scenario="following" />} />
+        {/* Other routes */}
 
         {/* Routes for unauthenticated users */}
         <Route path="/" element={<UnauthenticatedPage />} />
