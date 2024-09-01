@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 
 const NewPostPage = () => {
+  const navigate = useNavigate();
   const [userRealms, setUserRealms] = useState([]);
   const [formData, setFormData] = useState({
     realmId: '',
@@ -82,15 +84,16 @@ const NewPostPage = () => {
         imageIds: postImagesIds
       });
       if (response.status === 201) {
-        window.location.href = '/profile';
+        navigate(`/profile/${userId}`);
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error saving post:', error);
     }
   };
 
-  const handleCancel = async () => {
-      window.location.href = '/profile';
+  const handleCancel = () => {
+    navigate(`/profile/${userId}`);
   };
 
   return (

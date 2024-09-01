@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
-import { Button, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const NewRealmPage = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         description: "",
     });
     const [realmPictureFile, setRealmPictureFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
-
     const [loading, setLoading] = useState(false);
-
     const [nameError, setNameError] = useState("");
     const [fileError, setFileError] = useState("");
+
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         setNameError('');
@@ -61,7 +63,7 @@ const NewRealmPage = () => {
             }
             // Redirect to profile
             if (response.status === 201) {
-                window.location.href = '/profile';
+                navigate(`/profile/${userId}`);
             }
         }
         catch(error) {
@@ -78,76 +80,86 @@ const NewRealmPage = () => {
         }
     };
 
-
     return ( 
-    <>
-        <Navbar />
-        <div className="p-6 text-xl font-bold text-center">
-            <h1>Create a new realm</h1>
-        </div>
-        {loading 
-            ?
-            <div className="flex justify-center mt-4">
-                <CircularProgress /> {/* MUI loading spinner */}
-            </div>
-            :
-            <div className='p-6'>
-                <form onSubmit={handleSubmit}>
-                    {imagePreview && (
-                        <div className="mt-4 flex justify-center">
-                            <img
-                                src={imagePreview}
-                                alt="Preview"
-                                className="w-64 h-48 object-cover"
-                            />
+        <>
+            <Navbar />
+            <div className="p-8 bg-gray-100 min-h-screen">
+                <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Create a New Realm</h2>
+                    {loading ? (
+                        <div className="flex justify-center">
+                            <CircularProgress />
                         </div>
-                        )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            id="profilePicture"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
-                        <label htmlFor="profilePicture">
-                            <Button variant="outlined" component="span" color="primary" className="w-full">
-                                Upload Realm Picture
-                            </Button>
-                            { fileError && 
-                                <p className='text-center text-red-600'>{fileError}</p>
-                            }
-                        </label>
-                    <div className="mb-4">
-                        <label htmlFor="name" className="block">Realm Name:</label>
-                        <input
-                            id="name"
-                            type="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="border p-2 w-full"
-                            required
-                        />
-                        { nameError && 
-                            <p className='text-center text-red-600'>{nameError}</p>
-                        }
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="description" className="block">Add a description:</label>
-                        <textarea
-                            id="description"
-                            type="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            className="border p-2 w-full"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="bg-blue-500 text-white p-2">Create realm</button>
-                </form>
+                    ) : (
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-4">
+                                <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
+                                    Realm Picture:
+                                </label>
+                                {imagePreview && (
+                                    <div className="mt-4 flex justify-center">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Preview"
+                                            className="w-64 h-48 object-cover rounded-md shadow-md"
+                                        />
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    id="profilePicture"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                                <label htmlFor="profilePicture" className="inline-block p-2 mt-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
+                                    Upload Realm Picture
+                                </label>
+                                {fileError && <p className="text-red-500 text-sm mt-2">{fileError}</p>}
+                            </div>
+
+                            <div className="mb-4">
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                    Realm Name:
+                                </label>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required
+                                />
+                                {nameError && <p className="text-red-500 text-sm mt-2">{nameError}</p>}
+                            </div>
+
+                            <div className="mb-4">
+                                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                                    Description:
+                                </label>
+                                <textarea
+                                    id="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    rows="5"
+                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    required
+                                />
+                            </div>
+
+                            <div className="flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                >
+                                    Create Realm
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                </div>
             </div>
-            }
-        
-    </>
+        </>
     );
 };
 

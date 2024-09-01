@@ -74,7 +74,7 @@ const Realm = () => {
                             <img
                                 src={realm.realmPictureUrl}
                                 alt={`${realm.name} picture`}
-                                className="w-full h-auto object-cover rounded-lg"
+                                className="w-full h-full object-cover rounded-lg"
                             />
                         </div>
                         

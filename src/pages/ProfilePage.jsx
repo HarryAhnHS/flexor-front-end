@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 const ProfilePage = () => {
   const [profileMeta, setProfileMeta] = useState({});
   const [posts, setPosts] = useState([]);
+  const [followed, setFollowed] = useState(null);
   const [selectedTab, setSelectedTab] = useState('posts');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,8 +26,20 @@ const ProfilePage = () => {
       try {
         const response = await api.get(`/users/${userId}`);
         setProfileMeta(response.data.user);
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error fetching profile meta', error);
+      }
+    };
+
+    const fetchFollowedState = async () => {
+      try {
+        const response = await api.get(`/users/${userId}/followers`);
+        const followedUsers = response.data.users.map(user => user.id);
+        setFollowed(followedUsers.includes(loggedInUserId)); // Check if the logged-in user is in the followers list
+      } 
+      catch (error) {
+        console.error('Error fetching user follow state', error);
       }
     };
 
@@ -55,17 +68,40 @@ const ProfilePage = () => {
             break;
         }
         setPosts(response.data.posts);
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error fetching posts data', error);
       }
     };
 
     if (userId) {
       fetchMetaData();
+      fetchFollowedState();
       fetchPostsData();
       setLoading(false);
     }
   }, [userId, selectedTab, loggedInUserId]);
+
+  console.log(profileMeta);
+
+  const handleFollowToggle = async () => {
+    try {
+      if (followed) {
+        await api.delete(`/users/${userId}/follow`);
+        const newMeta = {...profileMeta};
+        newMeta._count.followers--;
+
+      } else {
+        await api.post(`/users/${userId}/follow`);
+        const newMeta = {...profileMeta};
+        newMeta._count.followers++;
+      }
+      setFollowed(!followed);
+    } 
+    catch (error) {
+      console.error('Error following/unfollowing user', error);
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
 
@@ -75,14 +111,14 @@ const ProfilePage = () => {
       <div className="profile-page container mx-auto p-4">
         <div className="profile-header flex items-center space-x-4">
           <img
-            src={profileMeta.profilePictureUrl || 'default-profile-picture-url'}
+            src={profileMeta.profilePictureUrl}
             alt={`${profileMeta.username}'s profile`}
             className="w-24 h-24 rounded-full object-cover"
           />
           <div className="user-info">
             <h1 className="text-3xl font-bold">{profileMeta.username}</h1>
             <p className="text-gray-600">{profileMeta.bio || 'No bio available'}</p>
-            {userId === loggedInUserId && (
+            {userId === loggedInUserId ? (
               <div>
                 <button onClick={handleModalOpen}>Edit Profile</button>
                 <EditProfileModal
@@ -93,6 +129,15 @@ const ProfilePage = () => {
                   setProfileMeta={setProfileMeta}
                 />
               </div>
+            ) : (
+              <button
+                onClick={handleFollowToggle}
+                className={`py-2 px-4 rounded-md font-semibold focus:outline-none ${
+                  followed ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                }`}
+              >
+                {followed ? 'Following' : 'Follow'}
+              </button>
             )}
           </div>
         </div>
