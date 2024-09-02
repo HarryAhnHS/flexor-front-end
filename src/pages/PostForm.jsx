@@ -138,14 +138,14 @@ const PostForm = () => {
         });
       }
 
-      // Delete removed images if any
+      // Delete removed images if any using query
       if (removedImages.length > 0) {
         const deleteIds = removedImages.map((image) => image.id).join(',');
         const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
         await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
       }
-
       navigate(`/profile/${userId}`);
+
     } catch (error) {
       console.error('Error saving post:', error);
     }
@@ -160,7 +160,7 @@ const PostForm = () => {
       <Navbar />
       <div className="p-8 bg-gray-100 min-h-screen">
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Post' : 'Create Post'}</h2>
+          <h2 className="text-2xl font-bold mb-6">{isEditing ? (formData.published ? 'Edit Post' : 'Edit Draft') : 'Create Post'}</h2>
           <form onSubmit={(e) => handleSubmit(e, false)}>
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
@@ -258,7 +258,7 @@ const PostForm = () => {
                 onClick={(e) => handleSubmit(e, true)}
                 className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                {isEditing ? 'Update' : 'Post'}
+                {isEditing ? (formData.published ? 'Save Changes' : 'Publish Draft') : "Publish Post"}
               </button>
               <button
                 type="button"
