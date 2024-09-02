@@ -32,6 +32,9 @@ const Navbar = () => {
             <Link to="/submit-realm">+ Realm</Link>
         </div>
         <div className="text-lg font-semibold">
+          <Link to={`/notifications`}>Notifications</Link>
+        </div>
+        <div className="text-lg font-semibold">
           <Link to={`/profile/${userId}`}>Profile</Link>
         </div>
         <div>
