@@ -132,7 +132,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
     const handleDeleteClick = async () => {
         try {
             await api.delete(`/comments/${commentId}`);
-            setCommentsCount(prevCount => prevCount - 1);
+            setCommentsCount(prevCount => prevCount - (comment._count.nestedComments+1));
             setSiblings(siblings.filter((comment) => comment.id !== commentId));
         } catch (error) {
             console.error("Error deleting comment:", error);
