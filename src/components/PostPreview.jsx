@@ -77,7 +77,7 @@ const PostPreview = ({ postId, isEditable }) => {
 
     const handleEditClick = (e) => {
         e.stopPropagation();
-        navigate(`/edit-post/${postId}`);
+        navigate(`/submit-post/${postId}`);
     };
 
     const handleDeleteClick = async (e) => {

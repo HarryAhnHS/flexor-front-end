@@ -4,7 +4,7 @@ import api from '../services/api';
 import { CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const NewRealmPage = () => {
+const RealmForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
@@ -161,4 +161,4 @@ const NewRealmPage = () => {
     );
 };
 
-export default NewRealmPage;
+export default RealmForm;

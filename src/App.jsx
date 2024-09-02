@@ -7,14 +7,13 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
-import NewRealmPage from './pages/NewRealmPage';
-import NewPostPage from './pages/NewPostPage';
 import Realms from './pages/Realms';
-import EditPostPage from './pages/EditPostPage';
 import Post from './pages/Post';
 import Realm from './pages/Realm';
 import Feed from './pages/Feed';
 import Users from './pages/Users';
+import PostForm from './pages/PostForm';
+import RealmForm from './pages/RealmForm';
 
 
 const App = () => {
@@ -26,7 +25,11 @@ const App = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Or a loading spinner
+    return (
+    <div>
+      Loading...
+    </div>
+      ); // Or a loading spinner
   }
 
   return (
@@ -38,16 +41,12 @@ const App = () => {
           element={isAuthenticated ? <ProfilePage/> : <Navigate to="/login" />}
         />
         <Route
-          path="/new-realm"
-          element={isAuthenticated ? <NewRealmPage/> : <Navigate to="/login" />}
+          path="/submit-realm"
+          element={isAuthenticated ? <RealmForm/> : <Navigate to="/login" />}
         />
         <Route
-          path="/new-post"
-          element={isAuthenticated ? <NewPostPage/> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/edit-post/:postId"
-          element={isAuthenticated ? <EditPostPage/> : <Navigate to="/login" />}
+          path="/submit-post/:postId?"
+          element={isAuthenticated ? <PostForm/> : <Navigate to="/login" />}
         />
         <Route
           path="/realms"
@@ -72,7 +71,6 @@ const App = () => {
         <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
         <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
         <Route path="/users/:id/following" element={<Users scenario="following" />} />
-        {/* Other routes */}
 
         {/* Routes for unauthenticated users */}
         <Route path="/" element={<UnauthenticatedPage />} />

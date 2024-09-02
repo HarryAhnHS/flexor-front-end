@@ -33,7 +33,7 @@ const DraftPreview = ({postId}) => {
     };
 
     const handleEditClick = () => {
-        navigate(`/edit-post/${postId}`);
+        navigate(`/submit-post/${postId}`);
     };
 
     const handleDeleteClick = async () => {
