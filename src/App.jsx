@@ -41,7 +41,7 @@ const App = () => {
           element={isAuthenticated ? <ProfilePage/> : <Navigate to="/login" />}
         />
         <Route
-          path="/submit-realm"
+          path="/submit-realm/:realmId?"
           element={isAuthenticated ? <RealmForm/> : <Navigate to="/login" />}
         />
         <Route

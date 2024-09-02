@@ -4,7 +4,7 @@ import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
-const DraftPreview = ({postId}) => {
+const DraftPreview = ({postId, posts, setPosts}) => {
 
     const [post, setPost] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -38,7 +38,16 @@ const DraftPreview = ({postId}) => {
 
     const handleDeleteClick = async () => {
         try {
+            // Delete post images if any using query
+            const removedImages = post.images;
+            if (removedImages.length > 0) {
+                const deleteIds = removedImages.map((image) => image.id).join(',');
+                const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
+                await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
+            }
+
             await api.delete(`/posts/${postId}`);
+            setPosts(posts.filter(post => post.id !== postId));
         } catch (error) {
             console.error('Error deleting post:', error);
         }

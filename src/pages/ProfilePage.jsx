@@ -210,14 +210,18 @@ const ProfilePage = () => {
                 ? posts.map(post => (
                     <DraftPreview
                       postId={post.id}
+                      posts={posts}
+                      setPosts={setPosts}
                       key={post.id}
                     />
                   ))
                 : posts.map(post => (
                     <PostPreview
                       postId={post.id}
-                      key={post.id}
                       isEditable={userId === loggedInUserId}
+                      posts={posts}
+                      setPosts={setPosts}
+                      key={post.id}
                     />
                   ))
             ) : (

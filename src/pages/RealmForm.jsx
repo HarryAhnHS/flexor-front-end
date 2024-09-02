@@ -2,27 +2,66 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import { CircularProgress } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const RealmForm = () => {
     const navigate = useNavigate();
+    const { realmId } = useParams(); // Get realmId from route parameters
     const [formData, setFormData] = useState({
         name: "",
         description: "",
     });
     const [realmPictureFile, setRealmPictureFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState('');
+    const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const [nameError, setNameError] = useState("");
     const [fileError, setFileError] = useState("");
 
     const userId = localStorage.getItem('userId');
 
+    const isEditing = !!realmId;
+
     useEffect(() => {
+        // Reset errors on component mount
         setNameError('');
         setFileError('');
-    }, []);
-    
+
+        const fetchRealmData = async () => {
+            if (isEditing) {
+                setLoading(true);
+                try {
+                    const response = await api.get(`/realms/${realmId}`);
+                    const realmData = response.data.realm;
+                    setFormData({
+                        name: realmData.name,
+                        description: realmData.description,
+                    });
+                    if (realmData.picture) {
+                        setImagePreview(realmData.picture.url);
+                    }
+                } catch (error) {
+                    console.error('Error fetching realm data:', error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchRealmData();
+    }, [realmId, isEditing]);
+
+    useEffect(() => {
+        if (!isEditing) {
+          // Reset form data when navigating to New Post page
+          setFormData({
+            name: "",
+            description: "",
+          });
+          setRealmPictureFile(null);
+          setImagePreview(null);
+        }
+      }, [isEditing]);
+
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData((prevData) => ({
@@ -47,22 +86,35 @@ const RealmForm = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await api.post('/realms', formData);
-            const realmId = response.data.realm.id;
-            if (realmPictureFile) {
-                const pictureData = new FormData();
-                pictureData.append('realmPicture', realmPictureFile);
-                
-                await api.put(`/images/${realmId}/realm-picture`, pictureData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
+            if (isEditing) {
+                // Update existing realm
+                await api.put(`/realms/${realmId}`, formData);
+                if (realmPictureFile) {
+                    const pictureData = new FormData();
+                    pictureData.append('realmPicture', realmPictureFile);
+                    
+                    await api.put(`/images/${realmId}/realm-picture`, pictureData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                }
+            } else {
+                // Create new realm
+                const response = await api.post('/realms', formData);
+                const newRealmId = response.data.realm.id;
+                if (realmPictureFile) {
+                    const pictureData = new FormData();
+                    pictureData.append('realmPicture', realmPictureFile);
+                    
+                    await api.put(`/images/${newRealmId}/realm-picture`, pictureData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                }
             }
-            // Redirect to profile
-            if (response.status === 201) {
-                navigate(`/profile/${userId}`);
-            }
+            navigate(`/profile/${userId}`);
         }
         catch(error) {
             console.error('Error submitting form:', error);
@@ -83,7 +135,7 @@ const RealmForm = () => {
             <Navbar />
             <div className="p-8 bg-gray-100 min-h-screen">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Create a New Realm</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-center">{realmId ? 'Edit Realm' : 'Create a New Realm'}</h2>
                     {loading ? (
                         <div className="flex justify-center">
                             <CircularProgress />
@@ -150,7 +202,7 @@ const RealmForm = () => {
                                     type="submit"
                                     className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
-                                    Create Realm
+                                    {isEditing ? 'Update Realm' : 'Create Realm'}
                                 </button>
                             </div>
                         </form>

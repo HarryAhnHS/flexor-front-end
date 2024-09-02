@@ -4,7 +4,7 @@ import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
-const PostPreview = ({ postId, isEditable }) => {
+const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
     const [post, setPost] = useState(null);
     const [liked, setLiked] = useState(null);
     const [commentsCount, setCommentsCount] = useState(null);
@@ -83,7 +83,16 @@ const PostPreview = ({ postId, isEditable }) => {
     const handleDeleteClick = async (e) => {
         e.stopPropagation();
         try {
+            // Delete post images if any using query
+            const removedImages = post.images;
+            if (removedImages.length > 0) {
+                const deleteIds = removedImages.map((image) => image.id).join(',');
+                const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
+                await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
+            }
+            
             await api.delete(`/posts/${postId}`);
+            setPosts(posts.filter(post => post.id !== postId));
         } catch (error) {
             console.error('Error deleting post:', error);
         }
