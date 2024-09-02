@@ -36,8 +36,8 @@ const RealmForm = () => {
                         name: realmData.name,
                         description: realmData.description,
                     });
-                    if (realmData.picture) {
-                        setImagePreview(realmData.picture.url);
+                    if (realmData.realmPictureUrl) {
+                        setImagePreview(realmData.realmPictureUrl);
                     }
                 } catch (error) {
                     console.error('Error fetching realm data:', error);
@@ -130,6 +130,10 @@ const RealmForm = () => {
         }
     };
 
+    const handleCancel = () => {
+        navigate(-1);
+      };
+
     return ( 
         <>
             <Navbar />
@@ -203,6 +207,13 @@ const RealmForm = () => {
                                     className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     {isEditing ? 'Update Realm' : 'Create Realm'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="w-1/3 py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-md shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                                >
+                                    Cancel
                                 </button>
                             </div>
                         </form>

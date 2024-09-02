@@ -159,6 +159,8 @@ const PostPage = () => {
                                             key={comment.id}
                                             commentId={comment.id}
                                             setCommentsCount={setCommentsCount}
+                                            siblings={comments}
+                                            setSiblings={setComments}
                                         />
                                     ))
                                 ) : (

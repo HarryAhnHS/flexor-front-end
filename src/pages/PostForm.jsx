@@ -152,7 +152,7 @@ const PostForm = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/profile/${userId}`);
+    navigate(-1);
   };
 
   return (

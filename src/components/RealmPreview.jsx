@@ -2,22 +2,22 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-const RealmPreview = ({realmId}) => {
+const RealmPreview = ({ realmId }) => {
     const navigate = useNavigate();
     const [realm, setRealm] = useState({});
     const [joined, setJoined] = useState(null);
 
     const userId = localStorage.getItem('userId');
+    const isCreator = realm?.creatorId === userId;
 
     useEffect(() => {
-        console.log("realm preview use effect running")
+        console.log("realm preview use effect running");
         async function fetchRealm() {
             try {
                 const response = await api.get(`/realms/${realmId}`);
                 console.log(response);
                 setRealm(response.data.realm);
-            }
-            catch(error) {
+            } catch (error) {
                 console.error("Error fetching realm", error);
             }
         }
@@ -27,8 +27,7 @@ const RealmPreview = ({realmId}) => {
                 const response = await api.get(`/realms/${realmId}/joiners`);
                 const usersJoined = response.data.users.map(user => user.id);
                 setJoined(usersJoined.includes(userId));
-            }
-            catch(error) {
+            } catch (error) {
                 console.error("Error fetching realm", error);
             }
         }
@@ -41,10 +40,9 @@ const RealmPreview = ({realmId}) => {
         e.stopPropagation();
         try {
             if (!joined) {
-                await api.post(`realms/${realmId}/join`);
-            }
-            else {
-                await api.delete(`realms/${realmId}/join`);
+                await api.post(`/realms/${realmId}/join`);
+            } else {
+                await api.delete(`/realms/${realmId}/join`);
             }
             setJoined(prev => !prev);
         } catch (error) {
@@ -55,13 +53,22 @@ const RealmPreview = ({realmId}) => {
     const redirectToRealm = (e, realmId) => {
         e.stopPropagation();
         navigate(`/realms/${realmId}`);
-    }
+    };
+
+    const handleEditRealm = (e, realmId) => {
+        e.stopPropagation();
+        navigate(`/submit-realm/${realmId}`);
+    };
 
     console.log(realmId);
-    console.log(realm); 
+    console.log(realm);
+
     return (
-        <div key={realmId} className="bg-white p-4 rounded-lg shadow cursor-pointer" 
-            onClick={(e) => redirectToRealm(e, realmId)}>
+        <div
+            key={realmId}
+            className="bg-white p-4 rounded-lg shadow cursor-pointer"
+            onClick={(e) => redirectToRealm(e, realmId)}
+        >
             {realm?.realmPictureUrl && (
                 <img
                     src={realm?.realmPictureUrl}
@@ -71,17 +78,26 @@ const RealmPreview = ({realmId}) => {
             )}
             <h3 className="text-xl font-semibold mb-2">{realm?.name}</h3>
             <p className="text-gray-600 mb-4">{realm?.description}</p>
-            <button
-                onClick={(e) => handleJoinRealm(e, realmId)}
-                className={`px-4 py-2 rounded-md text-white ${
-                    joined ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
-                }`}
-            >
-                {joined ? 'Joined' : 'Join'}
-            </button>
+            <div className="flex justify-between">
+                <button
+                    onClick={(e) => handleJoinRealm(e, realmId)}
+                    className={`px-4 py-2 rounded-md text-white ${
+                        joined ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                    }`}
+                >
+                    {joined ? 'Joined' : 'Join'}
+                </button>
+                {isCreator && (
+                    <button
+                        onClick={(e) => handleEditRealm(e, realmId)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                        Edit
+                    </button>
+                )}
+            </div>
         </div>
-
-    )
-}
+    );
+};
 
 export default RealmPreview;

@@ -12,6 +12,7 @@ const Realm = () => {
     const [joined, setJoined] = useState(null);
 
     const userId = localStorage.getItem('userId');
+    const isCreator = realm?.creatorId === userId;
 
     useEffect(() => {
         const fetchRealm = async () => {
@@ -64,6 +65,11 @@ const Realm = () => {
         }
     };
 
+    const handleEditRealm = (e, realmId) => {
+        e.stopPropagation();
+        navigate(`/submit-realm/${realmId}`);
+    };
+
     return (
         <>
             <Navbar />
@@ -105,6 +111,14 @@ const Realm = () => {
                                 >
                                     {joined ? 'Joined' : 'Join'}
                                 </button>
+                                {isCreator && (
+                                    <button
+                                        onClick={(e) => handleEditRealm(e, realmId)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    >
+                                        Edit
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
