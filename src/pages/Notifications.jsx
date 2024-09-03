@@ -1,10 +1,28 @@
 import { useNotifications } from '../contexts/NotificationsContext';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { formatTime } from '../utils/formatters';
 
 const Notifications = () => {
-  const { notifications, notificationDetails, renderMessage, removeNotification } = useNotifications();
+  const navigate = useNavigate();
+  const { notifications, notificationDetails, renderMessage, refetchNotifications } = useNotifications();
+
+  useEffect(() => {
+    // Fetch the latest notifications when the page loads
+    refetchNotifications();
+  }, [refetchNotifications]);
+
+  const handleProfileNavigate = (e, notification) => {
+    e.stopPropagation(); // Prevents navigation on click
+    navigate(`/profile/${notification.actorId}`);
+  }
+
+  const handleNotificationClick = (link) => {
+    if (link) {
+      navigate(link);
+    }
+  }
 
   return (
     <>
@@ -16,40 +34,49 @@ const Notifications = () => {
             {notifications.map((notification) => {
               const details = notificationDetails[notification.id];
               const message = renderMessage(notification);
-              const link = details && details.link ? details.link : '#';
+              const link = details.link ? details.link : '#';
 
               return (
-                <Link 
-                  to={link}
+                <div
                   key={notification.id}
-                  className="flex items-center p-4 bg-white border border-gray-200 rounded-md shadow-md hover:shadow-lg transition-shadow duration-200"
+                  className="flex items-center p-4 bg-white border border-gray-200 rounded-md shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                  onClick={() => handleNotificationClick(link)}
                 >
-                  {details && details.image && (
-                    <img
-                      src={details.image}
-                      alt="Notification"
-                      className="w-16 h-16 rounded-full mr-4 object-cover"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-base mb-2">{message}</p>
-                    <p className='text-sm mb-2 text-gray'>{formatTime(notification.createdAt)}</p>
-                    {details && details.link && (
-                      <p className="text-blue-500 hover:underline">
-                        View Details
-                      </p>
+                  {/* Profile Section */}
+                  <div
+                    className="flex items-center mr-4 cursor-pointer"
+                    onClick={(e) => handleProfileNavigate(e, notification)}
+                  >
+                    {notification.actor.profilePictureUrl && (
+                      <img
+                        src={notification.actor.profilePictureUrl}
+                        alt="Profile"
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
                     )}
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();  // Prevent navigation when dismissing
-                      removeNotification(notification.id);
-                    }}
-                    className="ml-4 py-2 px-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
-                  >
-                    Dismiss
-                  </button>
-                </Link>
+
+                  {/* Message Section */}
+                  <div className="flex-1">
+                    <p className="text-base mb-2">
+                      <span className="font-medium"
+                      onClick={(e) => handleProfileNavigate(e, notification)}>
+                        @{notification.actor.username}
+                      </span>
+                      &nbsp;{message}
+                    </p>
+                    <p className='text-sm mb-2 text-gray'>{formatTime(notification.createdAt)}</p>
+                  </div>
+
+                  {/* Source Image */}
+                  {details.image && (
+                    <img
+                      src={details.image}
+                      alt="Source"
+                      className="w-16 h-16 object-cover ml-4"
+                    />
+                  )}
+                </div>
               );
             })}
           </div>
