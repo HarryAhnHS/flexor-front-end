@@ -59,14 +59,24 @@ const Notifications = () => {
                   {/* Message Section */}
                   <div className="flex-1">
                     <p className="text-base mb-2">
-                      <span className="font-medium"
-                      onClick={(e) => handleProfileNavigate(e, notification)}>
+                      <span 
+                        className="font-medium cursor-pointer"
+                        onClick={(e) => handleProfileNavigate(e, notification)}
+                      >
                         @{notification.actor.username}
                       </span>
                       &nbsp;{message}
+                      {details.source && (
+                        <span 
+                          className="italic text-gray-600 truncate max-w-[200px]"
+                        >
+                          &nbsp;&#x2018;{details.source}&#x2019;
+                        </span>
+                      )}
                     </p>
                     <p className='text-sm mb-2 text-gray'>{formatTime(notification.createdAt)}</p>
                   </div>
+
 
                   {/* Source Image */}
                   {details.image && (

@@ -16,6 +16,8 @@ import PostForm from './pages/PostForm';
 import RealmForm from './pages/RealmForm';
 import Notifications from './pages/Notifications';
 import { NotificationsProvider } from './contexts/NotificationsContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS here
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -118,7 +120,9 @@ const App = () => {
 
         {/* Catch-all route for handling invalid routes */}
         <Route path="*" element={<NotFoundPage />} />
+        
       </Routes>
+      <ToastContainer />
     </Router>
   );
 };
