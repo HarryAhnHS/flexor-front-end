@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatTime } from "../utils/formatters";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
@@ -137,10 +137,6 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
         } catch (error) {
             console.error("Error deleting comment:", error);
         }
-    };
-
-    const formatTime = (dt) => {
-        return formatDistanceToNow(new Date(dt), { addSuffix: true });
     };
 
     console.log(comment);
