@@ -1,40 +1,12 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import socket from '../utils/socket';
-import api from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-
 
 const NotificationsContext = createContext();
 
 export const NotificationsProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
-  const [notificationDetails, setNotificationDetails] = useState({});
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch initial notifications using pagination and include details with it
-  const fetchNotifications = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const { data } = await api.get('/notifications', { params: { page, limit: 10 } });
-      const notifications = data.notifications;
-
-      notifications.forEach(async (notification) => {
-        const details = await populateNotificationDetails(notification);
-        setNotificationDetails((prev) => ({ ...prev, [notification.id]: details }));
-      });
-
-      setNotifications(notifications);
-      setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error('Error fetching notifications', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -43,16 +15,10 @@ export const NotificationsProvider = ({ children }) => {
       socket.emit('subscribeToNotifications', userId);
     }
 
-    fetchNotifications();
-
     socket.on('receiveNotification', async (notification) => {
       const details = await populateNotificationDetails(notification);
-      setNotificationDetails((prev) => ({ ...prev, [notification.id]: details }));
-      setNotifications((prev) => [notification, ...prev]);
-      
       // Popup notification
       const message = `@${notification.actor.username} ${renderMessage(notification)} ${details.source && details.source}!`;  
-      console.log(message);
       toast(message, {
         onClick: () => {
           if (details.link) {
@@ -69,59 +35,49 @@ export const NotificationsProvider = ({ children }) => {
       });
     });
     
-
     return () => {
       socket.off('receiveNotification');
     };
-  }, [fetchNotifications, navigate]);
+  }, [navigate]);
 
-  useEffect(() => {
-    if (page === 1) return;
-    fetchNotifications(page);
-  }, [page, fetchNotifications]);
-
+  // Helper function to populate details with respective resources based on sourceType
   const populateNotificationDetails = async (notification) => {
-    try {
-      let details = {};
-      if (notification.type === 'follow') {
-        details = { 
-          actorLink:`/profile/${notification.actorId}`, 
-          link: `/profile/${notification.actorId}`, 
-          image: notification.actor.profilePictureUrl, 
-        };
-      } 
-      else if (notification.type === 'post_like' || notification.type === 'post_comment') {
-        details = { 
-          actorLink:`/profile/${notification.actorId}`, 
-          link: `/posts/${notification.postId}`, 
-          image: notification.post.images[0]?.url || null,
-          source: notification.post.title, 
-        };
-      } 
-      else if (notification.type === 'comment_like' || notification.type === 'comment_reply') {
-        details = { 
-          actorLink:`/profile/${notification.actorId}`, 
-          link: `/posts/${notification.comment.postId}`, 
-          image: notification.comment.post.images[0]?.url || null,
-          source: notification.comment.comment, 
-        };
-      } 
-      else if (notification.type === 'realm_join') {
-        details = { 
-          actorLink:`/profile/${notification.actorId}`, 
-          link: `/realms/${notification.realmId}`, 
-          image: notification.realm.realmPictureUrl,
-          source: notification.realm.name,
-        };
-      }
-      return details;
+    let details = {};
+    if (notification.type === 'follow') {
+      details = { 
+        actorLink:`/profile/${notification.actorId}`, 
+        link: `/profile/${notification.actorId}`, 
+        image: notification.actor.profilePictureUrl, 
+      };
     } 
-    catch (error) {
-      console.error('Error fetching notification details', error);
-      return {};
+    else if (notification.type === 'post_like' || notification.type === 'post_comment') {
+      details = { 
+        actorLink:`/profile/${notification.actorId}`, 
+        link: `/posts/${notification.postId}`, 
+        image: notification.post.images[0]?.url || null,
+        source: notification.post.title, 
+      };
+    } 
+    else if (notification.type === 'comment_like' || notification.type === 'comment_reply') {
+      details = { 
+        actorLink:`/profile/${notification.actorId}`, 
+        link: `/posts/${notification.comment.postId}`, 
+        image: notification.comment.post.images[0]?.url || null,
+        source: notification.comment.comment, 
+      };
+    } 
+    else if (notification.type === 'realm_join') {
+      details = { 
+        actorLink:`/profile/${notification.actorId}`, 
+        link: `/realms/${notification.realmId}`, 
+        image: notification.realm.realmPictureUrl,
+        source: notification.realm.name,
+      };
     }
+    return details;
   };
 
+  // Helper function to render respective message based on sourceType
   const renderMessage = (notification) => {
     const { type } = notification;
     switch (type) {
@@ -142,26 +98,11 @@ export const NotificationsProvider = ({ children }) => {
     }
   };
 
-  const loadMoreNotifications = () => {
-    if (page < totalPages && !loading) {
-      setPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const refetchNotifications = useCallback(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
   return (
     <NotificationsContext.Provider
       value={{
-        notifications,
-        notificationDetails,
+        populateNotificationDetails,
         renderMessage,
-        loadMoreNotifications,
-        loading,
-        hasMore: page < totalPages,
-        refetchNotifications, // Provide the refetch function
       }}
     >
       {children}
