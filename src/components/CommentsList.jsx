@@ -20,7 +20,7 @@ const CommentsList = ({postId, setCommentsCount}) => {
     }, []);
 
     useEffect(() => {
-        console.log("RealmsList: Reset useeffect running")
+        console.log("CommentsList: Reset useeffect running")
         resetComments();
     }, [resetComments]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatTime } from "../utils/formatters";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
@@ -13,32 +13,36 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
 
     const [nestedComments, setNestedComments] = useState(null);
     const [showNestedComments, setShowNestedComments] = useState(false);
-    
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1); // Track the current page
+    const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
+    const limit = 5; // Number of comments per page
+
     const [editMode, setEditMode] = useState(false);
     const [editedComment, setEditedComment] = useState(comment.comment);
 
     const userId = localStorage.getItem("userId");
     const isCreator = userId === comment?.userId;
 
+    const resetNestedComments = useCallback(() => {
+        setNestedComments(null);
+        setPage(1);
+        setHasMore(true);
+    }, []);
+
     useEffect(() => {
-        console.log("Comment use effect running");
+        console.log("NestedComments: Reset useeffect running")
+        resetNestedComments();
+    }, [resetNestedComments]);
+
+    // Fetch main comment data
+    useEffect(() => {
         async function fetchComment() {
             try {
                 const response = await api.get(`/comments/${commentId}`);
                 setComment(response.data.comment);
             } catch (error) {
                 console.error("Error fetching comment data:", error);
-            }
-        }
-
-        async function fetchNestedComments() {
-            if (showNestedComments && !nestedComments) {
-                try {
-                    const response = await api.get(`/comments/${commentId}/nested`);
-                    setNestedComments(response.data.nestedComments);
-                } catch (error) {
-                    console.error("Error fetching nested comments:", error);
-                }
             }
         }
 
@@ -53,9 +57,34 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
         };
 
         fetchComment();
-        fetchNestedComments();
         fetchLikeStatus();
-    }, [showNestedComments, nestedComments, commentId, userId]);
+    }, [commentId, userId]);
+
+    // Fetch nested comments with pagination
+    useEffect(() => {
+        async function fetchNestedComments() {
+            if (showNestedComments) {
+                try {
+                    setLoading(true);
+                    const response = await api.get(`/comments/${commentId}/nested`, {
+                        params: { page, limit },
+                    });
+                    if (response.data.nestedComments.length < limit) {
+                        setHasMore(false); // No more nested comments to load
+                    }
+                    setNestedComments(prev => [...prev || [], ...response.data.nestedComments]);
+                } catch (error) {
+                    console.error("Error fetching nested comments:", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        }
+
+        if (showNestedComments) {
+            fetchNestedComments();
+        }
+    }, [showNestedComments, page, commentId]);
 
     const handleLikeClick = async (e) => {
         e.stopPropagation();
@@ -107,7 +136,16 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
     };
 
     const handleShowRepliesClick = () => {
+        if (!showNestedComments) {
+            resetNestedComments();
+        }
         setShowNestedComments(!showNestedComments);
+    };
+
+    const handleLoadMoreNestedComments = () => {
+        if (hasMore && !loading) {
+            setPage(prevPage => prevPage + 1);
+        }
     };
 
     const handleEditClick = () => {
@@ -144,6 +182,8 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
 
     console.log(comment);
     console.log(nestedComments);
+    console.log("Nested hasmore:", hasMore);
+    console.log("Nested loading:", loading);
 
     return (
         <div key={commentId} className="comment bg-gray-100 p-4 rounded-lg mb-4">
@@ -175,7 +215,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
                     {comment._count?.likes}
                 </span>
             </div>
-
+    
             {editMode ? (
                 <form onSubmit={handleEditSubmit} className="mt-2">
                     <textarea
@@ -202,7 +242,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
             ) : (
                 <p className="text-gray-800 mt-3">{comment?.comment}</p>
             )}
-
+    
             {isCreator &&
                 <div className="flex space-x-2">
                     <button
@@ -219,7 +259,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
                     </button>
                 </div>
             }
-
+    
             {/* Reply Button */}
             <button
                 onClick={handleReplyClick}
@@ -227,7 +267,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
             >
                 Reply
             </button>
-
+    
             {/* Reply Input */}
             {showReplyInput && (
                 <form onSubmit={handleReplySubmit} className="mt-2">
@@ -246,7 +286,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
                     </button>
                 </form>
             )}
-
+    
             {/* Show Replies Button */}
             {comment._count?.nestedComments > 0 && (
                 <button
@@ -258,7 +298,7 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
                         : `Show replies (${comment._count?.nestedComments})`}
                 </button>
             )}
-
+    
             {/* Nested Comments */}
             {showNestedComments && nestedComments && (
                 <div className="nested-comments ml-6 mt-4">
@@ -271,10 +311,25 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
                             setSiblings={setNestedComments}
                         />
                     ))}
+    
+                    {/* Load More Replies Button */}
+                    {hasMore && !loading && (
+                        <button
+                            onClick={handleLoadMoreNestedComments}
+                            className="text-blue-500 text-sm mt-4 hover:underline"
+                        >
+                            Load more replies
+                        </button>
+                    )}
+    
+                    {/* Loading Indicator */}
+                    {loading && (
+                        <p className="text-gray-500 text-sm mt-2">Loading more replies...</p>
+                    )}
                 </div>
             )}
         </div>
-    );
+    );    
 };
 
 export default Comment;
