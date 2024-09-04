@@ -7,10 +7,13 @@ const Comment = ({ commentId, setCommentsCount, siblings, setSiblings }) => {
     const navigate = useNavigate();
     const [comment, setComment] = useState({});
     const [commentLiked, setCommentLiked] = useState(null);
+
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [reply, setReply] = useState("");
+
     const [nestedComments, setNestedComments] = useState(null);
     const [showNestedComments, setShowNestedComments] = useState(false);
+    
     const [editMode, setEditMode] = useState(false);
     const [editedComment, setEditedComment] = useState(comment.comment);
 
