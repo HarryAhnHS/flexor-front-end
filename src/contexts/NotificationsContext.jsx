@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import socket from '../utils/socket';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ const NotificationsContext = createContext();
 
 export const NotificationsProvider = ({ children }) => {
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -33,6 +34,9 @@ export const NotificationsProvider = ({ children }) => {
         pauseOnHover: true,
         theme: "light", // Or "dark" based on your preference
       });
+
+      // Update unread count
+      setUnreadCount((prev) => prev + 1);
     });
     
     return () => {
@@ -103,6 +107,8 @@ export const NotificationsProvider = ({ children }) => {
       value={{
         populateNotificationDetails,
         renderMessage,
+        unreadCount,
+        setUnreadCount
       }}
     >
       {children}

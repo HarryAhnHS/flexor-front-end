@@ -1,5 +1,5 @@
 import { useNotifications } from '../contexts/NotificationsContext';
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { formatTime } from '../utils/formatters';
@@ -7,7 +7,7 @@ import api from '../services/api';
 
 const Notifications = () => {
   const navigate = useNavigate();
-  const { renderMessage, populateNotificationDetails } = useNotifications();
+  const { renderMessage, populateNotificationDetails, setUnreadCount } = useNotifications();
 
   const [notifications, setNotifications] = useState([]);
   const [notificationDetails, setNotificationDetails] = useState({});
@@ -15,43 +15,67 @@ const Notifications = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const listInnerRef = useRef(null); // Ref for the scrollable container
+  const fetchingRef = useRef(false); // Ref to track fetching state
+
+  const fetchNotifications = useCallback(async (page = 1) => {
+    if (fetchingRef.current) return; // Avoid multiple fetches
+
+    setLoading(true);
+    fetchingRef.current = true; // Set fetching flag to true
+    try {
+      const { data } = await api.get('/notifications', { params: { page, limit: 10 } });
+      const notifications = data.notifications;
+
+      // Populate details for each notification
+      const updatedDetails = {};
+      for (const notification of notifications) {
+        const details = await populateNotificationDetails(notification);
+        updatedDetails[notification.id] = details;
+      }
+
+      setNotificationDetails((prev) => ({ ...prev, ...updatedDetails }));
+      setNotifications((prev) => (page === 1 ? notifications : [...prev, ...notifications])); // Append or reset based on page
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching notifications', error);
+    } finally {
+      fetchingRef.current = false;
+      setTimeout( async () => {
+        setLoading(false);
+      }, 1000)
+    }
+  }, [populateNotificationDetails]);
 
   useEffect(() => {
-    console.log("use effect running");
-    const fetchNotifications = async (page = 1) => {
-      setLoading(true);
-      try {
-        const { data } = await api.get('/notifications', { params: { page, limit: 10 } });
-        const notifications = data.notifications;
-  
-        for (const notification of notifications) {
-          const details = await populateNotificationDetails(notification);
-          setNotificationDetails((prev) => ({ ...prev, [notification.id]: details }));
-        }
-  
-        setNotifications((prev) => [...prev, ...notifications]);
-        setTotalPages(data.totalPages);
-      } 
-      catch (error) {
-        console.error('Error fetching notifications', error);
-      } 
-      finally {
-        setLoading(false);
+    setPage(1);
+    setNotifications([]); // Clear notifications when navigating back to the page
+    fetchNotifications(1); // Fetch first page of notifications
+    setUnreadCount(0); // Reset unread count
+  }, [fetchNotifications, setUnreadCount]);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchNotifications(page); // Fetch subsequent pages when page changes
+    }
+  }, [page, fetchNotifications]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 10 &&
+        !loading &&
+        page < totalPages &&
+        !fetchingRef.current // Check if not already fetching
+      ) {
+        setPage((prevPage) => prevPage + 1); // Trigger pagination fetch
       }
     };
-    fetchNotifications(page);
-  }, [page, populateNotificationDetails]);
 
-  // onScroll event handler
-  const onScroll = () => {
-    if (listInnerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight >= scrollHeight && !loading && page < totalPages) {
-        setPage((prevPage) => prevPage + 1);
-      }
-    }
-  };
+    window.addEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [loading, page, totalPages]);
 
   const handleProfileNavigate = (e, notification) => {
     e.stopPropagation(); // Prevents navigation on click
@@ -64,16 +88,14 @@ const Notifications = () => {
     }
   };
 
+  console.log("Current page", page);
+
   return (
     <>
       <Navbar />
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6 text-center">Notifications</h1>
-        <div
-          className="flex flex-col space-y-4 overflow-y-auto h-[80vh]" // Adjust the height as needed
-          ref={listInnerRef}
-          onScroll={onScroll}
-        >
+        <div className="flex flex-col space-y-4">
           {notifications.length > 0 ? (
             notifications.map((notification) => {
               const details = notificationDetails[notification.id];
@@ -111,9 +133,7 @@ const Notifications = () => {
                       </span>
                       &nbsp;{message}
                       {details?.source && (
-                        <span
-                          className="italic text-gray-600 truncate max-w-[200px]"
-                        >
+                        <span className="italic text-gray-600 truncate max-w-[200px]">
                           &nbsp;&#x2018;{details.source}&#x2019;
                         </span>
                       )}

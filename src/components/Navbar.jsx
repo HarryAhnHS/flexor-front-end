@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'; // For redirecting after logout
+import { useNotifications } from '../contexts/NotificationsContext';
 
 const Navbar = () => {
   const navigate = useNavigate(); // For programmatic navigation
   const userId = localStorage.getItem('userId');
+  const { unreadCount } = useNotifications();
 
   // Logout function
   const handleLogout = async () => {
@@ -31,8 +33,13 @@ const Navbar = () => {
         <div className="text-lg font-semibold">
             <Link to="/submit-realm">+ Realm</Link>
         </div>
-        <div className="text-lg font-semibold">
+        <div className="text-lg font-semibold relative">
           <Link to={`/notifications`}>Notifications</Link>
+          {unreadCount !== 0 && 
+            <span className='absolute top-[-5px] right-[-22px] w-[20px] h-[20px] rounded-full text-sm text-white bg-red-600 flex items-center justify-center'>
+              {unreadCount}
+            </span>
+          }
         </div>
         <div className="text-lg font-semibold">
           <Link to={`/profile/${userId}`}>Profile</Link>
