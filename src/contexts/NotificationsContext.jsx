@@ -17,7 +17,7 @@ export const NotificationsProvider = ({ children }) => {
     }
 
     socket.on('receiveNotification', async (notification) => {
-      const details = await populateNotificationDetails(notification);
+      const details = populateNotificationDetails(notification);
       // Popup notification
       const message = `@${notification.actor.username} ${renderMessage(notification)} ${details.source && details.source}!`;  
       toast(message, {
@@ -45,7 +45,7 @@ export const NotificationsProvider = ({ children }) => {
   }, [navigate]);
 
   // Helper function to populate details with respective resources based on sourceType
-  const populateNotificationDetails = async (notification) => {
+  const populateNotificationDetails = (notification) => {
     let details = {};
     if (notification.type === 'follow') {
       details = { 

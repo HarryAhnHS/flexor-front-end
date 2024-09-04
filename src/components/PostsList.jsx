@@ -103,7 +103,7 @@ const PostsList = ({ sourceId, type }) => {
       ) : (
         !loading && <p className="text-gray-600 text-center mt-8">No posts available.</p>
       )}
-      {loading && <p className="text-center text-gray-500">Loading more notifications...</p>}
+      {loading && <p className="text-center text-gray-500">Loading more posts...</p>}
     </div>
   );
 };
