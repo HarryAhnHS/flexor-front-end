@@ -2,16 +2,14 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import EditProfileModal from '../components/modals/EditProfile';
 import Navbar from '../components/Navbar';
-import PostPreview from '../components/PostPreview';
-import DraftPreview from '../components/DraftPreview';
+import PostsList from '../components/PostsList';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [profileMeta, setProfileMeta] = useState({});
-  const [posts, setPosts] = useState([]);
   const [followed, setFollowed] = useState(null);
-  const [selectedTab, setSelectedTab] = useState('posts');
+  const [selectedTab, setSelectedTab] = useState('user_posts');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,44 +42,12 @@ const ProfilePage = () => {
       }
     };
 
-    const fetchPostsData = async () => {
-      try {
-        let response;
-        switch (selectedTab) {
-          case 'posts':
-            response = await api.get(`/users/${userId}/posts`);
-            break;
-          case 'liked':
-            response = await api.get(`/users/${userId}/liked`);
-            break;
-          case 'commented':
-            response = await api.get(`/users/${userId}/commented`);
-            break;
-          case 'drafts':
-            if (userId === loggedInUserId) {
-              response = await api.get(`/users/${userId}/drafts`);
-            } else {
-              response = { data: { posts: [] } }; // Prevent showing drafts to others
-            }
-            break;
-          default:
-            response = { data: { posts: [] } }; // Fallback
-            break;
-        }
-        setPosts(response.data.posts);
-      } 
-      catch (error) {
-        console.error('Error fetching posts data', error);
-      }
-    };
-
     if (userId) {
       fetchMetaData();
       fetchFollowedState();
-      fetchPostsData();
       setLoading(false);
     }
-  }, [userId, selectedTab, loggedInUserId]);
+  }, [userId, loggedInUserId]);
 
   const handleFollowToggle = async () => {
     try {
@@ -171,27 +137,27 @@ const ProfilePage = () => {
         <section className="tabs mb-4">
           <div className="tabs-buttons flex space-x-4">
             <button
-              className={`px-4 py-2 rounded ${selectedTab === 'posts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setSelectedTab('posts')}
+              className={`px-4 py-2 rounded ${selectedTab === 'user_posts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setSelectedTab('user_posts')}
             >
               Posts
             </button>
             <button
-              className={`px-4 py-2 rounded ${selectedTab === 'liked' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setSelectedTab('liked')}
+              className={`px-4 py-2 rounded ${selectedTab === 'user_liked' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setSelectedTab('user_liked')}
             >
               Liked
             </button>
             <button
-              className={`px-4 py-2 rounded ${selectedTab === 'commented' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => setSelectedTab('commented')}
+              className={`px-4 py-2 rounded ${selectedTab === 'user_commented' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setSelectedTab('user_commented')}
             >
               Commented
             </button>
             {userId === loggedInUserId && (
               <button
-                className={`px-4 py-2 rounded ${selectedTab === 'drafts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                onClick={() => setSelectedTab('drafts')}
+                className={`px-4 py-2 rounded ${selectedTab === 'user_drafts' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                onClick={() => setSelectedTab('user_drafts')}
               >
                 Drafts
               </button>
@@ -199,37 +165,12 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Posts Content */}
-        <section className="profile-content">
-          <h2 className="text-2xl font-semibold mb-4">
-            {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
-          </h2>
-          <div className="posts-list">
-            {posts.length > 0 ? (
-              selectedTab === 'drafts'
-                ? posts.map(post => (
-                    <DraftPreview
-                      postId={post.id}
-                      posts={posts}
-                      setPosts={setPosts}
-                      key={post.id}
-                    />
-                  ))
-                : posts.map(post => (
-                    <PostPreview
-                      postId={post.id}
-                      isEditable={userId === loggedInUserId}
-                      posts={posts}
-                      setPosts={setPosts}
-                      key={post.id}
-                    />
-                  ))
-            ) : (
-              <p className="text-gray-600 text-center mt-8">
-                No posts available.
-              </p>
-            )}
-          </div>
+        {/* Render PostsList Component */}
+        <section>
+          <PostsList
+            sourceId={userId}
+            type={selectedTab}
+          />
         </section>
       </div>
     </>

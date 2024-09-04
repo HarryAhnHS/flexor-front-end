@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import PostPreview from "../components/PostPreview";
 import Navbar from "../components/Navbar";
+import PostsList from "../components/PostsList";
 
 const Realm = () => {
     const navigate = useNavigate();
     const { realmId } = useParams();
     const [realm, setRealm] = useState(null);
-    const [posts, setPosts] = useState([]);
     const [joined, setJoined] = useState(null);
 
     const userId = localStorage.getItem('userId');
@@ -25,16 +24,6 @@ const Realm = () => {
             }
         };
 
-        const fetchPosts = async () => {
-            try {
-                const response = await api.get(`/realms/${realmId}/posts`);
-                setPosts(response.data.posts);
-            } 
-            catch (error) {
-                console.error("Error fetching realm posts:", error);
-            }
-        };
-
         async function fetchJoinedStatus() {
             try {
                 const response = await api.get(`/realms/${realmId}/joiners`);
@@ -47,7 +36,6 @@ const Realm = () => {
         }
 
         fetchRealm();
-        fetchPosts();
         fetchJoinedStatus();
     }, [realmId, userId]);
 
@@ -125,18 +113,12 @@ const Realm = () => {
                 )}
 
                 {/* Posts Section */}
-                <div className="container mx-auto mt-6">
-                    <div className="bg-white shadow-md rounded-lg p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Posts</h2>
-                        {posts.length > 0 ? (
-                            posts.map((post) => (
-                                <PostPreview key={post.id} postId={post.id} />
-                            ))
-                        ) : (
-                            <p className="text-gray-600">No posts available in this realm.</p>
-                        )}
-                    </div>
-                </div>
+                <section>
+                    <PostsList 
+                        sourceId={realmId}
+                        type="realm_posts" 
+                    />
+                </section>
             </div>
         </>
     );
