@@ -108,11 +108,46 @@ const App = () => {
             />
 
             {/* User list routes */}
-            <Route path="/posts/:id/liked" element={<Users scenario="likedPost" />} />
-            <Route path="/comments/:id/liked" element={<Users scenario="likedComment" />} />
-            <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
-            <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
-            <Route path="/users/:id/following" element={<Users scenario="following" />} />
+            <Route 
+              path="/posts/:id/liked" 
+              element={
+                <NotificationsProvider>
+                  <Users scenario="likedPost" />  
+                </NotificationsProvider>
+              } 
+            />
+            <Route 
+              path="/comments/:id/liked" 
+              element={
+                <NotificationsProvider>
+                  <Users scenario="likedComment" />
+                </NotificationsProvider>
+              } 
+            />
+            <Route 
+              path="/realms/:id/joined" 
+              element={
+                <NotificationsProvider>
+                  <Users scenario="joinedRealm" />
+                </NotificationsProvider>
+              } 
+            />
+            <Route 
+              path="/users/:id/followers" 
+              element={
+                <NotificationsProvider>
+                  <Users scenario="followers" />
+                </NotificationsProvider>
+              } 
+            />
+            <Route 
+              path="/users/:id/following" 
+              element={
+                <NotificationsProvider>
+                  <Users scenario="following" />
+                </NotificationsProvider>
+              } 
+            />
           </>
         ) : (
           <Route path="*" element={<Navigate to="/login" />} />

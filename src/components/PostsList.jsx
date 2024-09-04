@@ -1,23 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 import PostPreview from './PostPreview';
 import DraftPreview from './DraftPreview';
 
 const PostsList = ({ sourceId, type }) => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [page, setPage] = useState(1); // Track the current page
   const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
   const loggedInUserId = localStorage.getItem('userId');
   const limit = 10; // Number of posts per page
 
-  useEffect(() => {
-    console.log("PostsList: Reset useeffect running")
+  const resetPost = useCallback(() => {
     // Clear posts when sourceId or type changes
     setPosts([]);
     setPage(1);
     setHasMore(true);
-  }, [sourceId, type]);
+  }, []);
+
+  useEffect(() => {
+    console.log("PostsList: Reset useeffect running")
+    resetPost();
+    
+  }, [sourceId, type, resetPost]);
 
   useEffect(() => {
     const fetchPostsData = async () => {
@@ -66,7 +72,7 @@ const PostsList = ({ sourceId, type }) => {
     };
 
     fetchPostsData();
-  }, [sourceId, type, loggedInUserId, page]);
+  }, [sourceId, type, loggedInUserId, page, refresh]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,8 +85,16 @@ const PostsList = ({ sourceId, type }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasMore, loading]);
 
+  const handleRefresh = () => {
+    resetPost(); // Clear current notifications
+    setRefresh(prev => !prev); // Trigger refresh
+  };
+
   return (
     <div className="posts-list">
+        <button onClick={handleRefresh}>
+            Refresh
+        </button>
       {posts.length > 0 ? (
         posts.map(post => (
           type === 'user_drafts' ? (

@@ -11,6 +11,7 @@ const NotificationsList = () => {
   const [notifications, setNotifications] = useState([]);
   const [notificationDetails, setNotificationDetails] = useState({});
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false); // Trigger refresh
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
   const limit = 10;
@@ -61,7 +62,7 @@ const NotificationsList = () => {
     };
 
     fetchNotifications();
-  }, [page, populateNotificationDetails, resetNotifications]);
+  }, [page, populateNotificationDetails, resetNotifications, refresh]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,8 +86,16 @@ const NotificationsList = () => {
     }
   };
 
+  const handleRefresh = () => {
+    resetNotifications(); // Clear current notifications
+    setRefresh(prev => !prev); // Trigger refresh
+  };
+
   return (
     <div className="flex flex-col space-y-4">
+        <button onClick={handleRefresh}>
+            Refresh
+        </button>
       {notifications.length > 0 ? (
         notifications.map((notification) => {
           const details = notificationDetails[notification.id];
