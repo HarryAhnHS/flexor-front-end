@@ -3,15 +3,13 @@ import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Comment from "../components/Comment";
+import CommentsList from "../components/CommentsList";
 
 const PostPage = () => {
     const navigate = useNavigate();
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [commentsCount, setCommentsCount] = useState(null);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const [liked, setLiked] = useState(null);
     const userId = localStorage.getItem("userId");
@@ -21,7 +19,6 @@ const PostPage = () => {
             try {
                 const response = await api.get(`/posts/${postId}`);
                 setPost(response.data.post);
-                setComments(response.data.post.comments);
             } 
             catch (error) {
                 console.error("Error fetching post:", error);
@@ -61,24 +58,6 @@ const PostPage = () => {
         setSelectedImage(null);
     };
 
-    const handleNewCommentChange = (e) => {
-        setNewComment(e.target.value);
-    };
-
-    const handleCommentSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await api.post(`/posts/${postId}/comment`, {
-                comment: newComment,
-            });
-            setComments([...comments, response.data.comment]);
-            setNewComment("");
-            setCommentsCount((prevCount) => prevCount + 1);
-        } catch (error) {
-            console.error("Error adding comment:", error);
-        }
-    };
-
     const handleLikeClick = async () => {
         try {
             if (liked) {
@@ -97,7 +76,6 @@ const PostPage = () => {
 
 
     console.log(post);
-    console.log(comments);
     return (
         <>
             <Navbar />
@@ -132,42 +110,11 @@ const PostPage = () => {
                                 <span>Comments: {commentsCount}</span>
                             </div>
                         </div>
+                        
+                        <section>
+                            <CommentsList postId={postId} setCommentsCount={setCommentsCount}/>
+                        </section>
 
-                        {/* Comment Section */}
-                        <div className="comments-section">
-                            <h2 className="text-2xl font-semibold mb-4">Comments</h2>
-                            <form onSubmit={handleCommentSubmit} className="mb-6">
-                                <textarea
-                                    value={newComment}
-                                    onChange={handleNewCommentChange}
-                                    className="w-full p-2 border rounded-md"
-                                    placeholder="Add a comment..."
-                                    required
-                                />
-                                <button
-                                    type="submit"
-                                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md"
-                                >
-                                    Comment
-                                </button>
-                            </form>
-
-                            <div className="comments-list">
-                                {comments.length > 0 ? (
-                                    comments.map((comment) => (
-                                        <Comment
-                                            key={comment.id}
-                                            commentId={comment.id}
-                                            setCommentsCount={setCommentsCount}
-                                            siblings={comments}
-                                            setSiblings={setComments}
-                                        />
-                                    ))
-                                ) : (
-                                    <p>No comments yet. Be the first to comment!</p>
-                                )}
-                            </div>
-                        </div>
                     </>
                 )}
 
