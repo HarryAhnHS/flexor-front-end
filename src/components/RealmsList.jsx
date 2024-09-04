@@ -1,0 +1,95 @@
+import { useCallback, useEffect, useState } from "react";
+import api from "../services/api";
+import RealmPreview from "../components/RealmPreview";
+
+const RealmsList = ( {type} ) => {
+    const [realms, setRealms] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1); // Track the current page
+    const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
+    const limit = 10; // Number of posts per page
+
+    const userId = localStorage.getItem('userId');
+
+    const resetRealms = useCallback(() => {
+        // Clear posts when sourceId or type changes
+        setRealms([]);
+        setPage(1);
+        setHasMore(true);
+    }, []);
+
+    useEffect(() => {
+        console.log("RealmsList: Reset useeffect running")
+        resetRealms();
+        
+    }, [type, resetRealms]);
+
+    useEffect(() => {
+        const fetchRealms = async () => {
+            try {
+                setLoading(true);
+                let response;
+                switch (type) {
+                    case 'joined':
+                        response = await api.get(`users/${userId}/joined`, { params: { page, limit } });
+                        break;
+                    case 'created':
+                        response = await api.get(`users/${userId}/created`, { params: { page, limit } });
+                        break;
+                    case 'all':
+                        response = await api.get('/realms/', { params: { page, limit } });
+                        break;
+                    default:
+                        response = { data: { realms: [] } };
+                        break;
+                };
+
+                if (response.data.realms.length < limit) {
+                    setHasMore(false); // No more users to load
+                }
+
+                setRealms((prevRealms) => [...prevRealms, ...response.data.realms]);
+            } catch (error) {
+                console.error("Error fetching realms:", error);
+            } finally {
+                setTimeout( async () => {
+                    setLoading(false);
+                }, 1000)
+            }
+        };
+
+        fetchRealms();
+    }, [type, page, userId]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+          if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !loading) {
+            setPage(prevPage => prevPage + 1);
+          }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [hasMore, loading]);
+
+    return (
+        <>
+            <div className="user-list space-y-4">
+                {realms.length > 0 
+                ?
+                realms.map((realm) => (
+                    <RealmPreview 
+                        realmId={realm.id} 
+                        key={realm.id} 
+                    />
+                ))
+                :
+                !loading && <p className="text-gray-600 text-center mt-8">No realms available.</p>
+                }
+                {loading && <p className="text-center text-gray-500">Loading more realms...</p>}
+            </div>
+        </>
+    );
+};
+
+export default RealmsList;
