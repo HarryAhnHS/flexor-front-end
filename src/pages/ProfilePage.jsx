@@ -34,6 +34,7 @@ const ProfilePage = () => {
     const fetchFollowedState = async () => {
       try {
         const response = await api.get(`/users/${userId}/followers`);
+        console.log(response);
         const followedUsers = response.data.users.map(user => user.id);
         setFollowed(followedUsers.includes(loggedInUserId)); // Check if the logged-in user is in the followers list
       } 

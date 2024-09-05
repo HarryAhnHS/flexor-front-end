@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
+import { formatTime } from '../utils/formatters';
 
 const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
     const [post, setPost] = useState(null);
@@ -103,10 +103,6 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
         navigate(`/posts/${postId}`);
     };
 
-    const formatTime = (dt) => {
-        return formatDistanceToNow(new Date(dt), { addSuffix: true });
-    };
-
     return (
         <div 
             key={post?.id} 
@@ -150,6 +146,29 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
                     </div>
                 )}
             </div>
+
+            {/* Realm details */}
+            <div className="flex items-center mb-4">
+                <img 
+                    src={post?.realm?.realmPictureUrl} 
+                    alt={`${post?.realm?.name} realm picture`} 
+                    className="w-8 h-8 rounded-full object-cover cursor-pointer"
+                    onClick={(e) => { 
+                        e.stopPropagation(); 
+                        navigate(`/realms/${post?.realmId}`);
+                    }} 
+                />
+                <h4 
+                    className="ml-2 text-sm font-semibold text-gray-700 cursor-pointer hover:underline"
+                    onClick={(e) => { 
+                        e.stopPropagation(); 
+                        navigate(`/realms/${post?.realmId}`);
+                    }}
+                >
+                    Under {post?.realm?.name}
+                </h4>
+            </div>
+
             <div className="mb-4">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">{post?.title}</h3>
                 {post?.text && <p className="text-gray-700 mb-4">{post?.text}</p>}
@@ -167,6 +186,7 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
                     </div>
                 )}
             </div>
+
             <div className="post-meta text-gray-600 flex items-center space-x-6">
                 <span className="flex items-center">
                     <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
