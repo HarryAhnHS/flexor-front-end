@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'; // For redirecting after logout
 import { useNotifications } from '../contexts/NotificationsContext';
+import SearchBar from './Searchbar';
 
 const Navbar = () => {
   const navigate = useNavigate(); // For programmatic navigation
@@ -11,6 +12,7 @@ const Navbar = () => {
     try {
       // Remove JWT token from local storage
       localStorage.removeItem('token');
+      localStorage.removeItem('userId');
       // Redirect to login page
       navigate('/');
     } catch (error) {
@@ -20,7 +22,9 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gray-800 p-4 text-white">
+
       <div className="container mx-auto flex justify-between items-center">
+        <SearchBar />
         <div className="text-lg font-semibold">
           <Link to="/feed">Posts</Link>
         </div>
