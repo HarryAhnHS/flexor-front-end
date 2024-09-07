@@ -76,6 +76,7 @@ const PostPage = () => {
 
 
     console.log(post);
+    console.log(commentsCount);
     return (
         <>
             <Navbar />
@@ -112,7 +113,7 @@ const PostPage = () => {
                         </div>
                         
                         <section>
-                            <CommentsList postId={postId} setCommentsCount={setCommentsCount}/>
+                            <CommentsList postId={postId} setTotalCommentsCount={setCommentsCount}/>
                         </section>
 
                     </>

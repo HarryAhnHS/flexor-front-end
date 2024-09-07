@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import Comment from "../components/Comment";
 
-const CommentsList = ({postId, setCommentsCount}) => {
+const CommentsList = ({postId, setTotalCommentsCount}) => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1); // Track the current page
     const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
+    const [sortField, setSortField] = useState('createdAt'); // Default sort field (newest)
+    const [sortOrder, setSortOrder] = useState('desc'); // Default sort order (descending)
     const limit = 10; // Number of posts per page
 
     const userId = localStorage.getItem("userId");
@@ -22,13 +24,13 @@ const CommentsList = ({postId, setCommentsCount}) => {
     useEffect(() => {
         console.log("CommentsList: Reset useeffect running")
         resetComments();
-    }, [resetComments]);
+    }, [resetComments, sortField, sortOrder]);
 
     useEffect(() => {
         const fetchRootComments = async () => {
             try {
                 setLoading(true);
-                const response = await api.get(`/posts/${postId}/comments`, { params: { page, limit } });
+                const response = await api.get(`/posts/${postId}/comments`, { params: { page, limit, sortField, sortOrder } });
 
                 if (response.data.comments.length < limit) {
                     setHasMore(false); // No more users to load
@@ -47,7 +49,15 @@ const CommentsList = ({postId, setCommentsCount}) => {
         };
 
         fetchRootComments();
-    }, [postId, userId, page]);
+    }, [postId, userId, page, sortField, sortOrder]);
+
+    const handleSortChange = (e) => {
+        setSortField(e.target.value);
+      };
+    
+    const toggleSortOrder = () => {
+        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -72,7 +82,7 @@ const CommentsList = ({postId, setCommentsCount}) => {
             });
             setComments([...comments, response.data.comment]);
             setNewComment("");
-            setCommentsCount((prevCount) => prevCount + 1);
+            setTotalCommentsCount((prevCount) => prevCount + 1);
         } catch (error) {
             console.error("Error adding comment:", error);
         }
@@ -102,14 +112,45 @@ const CommentsList = ({postId, setCommentsCount}) => {
 
                 {/* Comments List */}
                 <div className="comments-list">
+                {/* Sort controls */}
+                <div className="sort-container mb-4 flex items-center">
+                    <div className="relative">
+                        <select
+                            className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            value={sortField }
+                            onChange={handleSortChange}
+                        >
+                            <option value="createdAt">New</option>
+                            <option value="likes">Likes</option>
+                            <option value="nestedComments">Replies</option>
+                        </select>
+
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5.5 7.5L10 2.5l4.5 5h-9zM5.5 12.5l4.5 5 4.5-5h-9z" />
+                            </svg>
+                        </div>
+                        </div>
+
+                        {/* Sort Order Button */}
+                        <button
+                        className='ml-2 flex items-center p-2 border border-gray-300 rounded hover:bg-gray-100 bg-white'
+                        onClick={toggleSortOrder}
+                        aria-label="Toggle sort order"
+                        >
+                        <span className="ml-1 text-sm text-gray-600">{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
+                    </button>
+                </div>
                     {comments.length > 0 ? (
                         comments.map((comment) => (
                             <Comment
                                 key={comment.id}
                                 commentId={comment.id}
-                                setCommentsCount={setCommentsCount}
+                                setTotalCommentsCount={setTotalCommentsCount}
                                 siblings={comments}
                                 setSiblings={setComments}
+                                sortField={sortField}
+                                sortOrder={sortOrder}
                             />
                         ))
                     ) : (
