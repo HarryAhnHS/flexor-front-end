@@ -117,13 +117,13 @@ const PostsList = ({ sourceId, type }) => {
   };
 
   return (
-    <div className="bg-gray-800 p-3 rounded-lg shadow-lg">
+    <>
       <div className="flex items-center justify-between mb-4">
         <div className='flex'>
           <div className="relative">
             {/* Sort Dropdown */}
               <select
-              className="block w-full bg-gray-700 border border-gray-600 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
+              className="block w-full bg-gray-800 border border-gray-700 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
               value={type === 'user_drafts' ? 'New' : sortField}
               onChange={handleSortChange}
               disabled={type === 'user_drafts'}
@@ -139,7 +139,7 @@ const PostsList = ({ sourceId, type }) => {
 
           {/* Sort Order Button */}
           <button
-            className='ml-4 flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+            className='ml-2 flex items-center p-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-600 transition'
             onClick={toggleSortOrder}
             disabled={type === 'user_drafts'}
             aria-label="Toggle sort order"
@@ -151,7 +151,7 @@ const PostsList = ({ sourceId, type }) => {
         <div className='flex items-center justify-center'>
           <button
             onClick={handleRefresh}
-            className='flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+            className='flex items-center p-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-600 transition'
           >  
             <FontAwesomeIcon icon={faArrowsRotate} />
           </button>
@@ -182,7 +182,7 @@ const PostsList = ({ sourceId, type }) => {
       )}
 
       {loading && <p className="text-center text-gray-500 mt-4">Loading more posts...</p>}
-    </div>
+    </>
   );
 };
 

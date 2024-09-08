@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { formatTime } from '../utils/formatters';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-regular-svg-icons";
-import { faHeart as faHeartFilled } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faHeart as faHeartFilled, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
     const [post, setPost] = useState(null);
@@ -111,7 +112,7 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
     return (
         <div 
             key={post?.id} 
-            className="post-item mb-6 bg-gray-700 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative" 
+            className="post-item mb-6 bg-gray-800 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative" 
             onClick={(e) => redirectToPost(e)}
         >
             {/* Author Section */}
@@ -164,14 +165,33 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
                     </div>
                 </div>
                 {isEditable && (
-                    <div className="space-x-4">
-                        <button onClick={(e) => handleEditClick(e)} className="text-blue-400 hover:underline">
-                            Edit
-                        </button>
-                        <button onClick={(e) => handleDeleteClick(e)} className="text-red-400 hover:underline">
-                            Delete
-                        </button>
-                    </div>
+                    <div className="flex items-center px-3 text-gray-400">
+                    <Menu as="div" className="relative">
+                        <MenuButton onClick={(e) => e.stopPropagation()}>
+                            <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                        </MenuButton>
+                        <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                            <MenuItem>
+                                    <button
+                                        onClick={handleEditClick}
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                    >
+                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                        <span>Edit</span>
+                                    </button>
+                            </MenuItem>
+                            <MenuItem>
+                                    <button
+                                        onClick={handleDeleteClick}
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                    >
+                                        <FontAwesomeIcon icon={faTrashCan} />
+                                        <span>Delete</span>
+                                    </button>
+                            </MenuItem>
+                        </MenuItems>
+                    </Menu>
+                </div>
                 )}
             </div>
 

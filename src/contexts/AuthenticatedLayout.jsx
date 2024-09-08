@@ -17,7 +17,7 @@ const AuthenticatedLayout = () => {
         </div>
 
         {/* Scrollable Content */}
-        <div className='bg-gray-900 ml-6 flex-1 rounded-lg overflow-y-auto'>
+        <div className='bg-gray-900 flex-1 rounded-lg overflow-y-auto'>
           <Outlet />
         </div>
       </div>

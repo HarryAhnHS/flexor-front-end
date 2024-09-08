@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import CommentsList from "../components/CommentsList";
 import { formatTime } from "../utils/formatters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faEllipsis, faHeart as faHeartSolid, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 const PostPage = () => {
     const navigate = useNavigate();
@@ -83,6 +83,24 @@ const PostPage = () => {
         navigate(`/submit-post/${postId}`);
     };
 
+    const handleDeleteClick = async (e) => {
+        e.stopPropagation();
+        try {
+            // Delete post images if any using query
+            const removedImages = post.images;
+            if (removedImages.length > 0) {
+                const deleteIds = removedImages.map((image) => image.id).join(',');
+                const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
+                await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
+            }
+            
+            await api.delete(`/posts/${postId}`);
+            navigate(-1);
+        } catch (error) {
+            console.error('Error deleting post:', error);
+        }
+    };
+
     const redirectToProfile = (e, authorId) => {
         e.stopPropagation();
         navigate(`/profile/${authorId}`);
@@ -94,7 +112,7 @@ const PostPage = () => {
     };
 
     return (
-        <div className="container mx-auto pr-6 bg-gray-900 text-gray-100 min-h-screen">
+        <div className="container mx-auto p-6 bg-gray-900 text-gray-100 min-h-screen">
             {post && (
                 <div className="post-item bg-gray-800 p-6 rounded-lg shadow-md mb-6 relative">
                     {/* Author Section */}
@@ -134,13 +152,35 @@ const PostPage = () => {
                                 </div>
                             </div>
                         </div>
-                        {userId === post?.authorId && (
-                            <div className="space-x-4">
-                                <button onClick={(e) => handleEditClick(e)} className="text-blue-400 hover:underline">
-                                    Edit
-                                </button>
+                        {userId === post?.authorId && 
+                                <div className="flex items-center px-3 text-gray-400">
+                                <Menu as="div" className="relative">
+                                    <MenuButton onClick={(e) => e.stopPropagation()}>
+                                        <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                                    </MenuButton>
+                                    <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                        <MenuItem>
+                                                <button
+                                                    onClick={handleEditClick}
+                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                >
+                                                    <FontAwesomeIcon icon={faPenToSquare} />
+                                                    <span>Edit</span>
+                                                </button>
+                                        </MenuItem>
+                                        <MenuItem>
+                                                <button
+                                                    onClick={handleDeleteClick}
+                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                >
+                                                    <FontAwesomeIcon icon={faTrashCan} />
+                                                    <span>Delete</span>
+                                                </button>
+                                        </MenuItem>
+                                    </MenuItems>
+                                </Menu>
                             </div>
-                        )}
+                        }
                     </div>
 
                     {/* Post Content */}

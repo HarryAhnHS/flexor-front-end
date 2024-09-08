@@ -203,7 +203,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     };
 
     return (
-        <div key={commentId} className="flex-1 comment bg-gray-800 text-white py-4 pl-2 border-b border-gray-700">
+        <div key={commentId} className="flex-1 comment text-white py-4 pl-2 border-b border-gray-700">
             <div className="flex items-center">
                 <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
                     <img
@@ -237,11 +237,11 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                             <MenuButton>
                                 <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
                             </MenuButton>
-                            <MenuItems className="absolute right-0 mt-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-md w-40">
+                            <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
                                 <MenuItem>
                                     <button
                                         onClick={handleReplyClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-700'
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
                                     >
                                         <FontAwesomeIcon icon={faReply} />
                                         <span>Reply</span>
@@ -252,7 +252,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                                     <MenuItem>
                                             <button
                                                 onClick={handleEditClick}
-                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-700'
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
                                             >
                                                 <FontAwesomeIcon icon={faPenToSquare} />
                                                 <span>Edit</span>
@@ -261,7 +261,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                                     <MenuItem>
                                             <button
                                                 onClick={handleDeleteClick}
-                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-700'
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
                                             >
                                                 <FontAwesomeIcon icon={faTrashCan} />
                                                 <span>Delete</span>

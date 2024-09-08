@@ -3,6 +3,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { formatTime } from '../utils/formatters';
 import api from '../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 
 const NotificationsList = () => {
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ const NotificationsList = () => {
 
         // Handle edge-case where re-navigated to notifications
         if (page == 1) {
-            resetNotifications();
+          resetNotifications();
         }
 
         setNotificationDetails((prev) => ({ ...prev, ...updatedDetails }));
@@ -55,9 +57,9 @@ const NotificationsList = () => {
       } catch (error) {
         console.error('Error fetching notifications', error);
       } finally {
-        setTimeout( async () => {
-            setLoading(false);
-          }, 1000)
+        setTimeout(async () => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
@@ -66,7 +68,12 @@ const NotificationsList = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !loading) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 100 &&
+        hasMore &&
+        !loading
+      ) {
         setPage((prevPage) => prevPage + 1);
       }
     };
@@ -88,14 +95,19 @@ const NotificationsList = () => {
 
   const handleRefresh = () => {
     resetNotifications(); // Clear current notifications
-    setRefresh(prev => !prev); // Trigger refresh
+    setRefresh((prev) => !prev); // Trigger refresh
   };
 
   return (
-    <div className="flex flex-col space-y-4">
-        <button onClick={handleRefresh}>
-            Refresh
-        </button>
+    <div className="flex flex-col space-y-4 bg-gray-900 min-h-screen text-white">
+      <div className='flex items-center justify-center'>
+          <button
+            onClick={handleRefresh}
+            className='flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+          >  
+            <FontAwesomeIcon icon={faArrowsRotate} />
+          </button>
+        </div>
       {notifications.length > 0 ? (
         notifications.map((notification) => {
           const details = notificationDetails[notification.id];
@@ -105,12 +117,12 @@ const NotificationsList = () => {
           return (
             <div
               key={notification.id}
-              className="flex items-center p-4 bg-white border border-gray-200 rounded-md shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              className="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-shadow duration-200 cursor-pointer"
               onClick={() => handleNotificationClick(link)}
             >
               {/* Profile Section */}
               <div
-                className="flex items-center mr-4 cursor-pointer"
+                className="flex items-center justify-center mr-2 cursor-pointer"
                 onClick={(e) => handleProfileNavigate(e, notification)}
               >
                 {notification.actor.profilePictureUrl && (
@@ -123,22 +135,24 @@ const NotificationsList = () => {
               </div>
 
               {/* Message Section */}
-              <div className="flex-1">
-                <p className="text-base mb-2">
+              <div className="flex-1 flex-col justify-center space-y-2">
+                <p className="text-base">
                   <span
-                    className="font-medium cursor-pointer"
+                    className="font-medium cursor-pointer text-blue-400 hover:text-blue-500 hover:underline"
                     onClick={(e) => handleProfileNavigate(e, notification)}
                   >
                     @{notification.actor.username}
                   </span>
                   &nbsp;{message}
                   {details?.source && (
-                    <span className="italic text-gray-600 truncate max-w-[200px]">
+                    <span className="italic text-gray-400 truncate max-w-[200px]">
                       &nbsp;&#x2018;{details.source}&#x2019;
                     </span>
                   )}
                 </p>
-                <p className="text-sm mb-2 text-gray">{formatTime(notification.createdAt)}</p>
+                <p className="text-sm text-gray-500">
+                  {formatTime(notification.createdAt)}
+                </p>
               </div>
 
               {/* Source Image */}
@@ -146,7 +160,7 @@ const NotificationsList = () => {
                 <img
                   src={details.image}
                   alt="Source"
-                  className="w-16 h-16 object-cover ml-4"
+                  className="w-16 h-16 object-cover ml-4 rounded-md"
                 />
               )}
             </div>
@@ -155,7 +169,9 @@ const NotificationsList = () => {
       ) : (
         !loading && <p className="text-center text-gray-500">No notifications yet</p>
       )}
-      {loading && <p className="text-center text-gray-500">Loading more notifications...</p>}
+      {loading && (
+        <p className="text-center text-gray-500">Loading more notifications...</p>
+      )}
     </div>
   );
 };

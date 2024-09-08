@@ -80,6 +80,7 @@ const RealmsList = ( {type} ) => {
                 realms.map((realm) => (
                     <RealmPreview 
                         realmId={realm.id} 
+                        setRealms={setRealms}
                         key={realm.id} 
                     />
                 ))

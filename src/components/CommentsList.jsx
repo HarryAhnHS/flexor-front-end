@@ -95,7 +95,7 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
     return (
         <>
             {/* New Comment Section */}
-            <div className="comments-section bg-gray-800 text-white p-6 rounded-lg shadow-md">
+            <div className="comments-section text-white rounded-lg shadow-md">
                 <h2 className="text-2xl font-semibold mb-4">Comments</h2>
                 <form onSubmit={handleCommentSubmit} className="mb-6 flex items-center space-x-2">
                     <textarea
@@ -121,7 +121,7 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
                     <div className="sort-container mb-4 flex items-center space-x-2">
                         <div className="relative">
                             <select
-                                className="block w-full bg-gray-700 border border-gray-600 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
+                                className="block w-full bg-gray-800 border border-gray-700 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
                                 value={sortField}
                                 onChange={handleSortChange}
                             >
@@ -138,7 +138,7 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
 
                         {/* Sort Order Button */}
                         <button
-                            className='ml-4 flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+                            className='ml-2 flex items-center p-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-600 transition'
                             onClick={toggleSortOrder}
                             aria-label="Toggle sort order"
                         >

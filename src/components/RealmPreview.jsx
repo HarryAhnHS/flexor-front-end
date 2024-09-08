@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightToBracket, faCheck, faEllipsis, faPenToSquare, faTrashCan, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { faMicroblog } from "@fortawesome/free-brands-svg-icons";
 
-const RealmPreview = ({ realmId }) => {
+const RealmPreview = ({ realmId, setRealms }) => {
     const navigate = useNavigate();
     const [realm, setRealm] = useState({});
+    const [realmMembers, setRealmMembers] = useState(0);
     const [joined, setJoined] = useState(null);
 
     const userId = localStorage.getItem('userId');
@@ -15,6 +20,7 @@ const RealmPreview = ({ realmId }) => {
             try {
                 const response = await api.get(`/realms/${realmId}`);
                 setRealm(response.data.realm);
+                setRealmMembers(response.data.realm._count?.joined);
             } catch (error) {
                 console.error("Error fetching realm", error);
             }
@@ -39,8 +45,10 @@ const RealmPreview = ({ realmId }) => {
         try {
             if (!joined) {
                 await api.post(`/realms/${realmId}/join`);
+                setRealmMembers(prev => prev + 1);
             } else {
                 await api.delete(`/realms/${realmId}/join`);
+                setRealmMembers(prev => prev - 1);
             }
             setJoined(prev => !prev);
         } catch (error) {
@@ -58,41 +66,100 @@ const RealmPreview = ({ realmId }) => {
         navigate(`/submit-realm/${realmId}`);
     };
 
+    const handleDeleteRealm = async (e, realmId) => {
+        e.stopPropagation();
+        try {
+            await api.delete(`/realms/${realmId}`);
+            
+            setRealms((prev) => (prev).filter((realm) => realm.id !== realmId));
+        } catch (error) {
+            console.error("Error deleting realm:", error);
+        }
+    };
+
     return (
         <div
             key={realmId}
-            className="bg-white p-4 rounded-lg shadow flex items-center space-x-4 cursor-pointer"
+            className="bg-gray-800 text-white p-4 rounded-lg shadow-lg flex items-center space-x-6 cursor-pointer transition-colors"
             onClick={(e) => redirectToRealm(e, realmId)}
         >
+            {/* Realm Image */}
             <div className="flex-shrink-0">
                 {realm?.realmPictureUrl && (
                     <img
                         src={realm?.realmPictureUrl}
                         alt={realm?.name}
-                        className="w-32 h-32 object-cover rounded-md"
+                        className="w-24 h-24 object-cover rounded-md"
                     />
                 )}
             </div>
+
+            {/* Realm Details */}
             <div className="flex-1">
-                <h3 className="text-xl font-semibold mb-2">{realm?.name}</h3>
-                <p className="text-gray-600 mb-4">{realm?.description}</p>
+                <div className="mb-2 flex justify-between">
+                    <span className="font-semibold text-2xl">{realm?.name}</span>
+                    {/* Edit Button */}
+                    {isCreator && (
+                        <div className="flex items-center px-3 text-gray-400">
+                            <Menu as="div" className="relative">
+                                <MenuButton onClick={(e) => e.stopPropagation()}>
+                                    <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                                </MenuButton>
+                                <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                    <MenuItem>
+                                            <button
+                                                onClick={(e) => handleEditRealm(e, realmId)}
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                            >
+                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                                <span>Edit</span>
+                                            </button>
+                                    </MenuItem>
+                                    <MenuItem>
+                                            <button
+                                                onClick={(e) => handleDeleteRealm(e, realmId)}
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                            >
+                                                <FontAwesomeIcon icon={faTrashCan} />
+                                                <span>Delete</span>
+                                            </button>
+                                    </MenuItem>
+                                </MenuItems>
+                            </Menu>
+                        </div>
+                    )}
+                </div>
+                <p className="text-gray-400 mb-4">{realm?.description}</p>
                 <div className="flex justify-between items-center">
+                    <div className="flex space-x-4 text-base">
+                        <div className="text-gray-400 space-x-2">
+                            <FontAwesomeIcon icon={faUsers} />
+                            <span className="text-sm">{realmMembers} Joined</span>
+                        </div>
+                        <div className="text-gray-400 space-x-2">
+                            <FontAwesomeIcon icon={faMicroblog} />
+                            <span className="text-sm">{realm._count?.posts} Posts</span>
+                        </div>
+                    </div>
+                    {/* Join Button */}
                     <button
                         onClick={(e) => handleJoinRealm(e, realmId)}
-                        className={`px-4 py-2 rounded-md text-white ${
-                            joined ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                        className={`px-4 py-2 rounded-lg text-white transition-colors ${
+                            joined ? 'bg-gray-600 hover:bg-gray-500' : 'bg-indigo-600 hover:bg-indigo-700'
                         }`}
                     >
-                        {joined ? 'Joined' : 'Join'}
+                        {joined ? 
+                        <div className="space-x-2 text-sm">
+                            <span>Joined</span>
+                            <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                        : 
+                        <div className="space-x-2 text-sm">
+                            <span>Join</span>
+                            <FontAwesomeIcon icon={faArrowRightToBracket}/>
+                        </div>
+                        }
                     </button>
-                    {isCreator && (
-                        <button
-                            onClick={(e) => handleEditRealm(e, realmId)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        >
-                            Edit
-                        </button>
-                    )}
                 </div>
             </div>
         </div>
