@@ -17,7 +17,8 @@ import RealmForm from './pages/RealmForm';
 import Notifications from './pages/Notifications';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS here
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
