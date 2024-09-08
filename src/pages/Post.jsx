@@ -114,7 +114,7 @@ const PostPage = () => {
     return (
         <div className="container mx-auto p-6 bg-gray-900 text-gray-100 min-h-screen">
             {post && (
-                <div className="post-item bg-gray-800 p-6 rounded-lg shadow-md mb-6 relative">
+                <div className="post-item rounded-lg mb-6 relative">
                     {/* Author Section */}
                     <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-3">

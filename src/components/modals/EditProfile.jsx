@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,8 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
   const [usernameError, setUsernameError] = useState('');
   const [fileError, setFileError] = useState('');
 
+  const modalRef = useRef(null); // Ref for the modal container
+
   useEffect(() => {
     if (open && user) {
       setFormData({
@@ -22,6 +24,22 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
       setImagePreview(user.profilePictureUrl);
     }
   }, [open, user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleModalClose();
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open, handleModalClose]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -73,7 +91,10 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-gray-800 text-white rounded-lg shadow-lg max-w-lg w-full p-6">
+      <div
+        ref={modalRef}
+        className="bg-gray-800 text-white rounded-lg shadow-lg max-w-lg w-full p-6"
+      >
         <h2 className="text-2xl mb-4">Update Your Profile</h2>
         <div className='border-t border-gray-700 my-6'></div>
         <form onSubmit={handleFormSubmit}>

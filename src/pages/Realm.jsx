@@ -78,7 +78,7 @@ const Realm = () => {
     return (
         <div className="bg-gray-900 text-white min-h-screen p-6">
             {realm && (
-                <div className="container mx-auto flex bg-gray-800 shadow-lg rounded-lg p-6 mb-8">
+                <div className="container mx-auto flex rounded-lg mb-8">
                     {/* Realm Image */}
                     <div className="flex-shrink-0 w-1/3 md:w-1/4">
                         <img

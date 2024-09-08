@@ -117,7 +117,7 @@ const SearchBar = () => {
     return (
         <div className='w-full relative' ref={dropdownRef}>
             <div className={`flex items-center bg-gray-800 rounded-lg transition-all duration-300 p-3 overflow-hidden`}>
-                <FontAwesomeIcon icon={faMagnifyingGlass} className="cursor-pointer"/>
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400"/>
                 <input
                     type="text"
                     value={query}
@@ -127,13 +127,10 @@ const SearchBar = () => {
                     autoFocus
                 />
                 <div className='text-sm'>
-                    <span className=''>
-                        By:
-                    </span>
                     <select
                         value={searchType}
                         onChange={handleSearchTypeChange}
-                        className="bg-transparent text-sm ml-2 outline-none"
+                        className="bg-transparent text-sm pl-2 border-l border-gray-500"
                     >
                         <option value="all">All</option>
                         <option value="users">Users</option>

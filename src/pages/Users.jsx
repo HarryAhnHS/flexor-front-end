@@ -6,8 +6,8 @@ const Users = ({ scenario }) => {
 
   return (
     <>
-      <div className="user-listing-page container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">
+      <div className="user-listing-page container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-4">
             Users
         </h1>
         <section>

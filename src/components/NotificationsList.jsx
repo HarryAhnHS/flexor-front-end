@@ -117,7 +117,7 @@ const NotificationsList = () => {
           return (
             <div
               key={notification.id}
-              className="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-shadow duration-200 cursor-pointer"
+              className="flex items-center p-4 bg-gray-800 rounded-lg transition-shadow duration-200 cursor-pointer"
               onClick={() => handleNotificationClick(link)}
             >
               {/* Profile Section */}

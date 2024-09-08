@@ -95,21 +95,21 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
     return (
         <>
             {/* New Comment Section */}
-            <div className="comments-section text-white rounded-lg shadow-md">
+            <div className="comments-section text-white rounded-lg ">
                 <h2 className="text-2xl font-semibold mb-4">Comments</h2>
                 <form onSubmit={handleCommentSubmit} className="mb-6 flex items-center space-x-2">
                     <textarea
                         value={newComment}
                         onChange={handleNewCommentChange}
                         onKeyDown={handleKeyDown}
-                        className="flex-1 bg-gray-700 text-gray-300 p-2 border border-gray-600 rounded-lg"
+                        className="flex-1 bg-gray-800 text-gray-300 p-2 border border-gray-700 rounded-lg"
                         placeholder="Add a comment..."
                         required
                         rows="1"
                     />
                     <button
                         type="submit"
-                        className="ml-4 flex items-center p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-blue-600 transition"
+                        className="ml-4 flex items-center p-3 border border-gray-700 rounded-lg bg-gray-800 text-gray-300 hover:bg-blue-600 transition"
                     >
                         <FontAwesomeIcon icon={faPaperPlane} />
                     </button>
