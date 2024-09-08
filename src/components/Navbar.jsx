@@ -30,8 +30,8 @@ const Navbar = () => {
     <nav className='bg-gray-900 text-white flex flex-col h-full py-4 transition-all duration-300 border-r border-gray-700'>
       {/* Logo Container */}
       <div className="mt-2 mb-8 text-md font-bold md:text-2xl">
-        <Link to="/feed" className="hover:text-gray-400 transition flex justify-center items-center">
-          Flexor
+        <Link to="/feed" className="transition flex justify-center items-center">
+          <span className='font-bold text-indigo-500'>flex</span>or
         </Link>
       </div>
 

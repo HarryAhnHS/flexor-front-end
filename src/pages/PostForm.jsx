@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCloudArrowUp, faFloppyDisk, faImages, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const PostForm = () => {
   const navigate = useNavigate();
@@ -155,51 +157,149 @@ const PostForm = () => {
   };
 
   return (
-    <>
-      <div className="p-8 bg-gray-100 min-h-screen">
-        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-6">{isEditing ? (formData.published ? 'Edit Post' : 'Edit Draft') : 'Create Post'}</h2>
-          <form onSubmit={(e) => handleSubmit(e, false)}>
-            <div className="mb-4">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Title:
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title || ''}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
+    <div className="bg-gray-900 min-h-screen p-6">
+      <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-white mb-6">{isEditing ? (formData.published ? 'Edit Post' : 'Edit Draft') : 'Create Post'}</h2>
+        <div className='border-t border-gray-700 my-6'></div>
+        <form onSubmit={(e) => handleSubmit(e, false)}>
+          <div className="mb-4">
+            <label htmlFor="realm" className="block text-sm font-medium text-gray-300">
+              Choose a realm to post under:
+            </label>
+            <Select
+              value={selectedRealm}
+              name="realmId"
+              options={userRealms.map((realm) => ({
+                value: realm.id,
+                label: realm.name,
+              }))}
+              onChange={(selectedOption) => {
+                setFormData({ ...formData, realmId: selectedOption.value });
+                setSelectedRealm(selectedOption);
+              }}
+              isSearchable={true}
+              className="mt-1 cursor-pointer"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  backgroundColor: '#4a5568',
+                  borderColor: '#718096',
+                  borderRadius: '0.375rem',
+                  boxShadow: 'none',
+                  color: '#ffffff',
+                  ":hover": {
+                    borderColor: "#718096",
+                  },
+                  ":focus, :active": {
+                    borderColor: "#667eea",
+                  },
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  backgroundColor: '#4a5568',
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: state.isSelected ? '#2d3748' : '#4a5568',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  ":hover": {
+                    backgroundColor: "#2d3748",
+                  },
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: '#ffffff', // Ensure selected value text color is white
+                }),
+                placeholder: (provided) => ({
+                  ...provided,
+                  color: '#a0a0a0', // Optional: placeholder text color
+                }),
+                input: (provided) => ({
+                  ...provided,
+                  color: '#ffffff', // Input text color
+                }),
+                indicatorSeparator: (provided) => ({
+                  ...provided,
+                  display: 'none', // Remove indicator separator
+                }),
+                dropdownIndicator: (provided) => ({
+                  ...provided,
+                  color: '#ffffff', // Dropdown indicator color
+                  ':hover': {
+                    color: '#ffffff', // Dropdown indicator hover color
+                  },
+                }),
+                clearIndicator: (provided) => ({
+                  ...provided,
+                  color: '#ffffff', // Clear indicator color
+                  ':hover': {
+                    color: '#ffffff', // Clear indicator hover color
+                  },
+                }),
+              }}
+            />
+            {realmError && <p className="text-red-500 text-sm mt-2">{realmError}</p>}
+          </div>    
+          <div className="mb-4">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-300">
+              Title:
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title || ''}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            {postImages.length > 0 &&
+                <div className="block text-sm font-medium text-gray-300">
+                  Images:
+                </div>}
+            <div className="mt-2 flex flex-wrap">
+              {postImages.length > 0 && 
+                postImages.map((image) => (
+                  <div key={image.id} className="relative w-24 h-24 mr-4 mb-4">
+                    <img
+                      src={image.url}
+                      alt={`Uploaded ${image.id}`}
+                      className="object-cover w-full h-full rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleImageDelete(image)}
+                      className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center bg-gray-800 opacity-80 text-white rounded-full p-1 text-sm focus:outline-none"
+                    >
+                      x
+                    </button>
+                  </div>
+              ))}
             </div>
-            <div className="mb-4">
-              <label htmlFor="realm" className="block text-sm font-medium text-gray-700">
-                Choose a realm to post under:
-              </label>
-              <Select
-                value={selectedRealm}
-                name="realmId"
-                options={userRealms.map((realm) => ({
-                  value: realm.id,
-                  label: realm.name,
-                }))}
-                onChange={(selectedOption) => {
-                  setFormData({ ...formData, realmId: selectedOption.value });
-                  setSelectedRealm(selectedOption);
-                }}
-                isSearchable={true}
-                className="mt-1"
-              />
-              {realmError && <p className="text-red-500 text-sm mt-2">{realmError}</p>}
-            </div>
-            <div className="mb-4">
+          </div>
+          <div className="mb-4">
+            <label htmlFor="text" className="block text-sm font-medium text-gray-300">
+              Content:
+            </label>
+            <textarea
+              id="text"
+              name="text"
+              value={formData.text || ''}
+              onChange={handleInputChange}
+              rows="5"
+              required
+              className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className='my-4'>
               <label
                 htmlFor="images"
-                className="inline-block p-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
-              >
-                Upload Images
+                className="space-x-2 p-2 text-sm text-gray-100 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 cursor-pointer"
+              > 
+                <FontAwesomeIcon icon={faImages} className="ml-2" />
+                <span>Upload images</span>
               </label>
               <input
                 type="file"
@@ -208,69 +308,58 @@ const PostForm = () => {
                 onChange={handleImageUpload}
                 className="hidden"
               />
-              {fileError && <p className="text-center text-red-600">{fileError}</p>}
-              <div className="mt-4 flex flex-wrap">
-                {postImages &&
-                  postImages.map((image) => (
-                    <div key={image.id} className="relative w-24 h-24 mr-4 mb-4">
-                      <img
-                        src={image.url}
-                        alt={`Uploaded ${image.id}`}
-                        className="object-cover w-full h-full rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleImageDelete(image)}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs focus:outline-none"
-                      >
-                        x
-                      </button>
-                    </div>
-                  ))}
-              </div>
             </div>
-            <div className="mb-4">
-              <label htmlFor="text" className="block text-sm font-medium text-gray-700">
-                Content:
-              </label>
-              <textarea
-                id="text"
-                name="text"
-                value={formData.text || ''}
-                onChange={handleInputChange}
-                rows="5"
-                required
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                onClick={(e) => handleSubmit(e, false)}
-                className="w-1/3 py-2 px-4 bg-gray-600 text-white font-semibold rounded-md shadow hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-              >
-                Save as Draft
-              </button>
-              <button
-                type="button"
-                onClick={(e) => handleSubmit(e, true)}
-                className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                {isEditing ? (formData.published ? 'Save Changes' : 'Publish Draft') : "Publish Post"}
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="w-1/3 py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-md shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-              >
-                Cancel
-              </button>
-            </div>
-            {publishError && <p className="text-red-500 text-sm mt-2">{publishError}</p>}
-          </form>
-        </div>
+            {fileError && <p className="text-center text-red-500">{fileError}</p>}
+          </div>
+
+          <div className='border-t border-gray-700 my-6'></div>
+
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, false)}
+              className="w-1/3 py-2 px-4 bg-gray-600 text-gray-200 font-semibold rounded-md shadow flex items-center justify-center space-x-2 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              <FontAwesomeIcon icon={faFloppyDisk} />
+              <span>Save as Draft</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, true)}
+              className="w-1/3 py-2 px-4 bg-indigo-600 text-gray-200 font-semibold rounded-md shadow flex items-center justify-center space-x-2 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              {isEditing ? (formData.published 
+                ? 
+                  <>
+                    <FontAwesomeIcon icon={faCloudArrowUp} />
+                    <span>Save Changes</span>
+                  </>
+                : 
+                  <>
+                    <FontAwesomeIcon icon={faCloudArrowUp} />
+                    <span>Publish Draft</span>
+                  </>
+                ) 
+                : 
+                  <>
+                    <FontAwesomeIcon icon={faCloudArrowUp} />
+                    <span>Publish</span>
+                  </>
+                }
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-1/3 py-2 px-4 bg-gray-500 text-gray-200 font-semibold rounded-md shadow flex items-center justify-center space-x-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+              <span>Cancel</span>
+            </button>
+          </div>
+          {publishError && <p className="text-red-500 text-sm mt-2">{publishError}</p>}
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
