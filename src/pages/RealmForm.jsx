@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk, faImages, faLayerGroup, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const RealmForm = () => {
     const navigate = useNavigate();
@@ -51,7 +53,7 @@ const RealmForm = () => {
 
     useEffect(() => {
         if (!isEditing) {
-          // Reset form data when navigating to New Post page
+          // Reset form data when navigating to New Realm page
           setFormData({
             name: "",
             description: "",
@@ -134,91 +136,109 @@ const RealmForm = () => {
       };
 
     return ( 
-        <>
-            <div className="p-8 bg-gray-100 min-h-screen">
-                <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">{realmId ? 'Edit Realm' : 'Create a New Realm'}</h2>
-                    {loading ? (
-                        <div className="flex justify-center">
-                            <CircularProgress />
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">
-                                    Realm Picture (optional):
-                                </label>
-                                {imagePreview && (
+        <div className="bg-gray-900 min-h-screen p-6">
+            <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                    {realmId ? 'Edit Realm' : 'Create a New Realm'}
+                </h2>
+
+                <div className='border-t border-gray-700 my-6'></div>
+
+                {loading ? (
+                    <div className="flex justify-center">
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                id="profilePicture"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <label
+                                htmlFor="profilePicture"
+                                className="space-x-2 my-4 p-2 text-sm text-gray-100 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 cursor-pointer"
+                            > 
+                                <FontAwesomeIcon icon={faImages} className="ml-2" />
+                                <span>Realm Picture <span className='text-sm text-gray-500'>(Optional)</span></span>
+                            </label>
+                            {imagePreview && (
                                     <div className="mt-4 flex justify-center">
                                         <img
                                             src={imagePreview}
                                             alt="Preview"
-                                            className="w-64 h-48 object-cover rounded-md shadow-md"
+                                            className="w-64 h-48 object-cover rounded-lg"
                                         />
                                     </div>
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    id="profilePicture"
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                />
-                                <label htmlFor="profilePicture" className="inline-block p-2 mt-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
-                                    Upload Realm Picture
-                                </label>
-                                {fileError && <p className="text-red-500 text-sm mt-2">{fileError}</p>}
-                            </div>
+                            )}
+                            {fileError && <p className="text-red-500 text-sm mt-2">{fileError}</p>}
+                        </div>
 
-                            <div className="mb-4">
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                    Realm Name:
-                                </label>
-                                <input
-                                    id="name"
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    required
-                                />
-                                {nameError && <p className="text-red-500 text-sm mt-2">{nameError}</p>}
-                            </div>
+                        <div className="mb-4">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+                                Realm Name:
+                            </label>
+                            <input
+                                id="name"
+                                type="text"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            {nameError && <p className="text-red-500 text-sm mt-2">{nameError}</p>}
+                        </div>
 
-                            <div className="mb-4">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                                    Description:
-                                </label>
-                                <textarea
-                                    id="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    rows="5"
-                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    required
-                                />
-                            </div>
+                        <div className="mb-4">
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-300">
+                                Description:
+                            </label>
+                            <textarea
+                                id="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows="5"
+                                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                        </div>
 
-                            <div className="flex justify-center">
-                                <button
-                                    type="submit"
-                                    className="w-1/3 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        <div className='border-t border-gray-700 my-6'></div>
+
+                        <div className="flex space-x-4">
+                            <button
+                                type="submit"
+                                className="w-1/2 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow flex items-center justify-center space-x-2 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                {isEditing 
+                                ? 
+                                <>
+                                    <FontAwesomeIcon icon={faFloppyDisk} />
+                                    <span>Save Changes</span>
+                                </> 
+                                : 
+                                <>
+                                    <FontAwesomeIcon icon={faLayerGroup} />
+                                    <span>Create Realm</span>
+                                </> 
+                                }
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="w-1/2 py-2 px-4 bg-gray-500 text-gray-200 font-semibold rounded-md shadow flex items-center justify-center space-x-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                                 >
-                                    {isEditing ? 'Update Realm' : 'Create Realm'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCancel}
-                                    className="w-1/3 py-2 px-4 bg-gray-300 text-gray-800 font-semibold rounded-md shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+                                <FontAwesomeIcon icon={faXmark} />
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
-        </>
+        </div>
     );
 };
 

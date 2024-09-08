@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { checkAuth } from './services/checkAuth'; // A utility function to check if user is logged in
 
 import UnauthenticatedPage from './pages/UnauthenticatedPage';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import Realms from './pages/Realms';
@@ -38,8 +36,6 @@ const App = () => {
       <Routes>
         {/* Routes for unauthenticated users */}
         <Route path="/" element={<UnauthenticatedPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
 
         {/* Protected routes */}
         {isAuthenticated ? (
@@ -67,7 +63,7 @@ const App = () => {
             <Route path="/users/:id/following" element={<Users scenario="following" />} />
           </Route>
         ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         )}
 
         {/* Catch-all route for handling invalid routes */}

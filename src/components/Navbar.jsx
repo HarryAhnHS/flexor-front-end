@@ -10,6 +10,7 @@ import {
   faRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -58,17 +59,19 @@ const Navbar = () => {
               <MenuItem>
                 <Link
                   to="/submit-post"
-                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 space-x-2"
                 >
-                  New Post
+                  <FontAwesomeIcon icon={faMicroblog} />
+                  <span>New Post</span>
                 </Link>
               </MenuItem>
               <MenuItem>
                 <Link
                   to="/submit-realm"
-                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 space-x-2"
                 >
-                  New Realm
+                  <FontAwesomeIcon icon={faLayerGroup} />
+                  <span>New Realm</span>
                 </Link>
               </MenuItem>
             </MenuItems>

@@ -150,13 +150,13 @@ const RealmPreview = ({ realmId, setRealms }) => {
                     >
                         {joined ? 
                         <div className="space-x-2 text-sm">
-                            <span>Joined</span>
                             <FontAwesomeIcon icon={faCheck} />
+                            <span>Joined</span>
                         </div>
                         : 
                         <div className="space-x-2 text-sm">
-                            <span>Join</span>
                             <FontAwesomeIcon icon={faArrowRightToBracket}/>
+                            <span>Join</span>
                         </div>
                         }
                     </button>

@@ -111,19 +111,19 @@ const ProfilePage = () => {
             <button
               onClick={handleFollowToggle}
               className={`py-2 px-4 rounded font-semibold focus:outline-none transition-colors ${
-                followed ? 'bg-gray-500 text-white' : 'bg-gray-800 text-white'
+                followed ? 'bg-gray-500 text-white' : 'bg-indigo-600 text-white'
               }`}
             >
               {followed 
               ? 
               <div className='space-x-2'>
+                <FontAwesomeIcon icon={faCheck}/>
                 <span>Following</span>
-                <FontAwesomeIcon icon={faCheck} />
               </div>
               :
               <div className='space-x-2'>
+                <FontAwesomeIcon icon={faUserPlus}/>
                 <span>Follow</span>
-                <FontAwesomeIcon icon={faUserPlus} />
               </div>
                }
             </button>
@@ -160,47 +160,33 @@ const ProfilePage = () => {
 
         <div className='border-t border-gray-700 my-6'></div>
 
-        {/* Tabs for Posts, Liked, Commented, Drafts */}
-        <section className="tabs mb-4 flex justify-between">
-          <h1 className='text-3xl font-semibold'>Posts</h1>
-          <div className="flex items-center justify-center space-x-4">
+        <section className="flex items-center justify-between mb-4">
+          <h1 className='text-3xl font-bold'>
+            {selectedTab == 'user_posts' ? 'Posts' : selectedTab == 'user_liked' ? 'Liked' : selectedTab == 'user_commented' ? 'Commented' : selectedTab == 'user_drafts' ? 'Drafts' : null}
+          </h1>
+          {/* Tabs for Posts, Liked, Commented, Drafts */}
+          <div className="flex space-x-4">
             <button
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedTab === 'user_posts'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-colors ${selectedTab === 'user_posts' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
               onClick={() => setSelectedTab('user_posts')}
             >
               Posts
             </button>
             <button
-              className={`px-4 py-2 rounded transition-colors ${
-                selectedTab === 'user_liked'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-colors ${selectedTab === 'user_liked' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
               onClick={() => setSelectedTab('user_liked')}
             >
               Liked
             </button>
             <button
-              className={`px-4 py-2 rounded transition-colors ${
-                selectedTab === 'user_commented'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-colors ${selectedTab === 'user_commented' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
               onClick={() => setSelectedTab('user_commented')}
             >
               Commented
             </button>
             {userId === loggedInUserId && (
               <button
-                className={`px-4 py-2 rounded transition-colors ${
-                  selectedTab === 'user_drafts'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                className={`px-4 py-2 rounded-lg transition-colors ${selectedTab === 'user_drafts' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
                 onClick={() => setSelectedTab('user_drafts')}
               >
                 Drafts
@@ -208,6 +194,7 @@ const ProfilePage = () => {
             )}
           </div>
         </section>
+
 
         {/* Render PostsList Component */}
         <section>

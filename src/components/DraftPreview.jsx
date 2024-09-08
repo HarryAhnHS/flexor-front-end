@@ -3,9 +3,11 @@ import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsis, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
-const DraftPreview = ({postId, posts, setPosts}) => {
-
+const DraftPreview = ({ postId, posts, setPosts }) => {
     const [post, setPost] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const userId = localStorage.getItem('userId');
@@ -16,8 +18,7 @@ const DraftPreview = ({postId, posts, setPosts}) => {
             try {
                 const response = await api.get(`/posts/${postId}`);
                 setPost(response.data.post);
-            }
-            catch(error) {
+            } catch (error) {
                 console.error('Error getting post', error);
             }
         };
@@ -32,11 +33,13 @@ const DraftPreview = ({postId, posts, setPosts}) => {
         setSelectedImage(null);
     };
 
-    const handleEditClick = () => {
+    const handleEditClick = (e) => {
+        e.stopPropagation();
         navigate(`/submit-post/${postId}`);
     };
 
-    const handleDeleteClick = async () => {
+    const handleDeleteClick = async (e) => {
+        e.stopPropagation();
         try {
             // Delete post images if any using query
             const removedImages = post.images;
@@ -54,54 +57,119 @@ const DraftPreview = ({postId, posts, setPosts}) => {
     };
 
     const formatTime = (dt) => {
-        return formatDistanceToNow(new Date(dt), {addSuffix: true});
+        return formatDistanceToNow(new Date(dt), { addSuffix: true });
     };
 
     return (
-        <div key={post?.id} className="post-item mb-6 bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-semibold mb-2">{post?.title}</h3>
-                <div>
-                    {post?.realm ? <h3 className="text-gray">Posted under {post?.realm.name}</h3> : null}
-                    <p>{post?.createdAt && formatTime(post?.createdAt)}</p>
-                </div>
-            </div>
-            {post?.text && <p className="text-gray-800 mb-4">{post?.text}</p>}
-            {post?.images && post?.images.length > 0 && (
-                <div className="flex flex-wrap gap-4 mb-4">
-                    {post?.images.map((image, index) => (
-                        <img 
-                            key={index} 
-                            src={image.url} 
-                            alt={`Post Image ${index + 1}`} 
-                            className="w-32 h-32 object-cover rounded-md cursor-pointer" 
-                            onClick={() => handleImageClick(image.url)}
-                        />
-                    ))}
-                </div>
-            )}
-            <div className="post-meta text-gray-600 flex items-center space-x-4">
-                {post?.authorId === userId 
-                    ? 
-                        <div className="space-x-4">
-                            <button onClick={handleEditClick} className="text-blue-500">
-                                Edit
-                            </button>
-                            <button onClick={handleDeleteClick} className="text-red-500">
-                                Delete
-                            </button>
+        <div 
+            key={post?.id} 
+            className="post-item mb-6 bg-gray-800 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative"
+            onClick={handleEditClick}
+        >
+            {/* Author and Metadata Section */}
+            <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                    <img 
+                        src={post?.author?.profilePictureUrl} 
+                        alt={`${post?.author?.username}'s profile`} 
+                        className="w-12 h-12 rounded-full object-cover cursor-pointer"
+                        onClick={(e) => { 
+                            e.stopPropagation(); 
+                            navigate(`/profile/${post?.authorId}`); 
+                        }}
+                    />
+                    <div>
+                        <h3 
+                            className="text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
+                            onClick={(e) => { 
+                                e.stopPropagation(); 
+                                navigate(`/profile/${post?.authorId}`); 
+                            }}
+                        >
+                            @{post?.author?.username}
+                        </h3>
+                        <div className="flex items-center">
+                            <p className="text-sm text-gray-400">
+                                {post?.createdAt && formatTime(post?.createdAt)} on
+                            </p>
+                            <div className="flex items-center ml-2">
+                                <img 
+                                    src={post?.realm?.realmPictureUrl} 
+                                    alt={`${post?.realm?.name} realm picture`} 
+                                    className="w-6 h-6 rounded-lg object-cover cursor-pointer"
+                                    onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        navigate(`/realms/${post?.realmId}`);
+                                    }} 
+                                />
+                                <span 
+                                    className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
+                                    onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        navigate(`/realms/${post?.realmId}`);
+                                    }}
+                                >
+                                    {post?.realm?.name}
+                                </span>
+                            </div>
                         </div>
-                    :
-                        null
-                }
-                
+                    </div>
+                </div>
+                {post?.authorId === userId && (
+                    <div className="flex items-center px-3 text-gray-400">
+                        <Menu as="div" className="relative">
+                            <MenuButton onClick={(e) => e.stopPropagation()}>
+                                <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                            </MenuButton>
+                            <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                <MenuItem>
+                                    <button
+                                        onClick={handleEditClick}
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                    >
+                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                        <span>Edit</span>
+                                    </button>
+                                </MenuItem>
+                                <MenuItem>
+                                    <button
+                                        onClick={handleDeleteClick}
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                    >
+                                        <FontAwesomeIcon icon={faTrashCan} />
+                                        <span>Delete</span>
+                                    </button>
+                                </MenuItem>
+                            </MenuItems>
+                        </Menu>
+                    </div>
+                )}
+            </div>
+
+            {/* Post Content */}
+            <div className="mb-4">
+                <h3 className="text-2xl font-bold mb-2 text-gray-100">{post?.title}</h3>
+                {post?.text && <p className="text-gray-300 mb-4">{post?.text}</p>}
+                {post?.images && post?.images.length > 0 && (
+                    <div className="flex flex-wrap gap-4 mb-4">
+                        {post?.images.map((image, index) => (
+                            <img 
+                                key={index} 
+                                src={image.url} 
+                                alt={`Post Image ${index + 1}`} 
+                                className="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-200" 
+                                onClick={() => handleImageClick(image.url)}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {selectedImage && (
                 <ImageViewer imageUrl={selectedImage} onClose={closeModal} />
             )}
         </div>
-    )
+    );
 };
 
 export default DraftPreview;
