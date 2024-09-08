@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
-
 const SearchBar = () => {
     const navigate = useNavigate();
     const [query, setQuery] = useState('');
@@ -13,13 +12,12 @@ const SearchBar = () => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false); // State to handle expansion
+    const [dropdownDisplay, setDropdownDisplay] = useState(false);
     const dropdownRef = useRef(null);
     const limit = 10;
 
     const fetchResults = useCallback(async () => {
-        if (query.length < 3) return; // Start searching only if the query is at least 3 characters long
+        if (query.length < 3) return;
 
         setLoading(true);
 
@@ -32,8 +30,6 @@ const SearchBar = () => {
                     limit
                 }
             });
-
-            console.log(data);
 
             setResults(prevResults => ([
                 ...prevResults || [],
@@ -55,8 +51,7 @@ const SearchBar = () => {
     useEffect(() => {
         const handleOutsideClick = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdownVisible(false);
-                setIsExpanded(false); // Close search bar on outside click
+                setDropdownDisplay(false);
             }
         };
 
@@ -64,20 +59,19 @@ const SearchBar = () => {
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, []);
+    }, [dropdownDisplay]);
 
     const handleSearchChange = (e) => {
         setQuery(e.target.value);
         setResults([]);
         setPage(1);
-        setDropdownVisible(true);
+        setDropdownDisplay(true);
     };
 
     const handleSearchTypeChange = (e) => {
         setSearchType(e.target.value);
         setResults([]);
         setPage(1);
-        setDropdownVisible(true);
     };
 
     const handleLoadMore = () => {
@@ -88,8 +82,7 @@ const SearchBar = () => {
 
     const handleNavigate = (path) => () => {
         navigate(path);
-        setDropdownVisible(false);
-        setIsExpanded(false); // Close search bar on navigation
+        setDropdownDisplay(false);
     };
 
     const renderResult = (result) => {
@@ -122,41 +115,36 @@ const SearchBar = () => {
     };
 
     return (
-        <div className="relative max-w-md" ref={dropdownRef}>
-            <div className="flex items-center space-x-2">
-                <button 
-                    onClick={() => setIsExpanded(!isExpanded)} 
-                    className="rounded-full transition duration-200"
-                >
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                </button>
-                <div className={`flex items-center bg-gray-800 rounded-lg transition-all duration-300 ${isExpanded ? 'w-64 p-2' : 'w-0'} overflow-hidden`}>
-                    {isExpanded && (
-                        <>
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={handleSearchChange}
-                                placeholder="Search..."
-                                className="bg-transparent flex-1 outline-none px-2 text-sm"
-                                autoFocus
-                            />
-                            <select
-                                value={searchType}
-                                onChange={handleSearchTypeChange}
-                                className="bg-transparent text-sm ml-2 outline-none"
-                            >
-                                <option value="all">All</option>
-                                <option value="users">Users</option>
-                                <option value="realms">Realms</option>
-                                <option value="posts">Posts</option>
-                            </select>
-                        </>
-                    )}
+        <div className='w-full relative' ref={dropdownRef}>
+            <div className={`flex items-center bg-gray-800 rounded-lg transition-all duration-300 p-3 overflow-hidden`}>
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="cursor-pointer"/>
+                <input
+                    type="text"
+                    value={query}
+                    onChange={handleSearchChange}
+                    placeholder="Search for users, realms, posts..."
+                    className="bg-transparent flex-1 outline-none px-2 text-sm"
+                    autoFocus
+                />
+                <div className='text-sm'>
+                    <span className=''>
+                        By:
+                    </span>
+                    <select
+                        value={searchType}
+                        onChange={handleSearchTypeChange}
+                        className="bg-transparent text-sm ml-2 outline-none"
+                    >
+                        <option value="all">All</option>
+                        <option value="users">Users</option>
+                        <option value="realms">Realms</option>
+                        <option value="posts">Posts</option>
+                    </select>
                 </div>
+                
             </div>
-            {query.length > 0 && dropdownVisible && (
-                <div className="absolute left-0 right-0 mt-2 bg-gray-800 border-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto z-[99999]">
+            {query.length > 0 && (
+                <div className={`absolute left-0 right-0 mt-2 bg-gray-800 border-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto z-[99999] ${dropdownDisplay ? '' : 'hidden'}`}>
                     {loading && <div className="p-4 text-center text-gray-200">Loading...</div>}
                     {!loading && (
                         <>
@@ -186,3 +174,4 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
+
