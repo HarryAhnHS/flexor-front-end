@@ -10,14 +10,14 @@ const AuthenticatedLayout = () => {
       <Navbar className="bg-gray-900 text-white flex-shrink-0 h-full" /> {/* Add width as needed */}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col bg-gray-900">
+      <div className="flex-1 flex flex-col bg-gray-900 text-white">
         {/* Search Bar */}
         <div className='my-4 mx-6 text-white'>
           <SearchBar className="flex-1"/>
         </div>
 
         {/* Scrollable Content */}
-        <div className='bg-gray-800 my-4 mx-6 flex-1 rounded-lg overflow-y-auto'>
+        <div className='bg-gray-900 ml-6 flex-1 rounded-lg overflow-y-auto'>
           <Outlet />
         </div>
       </div>

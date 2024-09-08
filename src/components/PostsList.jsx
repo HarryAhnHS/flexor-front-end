@@ -2,17 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 import PostPreview from './PostPreview';
 import DraftPreview from './DraftPreview';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowDown, faArrowsRotate, faArrowUp, faSort } from '@fortawesome/free-solid-svg-icons';
 
 const PostsList = ({ sourceId, type }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [page, setPage] = useState(1); // Track the current page
-  const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
-  const [sortField, setSortField] = useState('createdAt'); // Default sort field (newest)
-  const [sortOrder, setSortOrder] = useState('desc'); // Default sort order (descending)
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
   const loggedInUserId = localStorage.getItem('userId');
-  const limit = 10; // Number of posts per page
+  const limit = 10;
 
   const resetPost = useCallback(() => {
     setPosts([]);
@@ -46,7 +48,6 @@ const PostsList = ({ sourceId, type }) => {
             });
             break;
           case 'user_drafts':
-            // Lock sorting for drafts to 'Newest'
             response = await api.get(`/users/${sourceId}/drafts`, {
               params: { page, limit, sortField: 'createdAt', sortOrder: 'desc' }
             });
@@ -67,21 +68,19 @@ const PostsList = ({ sourceId, type }) => {
             });
             break;
           default:
-            response = { data: { posts: [] } }; // Fallback
+            response = { data: { posts: [] } };
             break;
         }
 
         if (response.data.posts.length < limit) {
-          setHasMore(false); // No more posts to load
+          setHasMore(false);
         }
 
-        setPosts(prevPosts => [...prevPosts, ...response.data.posts]); // Append new posts
+        setPosts(prevPosts => [...prevPosts, ...response.data.posts]);
       } catch (error) {
         console.error('Error fetching posts data', error);
       } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        setLoading(false);
       }
     };
 
@@ -105,8 +104,8 @@ const PostsList = ({ sourceId, type }) => {
   }, [hasMore, loading]);
 
   const handleRefresh = () => {
-    resetPost(); // Clear current posts
-    setRefresh(prev => !prev); // Trigger refresh
+    resetPost();
+    setRefresh(prev => !prev);
   };
 
   const handleSortChange = (e) => {
@@ -118,43 +117,47 @@ const PostsList = ({ sourceId, type }) => {
   };
 
   return (
-    <div className="posts-list">
-      <div className="sort-container mb-4 flex items-center">
-        {/* Sort Dropdown */}
-        <div className="relative">
-          <select
-            className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            value={type === 'user_drafts' ? 'New' : sortField }
-            onChange={handleSortChange}
-            disabled={type === 'user_drafts'} // Disable dropdown if type is 'user_drafts'
-          >
-            <option value="createdAt">New</option>
-            <option value="likes">Likes</option>
-            <option value="comments">Comments</option>
-          </select>
-
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M5.5 7.5L10 2.5l4.5 5h-9zM5.5 12.5l4.5 5 4.5-5h-9z" />
-            </svg>
+    <div className="bg-gray-800 p-3 rounded-lg shadow-lg">
+      <div className="flex items-center justify-between mb-4">
+        <div className='flex'>
+          <div className="relative">
+            {/* Sort Dropdown */}
+              <select
+              className="block w-full bg-gray-700 border border-gray-600 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
+              value={type === 'user_drafts' ? 'New' : sortField}
+              onChange={handleSortChange}
+              disabled={type === 'user_drafts'}
+            >
+              <option value="createdAt">New</option>
+              <option value="likes">Likes</option>
+              <option value="comments">Comments</option>
+            </select>
+            <div className="text-sm pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+              <FontAwesomeIcon icon={faSort} />
+            </div>
           </div>
+
+          {/* Sort Order Button */}
+          <button
+            className='ml-4 flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+            onClick={toggleSortOrder}
+            disabled={type === 'user_drafts'}
+            aria-label="Toggle sort order"
+          >
+            <span className="text-sm">{sortOrder === 'asc' ? <FontAwesomeIcon icon={faArrowUp} /> : <FontAwesomeIcon icon={faArrowDown}/>} </span>
+          </button>
         </div>
 
-        {/* Sort Order Button */}
-        <button
-          className='ml-2 flex items-center p-2 border border-gray-300 rounded hover:bg-gray-100 bg-white'
-          onClick={toggleSortOrder}
-          disabled={type === 'user_drafts'}
-          aria-label="Toggle sort order"
-        >
-          <span className="ml-1 text-sm text-gray-600">{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
-        </button>
+        <div className='flex items-center justify-center'>
+          <button
+            onClick={handleRefresh}
+            className='flex items-center p-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition'
+          >  
+            <FontAwesomeIcon icon={faArrowsRotate} />
+          </button>
+        </div>
       </div>
 
-      <button onClick={handleRefresh}>
-        Refresh
-      </button>
-      
       {posts.length > 0 ? (
         posts.map(post =>
           type === 'user_drafts' ? (
@@ -175,10 +178,10 @@ const PostsList = ({ sourceId, type }) => {
           )
         )
       ) : (
-        !loading && <p className="text-gray-600 text-center mt-8">No posts available.</p>
+        !loading && <p className="text-gray-500 text-center mt-8">No posts available.</p>
       )}
 
-      {loading && <p className="text-center text-gray-500">Loading more posts...</p>}
+      {loading && <p className="text-center text-gray-500 mt-4">Loading more posts...</p>}
     </div>
   );
 };
