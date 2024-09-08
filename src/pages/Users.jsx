@@ -1,4 +1,3 @@
-import Navbar from '../components/Navbar';
 import UsersList from '../components/UsersList';
 import { useParams } from 'react-router-dom';
 
@@ -7,7 +6,6 @@ const Users = ({ scenario }) => {
 
   return (
     <>
-      <Navbar />
       <div className="user-listing-page container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">
             Users

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
 import api from '../services/api';
 import { CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -136,7 +135,6 @@ const RealmForm = () => {
 
     return ( 
         <>
-            <Navbar />
             <div className="p-8 bg-gray-100 min-h-screen">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold mb-6 text-center">{realmId ? 'Edit Realm' : 'Create a New Realm'}</h2>

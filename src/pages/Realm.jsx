@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
-import Navbar from "../components/Navbar";
 import PostsList from "../components/PostsList";
 
 const Realm = () => {
@@ -60,7 +59,6 @@ const Realm = () => {
 
     return (
         <>
-            <Navbar />
             <div className="bg-gray-100 min-h-screen p-6">
                 {realm && (
                     <div className="container mx-auto flex bg-white shadow-md rounded-lg p-6">

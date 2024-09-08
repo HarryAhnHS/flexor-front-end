@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
 import PostsList from '../components/PostsList';
 
 const FeedPage = () => {
@@ -7,7 +6,6 @@ const FeedPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="feed-page container mx-auto p-4">
         {/* Page Title */}
         <h1 className="text-3xl font-bold mb-4">Feed</h1>

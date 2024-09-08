@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import EditProfileModal from '../components/modals/EditProfile';
-import Navbar from '../components/Navbar';
 import PostsList from '../components/PostsList';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -75,7 +74,6 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="profile-page container mx-auto p-4">
         {/* Profile Header */}
         <div className="profile-header flex items-center space-x-4 mb-4">

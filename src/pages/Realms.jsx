@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
 import RealmsList from "../components/RealmsList";
 
 const Realms = () => {
@@ -7,7 +6,6 @@ const Realms = () => {
 
     return (
         <>
-            <Navbar />
             <div className="p-8 bg-gray-100 min-h-screen">
                 <div className="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold mb-6">All Realms</h2>

@@ -18,6 +18,7 @@ import Notifications from './pages/Notifications';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AuthenticatedLayout from './contexts/AuthenticatedLayout';
 
 
 const App = () => {
@@ -25,7 +26,7 @@ const App = () => {
 
   useEffect(() => {
     // Check if the user is authenticated on component mount
-    checkAuth().then(isAuth => setIsAuthenticated(isAuth));
+    checkAuth().then((isAuth) => setIsAuthenticated(isAuth));
   }, []);
 
   if (isAuthenticated === null) {
@@ -42,121 +43,35 @@ const App = () => {
 
         {/* Protected routes */}
         {isAuthenticated ? (
-          <>
-            <Route
-              path="/profile/:userId"
-              element={
-                <NotificationsProvider>
-                  <ProfilePage />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/submit-realm/:realmId?"
-              element={
-                <NotificationsProvider>
-                  <RealmForm />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/submit-post/:postId?"
-              element={
-                <NotificationsProvider>
-                  <PostForm />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/realms"
-              element={
-                <NotificationsProvider>
-                  <Realms />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/realms/:realmId"
-              element={
-                <NotificationsProvider>
-                  <Realm />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/posts/:postId"
-              element={
-                <NotificationsProvider>
-                  <Post />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/feed"
-              element={
-                <NotificationsProvider>
-                  <Feed />
-                </NotificationsProvider>
-              }
-            />
-            <Route
-              path="/notifications"
-              element={
-                <NotificationsProvider>
-                  <Notifications />
-                </NotificationsProvider>
-              }
-            />
+          <Route 
+            element={
+              <NotificationsProvider>
+                <AuthenticatedLayout />
+              </NotificationsProvider>
+            }
+          >
+            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/submit-realm/:realmId?" element={<RealmForm />} />
+            <Route path="/submit-post/:postId?" element={<PostForm />} />
+            <Route path="/realms" element={<Realms />} />
+            <Route path="/realms/:realmId" element={<Realm />} />
+            <Route path="/posts/:postId" element={<Post />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/notifications" element={<Notifications />} />
 
             {/* User list routes */}
-            <Route 
-              path="/posts/:id/liked" 
-              element={
-                <NotificationsProvider>
-                  <Users scenario="likedPost" />  
-                </NotificationsProvider>
-              } 
-            />
-            <Route 
-              path="/comments/:id/liked" 
-              element={
-                <NotificationsProvider>
-                  <Users scenario="likedComment" />
-                </NotificationsProvider>
-              } 
-            />
-            <Route 
-              path="/realms/:id/joined" 
-              element={
-                <NotificationsProvider>
-                  <Users scenario="joinedRealm" />
-                </NotificationsProvider>
-              } 
-            />
-            <Route 
-              path="/users/:id/followers" 
-              element={
-                <NotificationsProvider>
-                  <Users scenario="followers" />
-                </NotificationsProvider>
-              } 
-            />
-            <Route 
-              path="/users/:id/following" 
-              element={
-                <NotificationsProvider>
-                  <Users scenario="following" />
-                </NotificationsProvider>
-              } 
-            />
-          </>
+            <Route path="/posts/:id/liked" element={<Users scenario="likedPost" />} />
+            <Route path="/comments/:id/liked" element={<Users scenario="likedComment" />} />
+            <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
+            <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
+            <Route path="/users/:id/following" element={<Users scenario="following" />} />
+          </Route>
         ) : (
           <Route path="*" element={<Navigate to="/login" />} />
         )}
 
         {/* Catch-all route for handling invalid routes */}
         <Route path="*" element={<NotFoundPage />} />
-        
       </Routes>
       <ToastContainer />
     </Router>

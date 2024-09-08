@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
 import api from '../services/api';
 import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -157,7 +156,6 @@ const PostForm = () => {
 
   return (
     <>
-      <Navbar />
       <div className="p-8 bg-gray-100 min-h-screen">
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-6">{isEditing ? (formData.published ? 'Edit Post' : 'Edit Draft') : 'Create Post'}</h2>

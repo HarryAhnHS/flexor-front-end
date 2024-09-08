@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import CommentsList from "../components/CommentsList";
 import { formatTime } from "../utils/formatters";
 
@@ -95,7 +94,6 @@ const PostPage = () => {
 
     return (
         <>
-            <Navbar />
             <div className="container mx-auto p-4">
                 {post && (
                     <div className="post-item bg-white p-6 rounded-lg shadow-md mb-6">
