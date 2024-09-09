@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import  { jwtDecode } from 'jwt-decode';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -29,12 +30,42 @@ const SignUp = () => {
         },
         data: formData, // Send the form data as JSON
       });
+
       if (response.status === 201) {
-        window.location.href = '/login'; // Redirect to login page
+        // Automatically log in after a successful signup
+        await handleLogin();
       }
     } catch (error) {
       console.error('Sign up failed', error);
-      setError(error.response.data.errors[0].msg)
+      setError(error.response?.data?.errors?.[0]?.msg || 'Sign up failed. Please try again.');
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios({
+        method: 'post',
+        url: `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        headers: {
+          'Content-Type': 'application/json', // Set the content type header
+        },
+        data: {
+          username: formData.username,
+          password: formData.password,
+        }, // Use the same form data for login
+      });
+
+      if (response.status === 200) {
+        const token = response.data.token;
+        localStorage.setItem('token', token);
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.id;
+        localStorage.setItem('userId', userId);
+        window.location.href = '/feed'; // Redirect to home page
+      }
+    } catch (error) {
+      console.error('Login failed', error);
+      setError('Login failed. Please check your username and password and try again.');
     }
   };
 
@@ -42,6 +73,7 @@ const SignUp = () => {
     <div className="bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-white">Sign Up</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form fields for email, username, password, and confirmPassword */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
             Email
