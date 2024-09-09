@@ -99,8 +99,8 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
         <div className='border-t border-gray-700 my-6'></div>
         <form onSubmit={handleFormSubmit}>
           {loading ? (
-            <div className="flex justify-center mt-4">
-              <div className="loader border-t-4 border-indigo-500 rounded-full w-8 h-8 animate-spin"></div>
+            <div className="flex justify-center items-center h-full">
+              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
             </div>
           ) : (
             <>

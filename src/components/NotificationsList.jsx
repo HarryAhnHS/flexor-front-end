@@ -170,7 +170,9 @@ const NotificationsList = () => {
         !loading && <p className="text-center text-gray-500">No notifications yet</p>
       )}
       {loading && (
-        <p className="text-center text-gray-500">Loading more notifications...</p>
+        <div className="flex justify-center items-center h-full">
+          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+        </div>
       )}
     </div>
   );

@@ -160,7 +160,11 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
                     ) : (
                         <p className="text-gray-400">No comments yet. Be the first to comment!</p>
                     )}
-                    {loading && <p className="text-center text-gray-500">Loading more comments...</p>}
+                    {loading && 
+                        <div className="flex justify-center items-center h-full">
+                            <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                        </div>
+                    }
                 </div>
             </div>
         </>

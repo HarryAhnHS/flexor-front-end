@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CommentsList from "../components/CommentsList";
 import { formatTime } from "../utils/formatters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faHeart as faHeartSolid, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faHeart as faHeartSolid, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faComment, faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
@@ -188,17 +188,20 @@ const PostPage = () => {
                         <h1 className="text-3xl font-semibold mb-2">{post.title}</h1>
                         {post.text && <p className="text-gray-300 mb-4">{post.text}</p>}
                         {post.images && post.images.length > 0 && (
-                            <div className="flex flex-wrap gap-4 mb-4">
-                                {post.images.map((image, index) => (
-                                    <img
-                                        key={index}
-                                        src={image.url}
-                                        alt={`Post Image ${index + 1}`}
-                                        className="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                                        onClick={(e) => handleImageClick(e, image.url)}
-                                    />
-                                ))}
-                            </div>
+                            <>
+                                <FontAwesomeIcon icon={faImage} className="mb-2 text-gray-300"/>
+                                <div className="flex flex-wrap gap-4 mb-4">
+                                    {post.images.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image.url}
+                                            alt={`Post Image ${index + 1}`}
+                                            className="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                                            onClick={(e) => handleImageClick(e, image.url)}
+                                        />
+                                    ))}
+                                </div>
+                            </>
                         )}
                     </div>
 

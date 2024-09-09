@@ -78,55 +78,57 @@ const Realm = () => {
     return (
         <div className="bg-gray-900 text-white min-h-screen p-6">
             {realm && (
-                <div className="container mx-auto flex rounded-lg mb-8">
+                <div className="container mx-auto flex justify-center flex-wrap rounded-lg mb-8">
                     {/* Realm Image */}
-                    <div className="flex-shrink-0 w-1/3 md:w-1/4">
-                        <img
-                            src={realm.realmPictureUrl}
-                            alt={`${realm.name} picture`}
-                            className="w-full h-full object-cover rounded-lg"
-                        />
+                    <div className="flex-shrink-0 w-1/2 sm:w-1/4 md:w-1/3 lg:w-1/4 mb-6 sm:mb-0">
+                        <div className="relative pb-[100%]"> {/* Aspect Ratio Container */}
+                            <img
+                                src={realm.realmPictureUrl}
+                                alt={`${realm.name} picture`}
+                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                            />
+                        </div>
                     </div>
 
                     {/* Realm Info */}
-                    <div className="w-2/3 md:w-3/4 ml-6">
+                    <div className="flex-1 ml-6">
                         <div className="flex flex-col justify-between h-full">
                             <div>
-                            <div className="mb-2 flex justify-between items-start">
-                                <div className="flex flex-col justify-center">
-                                    <div className="text-gray-400 text-base flex items-center space-x-2">
-                                        <span className="text-sm text-gray-200">Created by</span>
-                                        <div className="flex space-x-2 items-center">
-                                            <img 
-                                                src={realm.creator?.profilePictureUrl} 
-                                                alt={`${realm.creator?.username}'s profile`} 
-                                                className="w-6 h-6 rounded-full object-cover cursor-pointer" 
-                                                onClick={(e) => { 
-                                                    e.stopPropagation(); 
-                                                    navigate(`/profile/${realm.creatorId}`); 
-                                                }}
-                                            />
-                                            <span 
-                                                className="text-sm font-semibold text-blue-400 cursor-pointer hover:underline"
-                                                onClick={(e) => { 
-                                                    e.stopPropagation(); 
-                                                    navigate(`/profile/${realm.creatorId}`); 
-                                                }}>
-                                                @{realm.creator?.username}
-                                            </span>
+                                <div className="mb-2 flex justify-between items-start">
+                                    <div className="flex flex-col justify-center">
+                                        <div className="text-gray-400 text-base flex items-center space-x-2">
+                                            <span className="text-sm text-gray-200">Realm created by</span>
+                                            <div className="flex space-x-2 items-center">
+                                                <img 
+                                                    src={realm.creator?.profilePictureUrl} 
+                                                    alt={`${realm.creator?.username}'s profile`} 
+                                                    className="w-6 h-6 rounded-full object-cover cursor-pointer" 
+                                                    onClick={(e) => { 
+                                                        e.stopPropagation(); 
+                                                        navigate(`/profile/${realm.creatorId}`); 
+                                                    }}
+                                                />
+                                                <span 
+                                                    className="text-sm font-semibold text-blue-400 cursor-pointer hover:underline"
+                                                    onClick={(e) => { 
+                                                        e.stopPropagation(); 
+                                                        navigate(`/profile/${realm.creatorId}`); 
+                                                    }}>
+                                                    @{realm.creator?.username}
+                                                </span>
+                                            </div>
                                         </div>
+                                        <span className="font-semibold text-2xl">{realm?.name}</span>
                                     </div>
-                                    <span className="font-semibold text-2xl">{realm?.name}</span>
-                                </div>
-                                {/* Edit Button */}
-                                {isCreator && (
-                                    <div className="flex items-center px-3 text-gray-400">
-                                        <Menu as="div" className="relative">
-                                            <MenuButton onClick={(e) => e.stopPropagation()}>
-                                                <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
-                                            </MenuButton>
-                                            <MenuItems className="absolute right-0 mt-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-md w-40">
-                                                <MenuItem>
+                                    {/* Edit Button */}
+                                    {isCreator && (
+                                        <div className="flex items-center px-3 text-gray-400">
+                                            <Menu as="div" className="relative">
+                                                <MenuButton onClick={(e) => e.stopPropagation()}>
+                                                    <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                                                </MenuButton>
+                                                <MenuItems className="absolute right-0 mt-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-md w-40">
+                                                    <MenuItem>
                                                         <button
                                                             onClick={(e) => handleEditRealm(e, realmId)}
                                                             className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-700'
@@ -134,8 +136,8 @@ const Realm = () => {
                                                             <FontAwesomeIcon icon={faPenToSquare} />
                                                             <span>Edit</span>
                                                         </button>
-                                                </MenuItem>
-                                                <MenuItem>
+                                                    </MenuItem>
+                                                    <MenuItem>
                                                         <button
                                                             onClick={(e) => handleDeleteRealm(e, realmId)}
                                                             className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-700'
@@ -143,27 +145,27 @@ const Realm = () => {
                                                             <FontAwesomeIcon icon={faTrashCan} />
                                                             <span>Delete</span>
                                                         </button>
-                                                </MenuItem>
-                                            </MenuItems>
-                                        </Menu>
-                                    </div>
-                                )}
-                            </div>
+                                                    </MenuItem>
+                                                </MenuItems>
+                                            </Menu>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="text-gray-400 mb-2">{realm.description}</div>
                             </div>
                             <div className="flex justify-between items-center">
-                                <div className="flex space-x-4 text-sm text-gray-200">
-                                    <div className="space-x-2 cursor-pointer" onClick={() => navigate(`/realms/${realm.id}/joined`)}>
+                                <div className="flex space-x-4 text-xs md:text-sm text-gray-200">
+                                    <div className="space-y-1 cursor-pointer flex flex-col justify-center items-center" onClick={() => navigate(`/realms/${realm.id}/joined`)}>
                                         <FontAwesomeIcon icon={faUsers} />
-                                        <span>{realmMembers} Joined</span>
+                                        <div>{realmMembers} Members</div>
                                     </div>
-                                    <div className="space-x-2">
+                                    <div className="space-y-1 cursor-pointer flex flex-col justify-center items-center">
                                         <FontAwesomeIcon icon={faMicroblog} />
-                                        <span>{realm._count?.posts} Posts</span>
+                                        <div>{realm._count?.posts} Posts</div>
                                     </div>
-                                    <div className="space-x-2">
-                                    <FontAwesomeIcon icon={faCakeCandles} />
-                                        <span>{formatDate(realm.createdAt)}</span>
+                                    <div className="space-y-1 cursor-pointer flex flex-col justify-center items-center">
+                                        <FontAwesomeIcon icon={faCakeCandles} />
+                                        <div>{formatDate(realm.createdAt)}</div>
                                     </div>
                                 </div>
                                 {/* Join Button */}

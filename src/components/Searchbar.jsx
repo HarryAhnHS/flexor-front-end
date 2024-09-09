@@ -17,8 +17,6 @@ const SearchBar = () => {
     const limit = 10;
 
     const fetchResults = useCallback(async () => {
-        if (query.length < 3) return;
-
         setLoading(true);
 
         try {
@@ -124,7 +122,6 @@ const SearchBar = () => {
                     onChange={handleSearchChange}
                     placeholder="Search for users, realms, posts..."
                     className="bg-transparent flex-1 outline-none px-2 text-sm"
-                    autoFocus
                 />
                 <div className='text-sm'>
                     <select
@@ -142,7 +139,11 @@ const SearchBar = () => {
             </div>
             {query.length > 0 && (
                 <div className={`absolute left-0 right-0 mt-2 bg-gray-800 border-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto z-[99999] ${dropdownDisplay ? '' : 'hidden'}`}>
-                    {loading && <div className="p-4 text-center text-gray-200">Loading...</div>}
+                    {loading && 
+                        <div className="flex justify-center items-center h-full">
+                            <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                        </div>
+                    }
                     {!loading && (
                         <>
                             {results.length > 0 ? (

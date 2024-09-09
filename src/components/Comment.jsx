@@ -205,21 +205,23 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     return (
         <div key={commentId} className="flex-1 comment text-white py-4 pl-2 border-b border-gray-700">
             <div className="flex items-center">
-                <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
+                <div className="flex flex-1 items-center space-x-2 cursor-pointer" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
                     <img
                         src={comment.user?.profilePictureUrl}
-                        className="w-[30px] h-[30px] object-cover rounded-full"
+                        className="w-10 h-10 object-cover rounded-full"
                         alt="Profile"
                     />
-                    <span className="text-base font-semibold text-blue-400 hover:underline">@{comment.user?.username}</span>
+                    <div>
+                        <div className="text-base font-semibold text-blue-400 hover:underline">@{comment.user?.username}</div>
+                        <div className="text-sm text-gray-400 flex-1">
+                            {comment?.createdAt && formatTime(comment?.createdAt)}
+                        </div>
+                    </div>
                 </div>
-                <span className="px-2 text-base text-gray-400">&#x2022;</span>
-                <span className="text-sm text-gray-400 flex-1">
-                    {comment?.createdAt && formatTime(comment?.createdAt)}
-                </span>
+                
                 {comment?.updatedAt && comment?.createdAt !== comment?.updatedAt && (
                     <span className="text-xs text-gray-400 mr-2">
-                        (Edited {formatTime(comment?.updatedAt)})
+                        &#40;Edited&#41;	
                     </span>
                 )}
                 <span className="flex items-center space-x-1">
@@ -380,7 +382,9 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
         
                         {/* Loading Indicator */}
                         {loading && (
-                            <p className="text-gray-500 text-sm mt-2">Loading more replies...</p>
+                            <div className="flex justify-center items-center h-full">
+                                <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                            </div>
                         )}
                     </div>
             )}

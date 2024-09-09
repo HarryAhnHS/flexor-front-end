@@ -28,7 +28,11 @@ const App = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Or a loading spinner
+    return <div className='h-screen w-screen bg-gray-900'>
+      <div className="flex justify-center items-center h-full">
+        <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+      </div>
+    </div>;
   }
 
   return (

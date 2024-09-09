@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
-import { CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk, faImages, faLayerGroup, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -145,8 +144,8 @@ const RealmForm = () => {
                 <div className='border-t border-gray-700 my-6'></div>
 
                 {loading ? (
-                    <div className="flex justify-center">
-                        <CircularProgress />
+                    <div className="flex justify-center items-center h-full">
+                        <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit}>

@@ -181,7 +181,11 @@ const PostsList = ({ sourceId, type }) => {
         !loading && <p className="text-gray-500 text-center mt-8">No posts available.</p>
       )}
 
-      {loading && <p className="text-center text-gray-500 mt-4">Loading more posts...</p>}
+      {loading && 
+        <div className="flex justify-center items-center h-full">
+          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+        </div>
+      }
     </>
   );
 };
