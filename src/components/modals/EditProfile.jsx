@@ -53,7 +53,7 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
     // Check for valid file type (only PNG, JPEG, GIF)
     if (file && !['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
       setFileError("Invalid file type - only PNG, JPEG, and GIF allowed.");
-      setProfilePictureFile(null);
+      setProfilePictureFile(user.profilePictureUrl);
       setImagePreview(null);
       return;
     }
