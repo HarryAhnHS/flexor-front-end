@@ -49,6 +49,16 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
+    // Check for valid file type (only PNG, JPEG, GIF)
+    if (file && !['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
+      setFileError("Invalid file type - only PNG, JPEG, and GIF allowed.");
+      setProfilePictureFile(null);
+      setImagePreview(null);
+      return;
+    }
+    setFileError("");
+
     setProfilePictureFile(file);
     if (file) {
       const reader = new FileReader();
