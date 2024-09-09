@@ -11,7 +11,7 @@ const AuthenticatedLayout = () => {
       <Navbar className="bg-gray-900 text-white flex-shrink-0 h-full" />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col bg-gray-900 text-white">
+      <div className="flex-1 flex flex-col bg-gray-900 text-white transition-all duration-300">
         {/* Search Bar */}
         <div className='my-4 mx-6 text-white'>
           <SearchBar className="flex-1"/>
@@ -23,7 +23,7 @@ const AuthenticatedLayout = () => {
         </div>
       </div>
 
-      <Sidebar />
+      <Sidebar/>
     </div>
   );
 };

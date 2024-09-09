@@ -28,7 +28,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='bg-gray-900 text-white flex flex-col h-full py-4 transition-all duration-300 border-r border-gray-700'>
+    <nav className='bg-gray-900 text-white flex flex-col h-full py-4 px-2 md:px-6 transition-all duration-300 border-r border-gray-700'>
       {/* Logo Container */}
       <div className="mt-2 text-md font-bold md:text-2xl">
         <Link to="/feed" className="transition flex justify-center items-center">
@@ -37,10 +37,10 @@ const Navbar = () => {
       </div>
 
       {/* Divider */}
-      <div className="mx-6 border-t border-gray-700 my-4"></div>
+      <div className="border-t border-gray-700 my-4"></div>
 
       {/* Navigation Items */}
-      <div className="flex flex-col flex-grow mx-8">
+      <div className="flex flex-col items-center md:items-start flex-grow">
         {/* Menu Items */}
         <div className="flex flex-col space-y-6">
           <Link to="/feed" className="h-8 flex items-center space-x-4 hover:text-gray-400 transition">
@@ -104,12 +104,12 @@ const Navbar = () => {
       </div>
 
       {/* Divider */}
-      <div className="mx-6 border-t border-gray-700 my-4"></div>
+      <div className="border-t border-gray-700 my-4"></div>
 
       {/* Logout Button */}
       <button
         onClick={handleLogout}
-        className="mx-8 h-8 flex items-center space-x-4 hover:text-gray-400 transition mb-4"
+        className="h-8 flex items-center justify-center md:justify-start space-x-4 hover:text-gray-400 transition mb-4"
       >
         <FontAwesomeIcon icon={faRightFromBracket} />
         <span className="hidden md:inline">Logout</span>
