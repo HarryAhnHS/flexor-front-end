@@ -197,9 +197,9 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
 
             {/* Post Content */}
             <div className="mb-4">
-                <h3 className="text-2xl font-bold mb-2 text-gray-100">{post?.title}</h3>
+                <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
                 {post?.text && (
-                    <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis line-clamp-5">
+                    <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
                         {post?.text}
                     </p>
                 )}

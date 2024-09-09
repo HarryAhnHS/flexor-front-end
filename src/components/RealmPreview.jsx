@@ -129,7 +129,10 @@ const RealmPreview = ({ realmId, setRealms }) => {
                         </div>
                     )}
                 </div>
-                <p className="text-gray-400 mb-4">{realm?.description}</p>
+                <p className="text-gray-400 mt-2 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-2">
+                    {realm?.description}
+                </p>
+
                 <div className="flex justify-between items-center">
                     <div className="flex space-x-4 text-base">
                         <div className="text-gray-400 space-x-2">

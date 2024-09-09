@@ -151,7 +151,11 @@ const Realm = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="text-gray-400 mb-2">{realm.description}</div>
+                                <div className='max-w-3/4'>
+                                    <p className="text-gray-400 mb-2 overflow-wrap-break-word break-all">
+                                    {realm.description}
+                                    </p>
+                                </div>    
                             </div>
                             <div className="flex justify-between items-center">
                                 <div className="flex space-x-4 text-xs md:text-sm text-gray-200">

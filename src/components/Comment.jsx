@@ -302,7 +302,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                     </div>
                 </form>
             ) : (
-                <p className="text-gray-300 mt-3">{comment?.comment}</p>
+                <p className="text-gray-300 mt-3 overflow-hidden text-ellipsis overflow-wrap-break-word break-all">{comment?.comment}</p>
             )}
     
             {/* Reply Button */}

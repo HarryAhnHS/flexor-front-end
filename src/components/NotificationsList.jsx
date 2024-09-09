@@ -145,7 +145,7 @@ const NotificationsList = () => {
                   </span>
                   &nbsp;{message}
                   {details?.source && (
-                    <span className="italic text-gray-400 truncate max-w-[200px]">
+                    <span className="italic text-gray-400 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">
                       &nbsp;&#x2018;{details.source}&#x2019;
                     </span>
                   )}
