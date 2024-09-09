@@ -218,7 +218,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                     {comment?.createdAt && formatTime(comment?.createdAt)}
                 </span>
                 {comment?.updatedAt && comment?.createdAt !== comment?.updatedAt && (
-                    <span className="text-sm text-gray-400 ml-2">
+                    <span className="text-xs text-gray-400 mr-2">
                         (Edited {formatTime(comment?.updatedAt)})
                     </span>
                 )}

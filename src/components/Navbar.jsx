@@ -30,16 +30,19 @@ const Navbar = () => {
   return (
     <nav className='bg-gray-900 text-white flex flex-col h-full py-4 transition-all duration-300 border-r border-gray-700'>
       {/* Logo Container */}
-      <div className="mt-2 mb-8 text-md font-bold md:text-2xl">
+      <div className="mt-2 text-md font-bold md:text-2xl">
         <Link to="/feed" className="transition flex justify-center items-center">
           <span className='font-bold text-indigo-500'>flex</span>or
         </Link>
       </div>
 
+      {/* Divider */}
+      <div className="mx-6 border-t border-gray-700 my-4"></div>
+
       {/* Navigation Items */}
-      <div className="flex flex-col flex-grow mr-6">
+      <div className="flex flex-col flex-grow mx-8">
         {/* Menu Items */}
-        <div className="flex flex-col space-y-6 ml-6">
+        <div className="flex flex-col space-y-6">
           <Link to="/feed" className="h-8 flex items-center space-x-4 hover:text-gray-400 transition">
             <FontAwesomeIcon icon={faHouse} />
             <span className="hidden md:inline">Posts</span>
@@ -106,7 +109,7 @@ const Navbar = () => {
       {/* Logout Button */}
       <button
         onClick={handleLogout}
-        className="ml-6 h-8 flex items-center space-x-4 hover:text-gray-400 transition mb-4"
+        className="mx-8 h-8 flex items-center space-x-4 hover:text-gray-400 transition mb-4"
       >
         <FontAwesomeIcon icon={faRightFromBracket} />
         <span className="hidden md:inline">Logout</span>
