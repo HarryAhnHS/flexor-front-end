@@ -26,13 +26,13 @@ export const NotificationsProvider = ({ children }) => {
             navigate(details.link);
           }
         },
-        autoClose: 5000, // Adjust the duration the toast is visible
-        position: "top-right", // Adjust position if needed
+        autoClose: 3000, // Adjust the duration the toast is visible
+        position: "bottom-right",
         hideProgressBar: false,
         closeButton: true,
         draggable: true,
         pauseOnHover: true,
-        theme: "light", // Or "dark" based on your preference
+        theme: "dark",
       });
 
       // Update unread count

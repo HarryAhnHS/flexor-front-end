@@ -22,6 +22,7 @@ const Navbar = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error('Logout failed', error);
     }

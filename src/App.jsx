@@ -39,7 +39,7 @@ const App = () => {
     <Router>
       <Routes>
         {/* Routes for unauthenticated users */}
-        <Route path="/" element={<UnauthenticatedPage />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/feed" /> : <UnauthenticatedPage />} />
 
         {/* Protected routes */}
         {isAuthenticated ? (
@@ -50,21 +50,21 @@ const App = () => {
               </NotificationsProvider>
             }
           >
-            <Route path="/profile/:userId" element={<ProfilePage />} />
-            <Route path="/submit-realm/:realmId?" element={<RealmForm />} />
-            <Route path="/submit-post/:postId?" element={<PostForm />} />
-            <Route path="/realms" element={<Realms />} />
-            <Route path="/realms/:realmId" element={<Realm />} />
-            <Route path="/posts/:postId" element={<Post />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/notifications" element={<Notifications />} />
+              <Route path="/profile/:userId" element={<ProfilePage />} />
+              <Route path="/submit-realm/:realmId?" element={<RealmForm />} />
+              <Route path="/submit-post/:postId?" element={<PostForm />} />
+              <Route path="/realms" element={<Realms />} />
+              <Route path="/realms/:realmId" element={<Realm />} />
+              <Route path="/posts/:postId" element={<Post />} />
+              <Route path="/feed" element={<Feed />} />
+              <Route path="/notifications" element={<Notifications />} />
 
-            {/* User list routes */}
-            <Route path="/posts/:id/liked" element={<Users scenario="likedPost" />} />
-            <Route path="/comments/:id/liked" element={<Users scenario="likedComment" />} />
-            <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
-            <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
-            <Route path="/users/:id/following" element={<Users scenario="following" />} />
+              {/* User list routes */}
+              <Route path="/posts/:id/liked" element={<Users scenario="likedPost" />} />
+              <Route path="/comments/:id/liked" element={<Users scenario="likedComment" />} />
+              <Route path="/realms/:id/joined" element={<Users scenario="joinedRealm" />} />
+              <Route path="/users/:id/followers" element={<Users scenario="followers" />} />
+              <Route path="/users/:id/following" element={<Users scenario="following" />} />
           </Route>
         ) : (
           <Route path="*" element={<Navigate to="/" />} />

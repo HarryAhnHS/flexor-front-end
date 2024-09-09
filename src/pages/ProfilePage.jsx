@@ -82,27 +82,32 @@ const ProfilePage = () => {
     <>
       <div className="profile-page container mx-auto p-6 min-h-screen text-white">
         {/* Profile Header */}
-        <div className="profile-header flex flex-col items-center sm:flex-row items-start sm:items-center justify-between mb-4">
-          <div className='flex flex-col sm:flex-row items-center space-x-0 sm:space-x-4'>
+        <div className="profile-header flex flex-col sm:flex-row items-center sm:items-start sm:justify-between mb-4">
+          <div className='flex flex-col sm:flex-row items-center sm:items-start space-x-0 sm:space-x-4'>
             <img
               src={profileMeta.profilePictureUrl}
               alt={`${profileMeta.username}'s profile`}
               className="w-24 h-24 rounded-full object-cover mb-4 sm:mb-0"
             />
-            <div className="text-center sm:text-left">
+            <div className="text-center sm:text-left flex-1">
               <h1 className="text-2xl font-bold text-white">@{profileMeta.username}</h1>
-              <p className="text-gray-400">{profileMeta.bio || 'No bio available'}</p>
+              <div className='max-w-3/4'>
+                <p className="text-gray-400 mt-2 overflow-wrap-break-word break-all">
+                  {profileMeta.bio || 'No bio available'}
+                </p>
+              </div>
             </div>
           </div>
+  
           <div className="mt-4 sm:mt-0">
             {userId === loggedInUserId ? (
               <>
                 <button
                   onClick={handleModalOpen}
-                  className="py-2 px-4 space-x-2 rounded bg-gray-800 hover:bg-gray-700 text-white transition-colors"
+                  className="min-w-[120px] mx-2 py-2 px-4 space-x-2 rounded bg-gray-800 hover:bg-gray-700 text-white transition-colors"
                 >
                   <FontAwesomeIcon icon={faUserPen} />
-                  <span>Edit Profile</span>
+                  <span>Edit</span>
                 </button>
                 <EditProfileModal
                   open={isModalOpen}
@@ -119,18 +124,17 @@ const ProfilePage = () => {
                   followed ? 'bg-gray-500 text-white' : 'bg-indigo-600 text-white'
                 }`}
               >
-                {followed 
-                ? 
-                <div className='flex items-center space-x-2'>
-                  <FontAwesomeIcon icon={faCheck} />
-                  <span>Following</span>
-                </div>
-                :
-                <div className='flex items-center space-x-2'>
-                  <FontAwesomeIcon icon={faUserPlus} />
-                  <span>Follow</span>
-                </div>
-                }
+                {followed ? (
+                  <div className='flex items-center space-x-2'>
+                    <FontAwesomeIcon icon={faCheck} />
+                    <span>Following</span>
+                  </div>
+                ) : (
+                  <div className='flex items-center space-x-2'>
+                    <FontAwesomeIcon icon={faUserPlus} />
+                    <span>Follow</span>
+                  </div>
+                )}
               </button>
             )}
           </div>
@@ -139,7 +143,6 @@ const ProfilePage = () => {
         {/* Profile Stats */}
         <section className="profile-stats mb-4">
           <div className="flex items-center justify-center text-xs sm:text-sm space-x-4 sm:space-x-6 md:space-x-12 mx-3 my-6">
-
             <div className="text-center">
               <h2 className="text-base sm:text-lg font-semibold text-white">{profileMeta._count?.posts || 0}</h2>
               <p className="text-gray-400">Posts</p>
@@ -211,6 +214,7 @@ const ProfilePage = () => {
       </div>
     </>
   );
+  
   
 };
 

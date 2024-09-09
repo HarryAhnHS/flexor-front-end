@@ -67,9 +67,11 @@ const Sidebar = () => {
               alt={`${loggedUser?.username}'s profile`} 
               className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
             />
-            <div>
-              <h2 className="text-lg font-semibold hover:underline">@{loggedUser?.username}</h2>
-              <p className="text-xs text-gray-400 truncate max-w-xs">{loggedUser?.bio}</p>
+            <div className="flex-1">
+                <h2 className="text-lg font-semibold hover:underline">@{loggedUser?.username}</h2>
+                <p className="text-xs text-gray-400 truncate overflow-hidden whitespace-nowrap max-w-36">
+                    {loggedUser?.bio}
+                </p>
             </div>
           </div>
 
@@ -98,7 +100,9 @@ const Sidebar = () => {
                       />
                       <div>
                         <h4 className="text-md font-medium hover:underline">@{user?.username}</h4>
-                        <p className="text-xs text-gray-400 truncate max-w-xs">{user?.bio}</p>
+                        <p className="text-xs text-gray-400 truncate overflow-hidden whitespace-nowrap max-w-36">
+                            {user?.bio}
+                        </p>
                       </div>
                     </div>
                     <FontAwesomeIcon 
@@ -130,7 +134,9 @@ const Sidebar = () => {
                       />
                       <div>
                         <h4 className="text-md font-medium hover:underline">{realm?.name}</h4>
-                        <p className="text-xs text-gray-400 truncate max-w-xs">{realm?.description}</p>
+                        <p className="text-xs text-gray-400 truncate overflow-hidden whitespace-nowrap max-w-36">
+                            {realm?.description}
+                        </p>
                       </div>
                     </div>
                     <FontAwesomeIcon 
