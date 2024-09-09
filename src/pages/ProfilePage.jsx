@@ -42,12 +42,14 @@ const ProfilePage = () => {
       } catch (error) {
         console.error('Error fetching user follow state', error);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     if (userId) {
       fetchMetaData();
       fetchFollowedState();
-      setLoading(false);
     }
   }, [userId, loggedInUserId]);
 
@@ -70,17 +72,19 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-full">
-      <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
-    </div>
-  );
-
   console.log(profileMeta);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+      </div>
+  )}
 
   return (
     <>
       <div className="profile-page container mx-auto p-6 min-h-screen text-white">
+        {/* Loading Indicator */}
         {/* Profile Header */}
         <div className="profile-header flex flex-col sm:flex-row items-center sm:items-start sm:justify-between mb-4">
           <div className='flex flex-col sm:flex-row items-center sm:items-start space-x-0 sm:space-x-4'>

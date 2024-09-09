@@ -16,6 +16,7 @@ const PostPage = () => {
     const [commentsCount, setCommentsCount] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [liked, setLiked] = useState(null);
+    const [loading, setLoading] = useState(true);
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
@@ -45,6 +46,9 @@ const PostPage = () => {
             } 
             catch (error) {
                 console.error("Error fetching comment count:", error);
+            }
+            finally {
+                setLoading(false);
             }
         }
 
@@ -110,6 +114,13 @@ const PostPage = () => {
         e.stopPropagation();
         navigate(`/realms/${realmId}`);
     };
+
+    if (loading) {
+        return (
+          <div className="flex justify-center items-center h-full">
+              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          </div>
+    )}
 
     return (
         <div className="container mx-auto p-6 bg-gray-900 text-gray-100 min-h-screen">

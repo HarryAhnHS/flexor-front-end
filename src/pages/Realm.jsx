@@ -14,6 +14,7 @@ const Realm = () => {
     const [realm, setRealm] = useState(null);
     const [realmMembers, setRealmMembers] = useState(0);
     const [joined, setJoined] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const userId = localStorage.getItem('userId');
     const isCreator = realm?.creatorId === userId;
@@ -36,6 +37,9 @@ const Realm = () => {
                 setJoined(usersJoined.includes(userId));
             } catch (error) {
                 console.error("Error fetching realm", error);
+            }
+            finally {
+                setLoading(false);
             }
         };
 
@@ -74,6 +78,13 @@ const Realm = () => {
     };
 
     console.log(realm);
+
+    if (loading) {
+        return (
+          <div className="flex justify-center items-center h-full">
+              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          </div>
+    )}
 
     return (
         <div className="bg-gray-900 text-white min-h-screen p-6">
