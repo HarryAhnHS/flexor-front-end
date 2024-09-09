@@ -99,7 +99,7 @@ const Sidebar = () => {
                         className="w-10 h-10 rounded-full object-cover border-2 border-gray-600"
                       />
                       <div>
-                        <h4 className="text-md font-medium hover:underline">@{user?.username}</h4>
+                        <h4 className="text-md font-medium hover:underline overflow-hidden whitespace-nowrap max-w-36">@{user?.username}</h4>
                         <p className="text-xs text-gray-400 truncate overflow-hidden whitespace-nowrap max-w-36">
                             {user?.bio}
                         </p>
@@ -112,7 +112,7 @@ const Sidebar = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-400 text-sm">Congrats! You know everyone!</p>
+                <p className="text-gray-400 text-sm">Wow! You know all of our users.</p>
               )}
             </div>
 
@@ -133,7 +133,7 @@ const Sidebar = () => {
                         className="w-10 h-10 rounded-lg object-cover border-2 border-gray-600"
                       />
                       <div>
-                        <h4 className="text-md font-medium hover:underline">{realm?.name}</h4>
+                        <h4 className="text-md font-medium hover:underline truncate overflow-hidden whitespace-nowrap max-w-36">{realm?.name}</h4>
                         <p className="text-xs text-gray-400 truncate overflow-hidden whitespace-nowrap max-w-36">
                             {realm?.description}
                         </p>

@@ -97,7 +97,7 @@ const RealmPreview = ({ realmId, setRealms }) => {
             {/* Realm Details */}
             <div className="flex-1">
                 <div className="mb-2 flex justify-between">
-                    <span className="font-semibold text-2xl">{realm?.name}</span>
+                    <span className="font-semibold text-2xl overflow-wrap-break-word break-all line-clamp-1">{realm?.name}</span>
                     {/* Edit Button */}
                     {isCreator && (
                         <div className="flex items-center px-3 text-gray-400">
