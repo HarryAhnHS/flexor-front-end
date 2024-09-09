@@ -12,6 +12,7 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
   const [fileError, setFileError] = useState('');
 
   const modalRef = useRef(null); // Ref for the modal container
+  const isDemoUser = user?.username === 'demo'; // Check if the logged user is "demo"
 
   useEffect(() => {
     if (open && user) {
@@ -132,12 +133,13 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
                 <input
                   id="username"
                   type="text"
-                  placeholder="Username"
+                  placeholder={isDemoUser ? "Feature locked for demo accounts" : "Username"}
                   value={formData.username}
                   onChange={handleChange}
+                  disabled={isDemoUser} // Disable the input if user is "demo"
                   className={`w-full p-2 rounded bg-gray-800 border-2 ${
                     usernameError ? 'border-red-500' : 'border-gray-700'
-                  } text-white`}
+                  } text-white ${isDemoUser ? 'cursor-not-allowed opacity-50' : ''}`} // Adjust styles when disabled
                 />
                 {usernameError && <p className="text-red-500">{usernameError}</p>}
               </div>

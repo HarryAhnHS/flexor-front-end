@@ -70,7 +70,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg shadow-md">
+    <div className="bg-gray-800 rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-white">Sign Up</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Form fields for email, username, password, and confirmPassword */}

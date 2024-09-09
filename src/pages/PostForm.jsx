@@ -145,7 +145,7 @@ const PostForm = () => {
         const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
         await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
       }
-      navigate(`/profile/${userId}`);
+      navigate(-1);
 
     } catch (error) {
       console.error('Error saving post:', error);

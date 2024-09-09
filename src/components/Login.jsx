@@ -42,8 +42,31 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    try {
+      const response = await api({
+        method: 'post',
+        url: `${import.meta.env.VITE_API_BASE_URL}/auth/login/demo`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status === 200) {
+        const token = response.data.token;
+        localStorage.setItem('token', token);
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.id;
+        localStorage.setItem('userId', userId);
+        window.location.href = '/feed';
+      }
+    } catch (error) {
+      console.error('Demo login failed', error);
+      setError('Unable to login to the demo account. Please try again later.');
+    }
+  };
+
   return (
-    <div className="bg-gray-800 rounded-lg shadow-md">
+    <div className="bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-white">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -80,6 +103,14 @@ const Login = () => {
           className="w-full p-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors duration-300"
         >
           Login
+        </button>
+        {/* Demo Login Button */}
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          className="w-full p-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300 mt-4"
+        >
+          Try Demo
         </button>
       </form>
     </div>
