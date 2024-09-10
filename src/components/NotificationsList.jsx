@@ -57,9 +57,7 @@ const NotificationsList = () => {
       } catch (error) {
         console.error('Error fetching notifications', error);
       } finally {
-        setTimeout(async () => {
-          setLoading(false);
-        }, 1000);
+        setLoading(false);
       }
     };
 

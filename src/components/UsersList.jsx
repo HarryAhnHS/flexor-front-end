@@ -58,9 +58,7 @@ const UsersList = ({ sourceId, scenario }) => {
         console.error('Error fetching users:', error);
       } 
       finally {
-        setTimeout( async () => {
-            setLoading(false);
-          }, 1000)
+          setLoading(false);
       }
     };
     fetchUsers();

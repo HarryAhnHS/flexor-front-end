@@ -52,9 +52,7 @@ const RealmsList = ( {type} ) => {
             } catch (error) {
                 console.error("Error fetching realms:", error);
             } finally {
-                setTimeout( async () => {
-                    setLoading(false);
-                }, 1000)
+                setLoading(false);
             }
         };
 
