@@ -13,10 +13,12 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
     const [liked, setLiked] = useState(false);
     const [commentsCount, setCommentsCount] = useState(0);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const userId = localStorage.getItem('userId');
     const navigate = useNavigate();
 
     useEffect(() => {
+        setLoading(true);
         const fetchPost = async () => {
             try {
                 const response = await api.get(`/posts/${postId}`);
@@ -42,6 +44,9 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
                 setCommentsCount(response.data.count);
             } catch (error) {
                 console.error("Error fetching comment count:", error);
+            }
+            finally {
+                setLoading(false);
             }
         };
 
@@ -115,132 +120,141 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
             className="post-item mb-6 bg-gray-800 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative" 
             onClick={(e) => redirectToPost(e)}
         >
-            {/* Author Section */}
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                    <img 
-                        src={post?.author?.profilePictureUrl} 
-                        alt={`${post?.author?.username}'s profile`} 
-                        className="w-12 h-12 rounded-full object-cover cursor-pointer" 
-                        onClick={(e) => { 
-                            e.stopPropagation(); 
-                            navigate(`/profile/${post?.authorId}`); 
-                        }}
-                    />
-                    <div>
-                        <h3 
-                            className="text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
+            {loading 
+            ? 
+                <div className="flex justify-center items-center h-full">
+                    <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
+                </div>
+            :
+            <>
+                {/* Author Section */}
+                <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                        <img 
+                            src={post?.author?.profilePictureUrl} 
+                            alt={`${post?.author?.username}'s profile`} 
+                            className="w-12 h-12 rounded-full object-cover cursor-pointer" 
                             onClick={(e) => { 
                                 e.stopPropagation(); 
                                 navigate(`/profile/${post?.authorId}`); 
                             }}
-                        >
-                            @{post?.author?.username}
-                        </h3>
-                        <div className="flex items-center">
-                            <p className="text-sm text-gray-400">
-                                {post?.createdAt && formatTime(post?.createdAt)} on
-                            </p>
-                            <div className="flex items-center ml-2">
-                                <img 
-                                    src={post?.realm?.realmPictureUrl} 
-                                    alt={`${post?.realm?.name} realm picture`} 
-                                    className="w-6 h-6 rounded-lg object-cover cursor-pointer"
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        navigate(`/realms/${post?.realmId}`);
-                                    }} 
-                                />
-                                <span 
-                                    className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        navigate(`/realms/${post?.realmId}`);
-                                    }}
-                                >
-                                    {post?.realm?.name}
-                                </span>
+                        />
+                        <div>
+                            <h3 
+                                className="text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
+                                onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    navigate(`/profile/${post?.authorId}`); 
+                                }}
+                            >
+                                @{post?.author?.username}
+                            </h3>
+                            <div className="flex items-center">
+                                <p className="text-sm text-gray-400">
+                                    {post?.createdAt && formatTime(post?.createdAt)} on
+                                </p>
+                                <div className="flex items-center ml-2">
+                                    <img 
+                                        src={post?.realm?.realmPictureUrl} 
+                                        alt={`${post?.realm?.name} realm picture`} 
+                                        className="w-6 h-6 rounded-lg object-cover cursor-pointer"
+                                        onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            navigate(`/realms/${post?.realmId}`);
+                                        }} 
+                                    />
+                                    <span 
+                                        className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
+                                        onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            navigate(`/realms/${post?.realmId}`);
+                                        }}
+                                    >
+                                        {post?.realm?.name}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {isEditable && (
+                        <div className="flex items-center px-3 text-gray-400">
+                        <Menu as="div" className="relative">
+                            <MenuButton onClick={(e) => e.stopPropagation()}>
+                                <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                            </MenuButton>
+                            <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                <MenuItem>
+                                        <button
+                                            onClick={handleEditClick}
+                                            className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        >
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                            <span>Edit</span>
+                                        </button>
+                                </MenuItem>
+                                <MenuItem>
+                                        <button
+                                            onClick={handleDeleteClick}
+                                            className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        >
+                                            <FontAwesomeIcon icon={faTrashCan} />
+                                            <span>Delete</span>
+                                        </button>
+                                </MenuItem>
+                            </MenuItems>
+                        </Menu>
+                    </div>
+                    )}
                 </div>
-                {isEditable && (
-                    <div className="flex items-center px-3 text-gray-400">
-                    <Menu as="div" className="relative">
-                        <MenuButton onClick={(e) => e.stopPropagation()}>
-                            <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
-                        </MenuButton>
-                        <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
-                            <MenuItem>
-                                    <button
-                                        onClick={handleEditClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                    >
-                                        <FontAwesomeIcon icon={faPenToSquare} />
-                                        <span>Edit</span>
-                                    </button>
-                            </MenuItem>
-                            <MenuItem>
-                                    <button
-                                        onClick={handleDeleteClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                    >
-                                        <FontAwesomeIcon icon={faTrashCan} />
-                                        <span>Delete</span>
-                                    </button>
-                            </MenuItem>
-                        </MenuItems>
-                    </Menu>
+
+                {/* Post Content */}
+                <div className="mb-4">
+                    <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
+                    {post?.text && (
+                        <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
+                            {post?.text}
+                        </p>
+                    )}
+
+                    {post?.images && post?.images.length > 0 && (
+                        <>
+                            <FontAwesomeIcon icon={faImage} className="mb-2 text-gray-300"/>
+                            <div className="flex flex-wrap gap-4 mb-4">
+                                {post.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={image.url}
+                                        alt={`Post Image ${index + 1}`}
+                                        className="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                                        onClick={(e) => handleImageClick(e, image.url)}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
+
+                {/* Post Meta */}
+                <div className="post-meta text-gray-400 flex items-center space-x-6">
+                    <span className="flex items-center space-x-1">
+                        <FontAwesomeIcon 
+                            onClick={(e) => handleLikeClick(e)} 
+                            icon={liked ? faHeartFilled : faHeart} 
+                            className={`text-xl ${liked ? 'text-red-500' : 'text-gray-400'}`} 
+                        />
+                        <span className="ml-1">{post?._count.likes}</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                        <FontAwesomeIcon icon={faComment} className="text-xl" />
+                        <span className="ml-1">{commentsCount}</span>
+                    </span>
+                </div>
+
+                {selectedImage && (
+                    <ImageViewer imageUrl={selectedImage} onClose={closeImage} />
                 )}
-            </div>
-
-            {/* Post Content */}
-            <div className="mb-4">
-                <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
-                {post?.text && (
-                    <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
-                        {post?.text}
-                    </p>
-                )}
-
-                {post?.images && post?.images.length > 0 && (
-                    <>
-                        <FontAwesomeIcon icon={faImage} className="mb-2 text-gray-300"/>
-                        <div className="flex flex-wrap gap-4 mb-4">
-                            {post.images.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={image.url}
-                                    alt={`Post Image ${index + 1}`}
-                                    className="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                                    onClick={(e) => handleImageClick(e, image.url)}
-                                />
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div>
-
-            {/* Post Meta */}
-            <div className="post-meta text-gray-400 flex items-center space-x-6">
-                <span className="flex items-center space-x-1">
-                    <FontAwesomeIcon 
-                        onClick={(e) => handleLikeClick(e)} 
-                        icon={liked ? faHeartFilled : faHeart} 
-                        className={`text-xl ${liked ? 'text-red-500' : 'text-gray-400'}`} 
-                    />
-                    <span className="ml-1">{post?._count.likes}</span>
-                </span>
-                <span className="flex items-center space-x-1">
-                    <FontAwesomeIcon icon={faComment} className="text-xl" />
-                    <span className="ml-1">{commentsCount}</span>
-                </span>
-            </div>
-
-            {selectedImage && (
-                <ImageViewer imageUrl={selectedImage} onClose={closeImage} />
-            )}
+            </>
+        }
         </div>
     );
 };

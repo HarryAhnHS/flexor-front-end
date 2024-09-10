@@ -17,6 +17,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     const [showNestedComments, setShowNestedComments] = useState(false);
     const [nestedCommentsCount, setNestedCommentsCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [nestedLoading, setNestedLoading] = useState(false);
     const [page, setPage] = useState(1); // Track the current page
     const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
     const limit = 5; // Number of comments per page
@@ -28,6 +29,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
 
     // Fetch main comment data
     useEffect(() => {
+        setLoading(true);
         async function fetchComment() {
             try {
                 const response = await api.get(`/comments/${commentId}`);
@@ -45,6 +47,9 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                 setCommentLiked(usersLiked.includes(userId));
             } catch (error) {
                 console.error("Error fetching like status:", error);
+            }
+            finally {
+                setLoading(false)
             }
         };
 
@@ -66,7 +71,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     useEffect(() => {
         async function fetchNestedComments() {
             try {
-                setLoading(true);
+                setNestedLoading(true);
                 const response = await api.get(`/comments/${commentId}/nested`, {
                     params: { page, limit, sortField, sortOrder },
                 });
@@ -77,7 +82,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
             } catch (error) {
                 console.error("Error fetching nested comments:", error);
             } finally {
-                setLoading(false);
+                setNestedLoading(false);
             }
         }
         fetchNestedComments();
@@ -147,7 +152,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     };
 
     const handleLoadMoreNestedComments = () => {
-        if (hasMore && !loading) {
+        if (hasMore && !nestedLoading) {
             setPage(prevPage => prevPage + 1);
         }
     };
@@ -204,153 +209,160 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
 
     return (
         <div key={commentId} className="flex-1 comment text-white py-4 pl-2 border-b border-gray-700">
-            <div className="flex items-center">
-                <div className="flex flex-1 items-center space-x-2 cursor-pointer" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
-                    <img
-                        src={comment.user?.profilePictureUrl}
-                        className="w-10 h-10 object-cover rounded-full"
-                        alt="Profile"
-                    />
-                    <div>
-                        <div className="text-base font-semibold text-blue-400 hover:underline">@{comment.user?.username}</div>
-                        <div className="text-sm text-gray-400 flex-1">
-                            {comment?.createdAt && formatTime(comment?.createdAt)}
+            {loading 
+            ? 
+                <div className="flex justify-center items-center h-full">
+                    <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
+                </div>
+            :
+            <>
+                <div className="flex items-center">
+                    <div className="flex flex-1 items-center space-x-2 cursor-pointer" onClick={() => navigate(`/profile/${comment.user?.id}`)}>
+                        <img
+                            src={comment.user?.profilePictureUrl}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt="Profile"
+                        />
+                        <div>
+                            <div className="text-base font-semibold text-blue-400 hover:underline">@{comment.user?.username}</div>
+                            <div className="text-sm text-gray-400 flex-1">
+                                {comment?.createdAt && formatTime(comment?.createdAt)}
+                            </div>
                         </div>
                     </div>
+                    
+                    {comment?.updatedAt && comment?.createdAt !== comment?.updatedAt && (
+                        <span className="text-xs text-gray-400 mr-2">
+                            &#40;Edited&#41;	
+                        </span>
+                    )}
+                    <span className="flex items-center space-x-1">
+                        <FontAwesomeIcon 
+                                onClick={(e) => handleLikeClick(e)} 
+                                icon={commentLiked ? faHeartFilled : faHeart} 
+                                className={`cursor-pointer text-xl ${commentLiked ? 'text-red-500' : 'text-gray-400'}`} 
+                            />
+                        <span className="text-sm text-gray-400 cursor-pointer ml-2" onClick={() => navigate(`/comments/${comment?.id}/liked`)}>
+                            {comment._count?.likes}
+                        </span>
+                    </span>
+                        <div className="flex items-center px-3 text-gray-400">
+                            <Menu as="div" className="relative">
+                                <MenuButton>
+                                    <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                                </MenuButton>
+                                <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                    <MenuItem>
+                                        <button
+                                            onClick={handleReplyClick}
+                                            className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        >
+                                            <FontAwesomeIcon icon={faReply} />
+                                            <span>Reply</span>
+                                        </button>
+                                </MenuItem>
+                                    {isCreator &&
+                                        <>
+                                        <MenuItem>
+                                                <button
+                                                    onClick={handleEditClick}
+                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                >
+                                                    <FontAwesomeIcon icon={faPenToSquare} />
+                                                    <span>Edit</span>
+                                                </button>
+                                        </MenuItem>
+                                        <MenuItem>
+                                                <button
+                                                    onClick={handleDeleteClick}
+                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                >
+                                                    <FontAwesomeIcon icon={faTrashCan} />
+                                                    <span>Delete</span>
+                                                </button>
+                                        </MenuItem>
+                                        </>
+                                    }
+                                </MenuItems>
+                            </Menu>
+                        </div>
                 </div>
-                
-                {comment?.updatedAt && comment?.createdAt !== comment?.updatedAt && (
-                    <span className="text-xs text-gray-400 mr-2">
-                        &#40;Edited&#41;	
-                    </span>
-                )}
-                <span className="flex items-center space-x-1">
-                    <FontAwesomeIcon 
-                            onClick={(e) => handleLikeClick(e)} 
-                            icon={commentLiked ? faHeartFilled : faHeart} 
-                            className={`cursor-pointer text-xl ${commentLiked ? 'text-red-500' : 'text-gray-400'}`} 
+        
+                {editMode ? (
+                    <form onSubmit={handleEditSubmit} className="mt-2">
+                        <textarea
+                            value={editedComment}
+                            onChange={handleEditChange}
+                            className="w-full p-2 bg-gray-700 text-gray-300 border border-gray-600 rounded-md"
+                            placeholder="Edit your comment..."
+                            required
                         />
-                    <span className="text-sm text-gray-400 cursor-pointer ml-2" onClick={() => navigate(`/comments/${comment?.id}/liked`)}>
-                        {comment._count?.likes}
-                    </span>
-                </span>
-                    <div className="flex items-center px-3 text-gray-400">
-                        <Menu as="div" className="relative">
-                            <MenuButton>
-                                <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
-                            </MenuButton>
-                            <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
-                                <MenuItem>
-                                    <button
-                                        onClick={handleReplyClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                    >
-                                        <FontAwesomeIcon icon={faReply} />
-                                        <span>Reply</span>
-                                    </button>
-                            </MenuItem>
-                                {isCreator &&
-                                    <>
-                                    <MenuItem>
-                                            <button
-                                                onClick={handleEditClick}
-                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                            >
-                                                <FontAwesomeIcon icon={faPenToSquare} />
-                                                <span>Edit</span>
-                                            </button>
-                                    </MenuItem>
-                                    <MenuItem>
-                                            <button
-                                                onClick={handleDeleteClick}
-                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                            >
-                                                <FontAwesomeIcon icon={faTrashCan} />
-                                                <span>Delete</span>
-                                            </button>
-                                    </MenuItem>
-                                    </>
-                                }
-                            </MenuItems>
-                        </Menu>
+                        <div className="flex mt-2 space-x-2">
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                            >
+                                Save
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setEditMode(false)}
+                                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                ) : (
+                    <p className="text-gray-300 mt-3 overflow-hidden text-ellipsis overflow-wrap-break-word break-all">{comment?.comment}</p>
+                )}
+        
+                {/* Reply Button */}
+                <div>
+                    <div className="flex items-center justify-between">
+                        <button
+                            onClick={handleReplyClick}
+                            className="text-blue-400 text-sm mt-2 space-x-2 hover:underline"
+                        >
+                            <FontAwesomeIcon icon={faReply} className="text-xs"/>
+                            <span>Reply</span>
+                        </button>
+                        {/* Show Replies Button */}
+                        {nestedCommentsCount > 0 && (
+                            <button
+                                onClick={handleShowRepliesClick}
+                                className="text-blue-400 text-sm mt-2 hover:underline"
+                            >
+                                {showNestedComments
+                                    ? `Hide replies`
+                                    : `Show ${nestedCommentsCount} replies`}
+                            </button>
+                        )}
                     </div>
-            </div>
-    
-            {editMode ? (
-                <form onSubmit={handleEditSubmit} className="mt-2">
-                    <textarea
-                        value={editedComment}
-                        onChange={handleEditChange}
-                        className="w-full p-2 bg-gray-700 text-gray-300 border border-gray-600 rounded-md"
-                        placeholder="Edit your comment..."
-                        required
-                    />
-                    <div className="flex mt-2 space-x-2">
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        >
-                            Save
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setEditMode(false)}
-                            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            ) : (
-                <p className="text-gray-300 mt-3 overflow-hidden text-ellipsis overflow-wrap-break-word break-all">{comment?.comment}</p>
-            )}
-    
-            {/* Reply Button */}
-            <div>
-                <div className="flex items-center justify-between">
-                    <button
-                        onClick={handleReplyClick}
-                        className="text-blue-400 text-sm mt-2 space-x-2 hover:underline"
-                    >
-                        <FontAwesomeIcon icon={faReply} className="text-xs"/>
-                        <span>Reply</span>
-                    </button>
-                    {/* Show Replies Button */}
-                    {nestedCommentsCount > 0 && (
-                        <button
-                            onClick={handleShowRepliesClick}
-                            className="text-blue-400 text-sm mt-2 hover:underline"
-                        >
-                            {showNestedComments
-                                ? `Hide replies`
-                                : `Show ${nestedCommentsCount} replies`}
-                        </button>
+                    {/* Reply Input */}
+                    {showReplyInput && (
+                        <form onSubmit={handleReplySubmit} className="mt-2 flex items-center space-x-2">
+                            <textarea
+                                value={reply}
+                                onChange={handleReplyChange}
+                                onKeyDown={handleKeyDown}
+                                className="flex-1 bg-gray-700 text-gray-300 p-2 border border-gray-600 rounded-lg"
+                                placeholder={`Reply to @${comment.user?.username}`}
+                                required
+                                rows="1"
+                            />
+                            <button
+                                type="submit"
+                                className="ml-4 flex items-center p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-blue-600 transition"
+                            >
+                                <FontAwesomeIcon icon={faPaperPlane} />
+                            </button>
+                        </form>
                     )}
                 </div>
-                {/* Reply Input */}
-                {showReplyInput && (
-                    <form onSubmit={handleReplySubmit} className="mt-2 flex items-center space-x-2">
-                        <textarea
-                            value={reply}
-                            onChange={handleReplyChange}
-                            onKeyDown={handleKeyDown}
-                            className="flex-1 bg-gray-700 text-gray-300 p-2 border border-gray-600 rounded-lg"
-                            placeholder={`Reply to @${comment.user?.username}`}
-                            required
-                            rows="1"
-                        />
-                        <button
-                            type="submit"
-                            className="ml-4 flex items-center p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-300 hover:bg-blue-600 transition"
-                        >
-                            <FontAwesomeIcon icon={faPaperPlane} />
-                        </button>
-                    </form>
-                )}
-            </div>
-    
-            {/* Nested Comments */}
-            {showNestedComments && nestedComments && (
+        
+                {/* Nested Comments */}
+                {showNestedComments && nestedComments && (
                     <div className="flex-1">
                         {nestedComments.map((nestedComment) => (
                             <div className="nested-comments ml-3 mt-2 flex" key={nestedComment.id}>
@@ -371,7 +383,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                         ))}
         
                         {/* Load More Replies Button */}
-                        {hasMore && !loading && (
+                        {hasMore && !nestedLoading && (
                             <button
                                 onClick={handleLoadMoreNestedComments}
                                 className="text-blue-400 text-sm mt-4 hover:underline"
@@ -381,13 +393,15 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                         )}
         
                         {/* Loading Indicator */}
-                        {loading && (
+                        {nestedLoading && (
                             <div className="flex justify-center items-center h-full">
                                 <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
                             </div>
                         )}
                     </div>
-            )}
+                )}
+                </>
+            }
         </div>
     );    
 };
