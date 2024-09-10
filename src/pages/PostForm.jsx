@@ -4,7 +4,8 @@ import api from '../services/api';
 import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faFloppyDisk, faImages, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp, faFloppyDisk, faImages, faXmark, faSmile } from '@fortawesome/free-solid-svg-icons';
+import GiphyModal from '../components/modals/GiphyModal';
 
 const PostForm = () => {
   const navigate = useNavigate();
@@ -18,10 +19,9 @@ const PostForm = () => {
   const [selectedRealm, setSelectedRealm] = useState(null);
   const [userRealms, setUserRealms] = useState([]);
   const [postImages, setPostImages] = useState([]);
-  const [removedImages, setRemovedImages] = useState([]);
   const [publishError, setPublishError] = useState(null);
   const [realmError, setRealmError] = useState(null);
-  const [fileError, setFileError] = useState(null);
+  const [isGifModalOpen, setGifModalOpen] = useState(false);
 
   const userId = localStorage.getItem('userId');
   const isEditing = !!postId;
@@ -42,7 +42,11 @@ const PostForm = () => {
             value: response.data.post.realm.id,
             label: response.data.post.realm.name,
           });
-          setPostImages(response.data.post.images);
+          setPostImages(response.data.post.images.map((image) => ({
+            ...image,
+            url: image.url,
+            isUploaded: true,
+          })));
         } catch (error) {
           console.error('Error initializing post:', error);
         }
@@ -68,7 +72,6 @@ const PostForm = () => {
 
   useEffect(() => {
     if (!isEditing) {
-      // Reset form data when navigating to New Post page
       setFormData({
         realmId: '',
         title: '',
@@ -77,7 +80,6 @@ const PostForm = () => {
       });
       setSelectedRealm(null);
       setPostImages([]);
-      setRemovedImages([]);
     }
   }, [isEditing]);
 
@@ -89,29 +91,57 @@ const PostForm = () => {
     });
   };
 
-  const handleImageUpload = async (e) => {
-    const id = uuidv4();
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    const uploadData = new FormData();
-    uploadData.append('image', file);
-    uploadData.append('id', id);
-    try {
-      const response = await api.post(`/images/`, uploadData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+    const id = uuidv4();
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setPostImages([
+        ...postImages,
+        {
+          id,
+          url: reader.result,
+          file,
         },
-      });
-      setPostImages([...postImages, response.data.image]);
-    } catch (error) {
-      if (error.response.data.message === 'Invalid file type') {
-        setFileError('Invalid file type - only png, jpeg and gif allowed');
-      }
-    }
+      ]);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleGifSelect = (gif) => {
+    const gifData = {
+      id: uuidv4(),
+      url: gif.images.original.url,
+      isGif: true,
+    };
+    setPostImages([...postImages, gifData]);
+    setGifModalOpen(false);
   };
 
   const handleImageDelete = async (image) => {
-    setPostImages(postImages.filter((i) => i.id !== image.id));
-    setRemovedImages([...removedImages, image]);
+    try {
+      setPostImages(postImages.filter((i) => i.id !== image.id));
+      if (image.isUploaded) {
+        let deleteIds = image.id;
+        let deletePublicIds = null;
+
+        if (image.publicId) {
+          deletePublicIds = image.publicId;
+        }
+        // If has publicId (user uploaded not gif then delete public Ids too)
+        const queryString = new URLSearchParams({
+          deleteIds: deleteIds,
+          deletePublicIds: deletePublicIds,
+        }).toString();
+
+        await api.delete(`/images?${queryString}`);
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      setPostImages([...postImages, image]);
+    }
   };
 
   const handleSubmit = async (e, published) => {
@@ -122,31 +152,50 @@ const PostForm = () => {
       return;
     }
 
+    console.log(postImages);
+    console.log(postImages.filter((image) => image.file));
+    console.log(postImages.filter((image) => image.isGif));
     try {
+
+      // Upload new files if any
+      await Promise.all(
+        postImages
+          .filter((image) => image.file)
+          .map(async (image) => {
+            const uploadData = new FormData();
+            uploadData.append('image', image.file);
+            uploadData.append('id', image.id);
+
+            await api.post(`/images/`, uploadData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+          })
+      );
+
+      // Upload new gif images if any
+      await Promise.all(
+        postImages
+          .filter((image) => image.isGif)
+          .map( async (gif) => {
+            await api.post('/images/existing', {id: gif.id, url: gif.url});
+         })
+      );
+
+      const formDataToSend = {
+        ...formData,
+        published,
+        imageIds: postImages.map((image) => image.id),
+      };
+
       if (isEditing) {
-        // Update the post
-        await api.put(`/posts/${postId}`, {
-          ...formData,
-          published,
-          imageIds: postImages.map((image) => image.id),
-        });
+        await api.put(`/posts/${postId}`, formDataToSend);
       } else {
-        // Create a new post
-        await api.post(`/posts/`, {
-          ...formData,
-          published,
-          imageIds: postImages.map((image) => image.id),
-        });
+        await api.post(`/posts/`, formDataToSend);
       }
 
-      // Delete removed images if any using query
-      if (removedImages.length > 0) {
-        const deleteIds = removedImages.map((image) => image.id).join(',');
-        const deletePublicIds = removedImages.map((image) => image.publicId).join(',');
-        await api.delete(`/images?deleteIds=${deleteIds}&deletePublicIds=${deletePublicIds}`);
-      }
-      navigate(-1);
-
+      navigate(`/profile/${userId}`);
     } catch (error) {
       console.error('Error saving post:', error);
     }
@@ -293,28 +342,50 @@ const PostForm = () => {
               required
               className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <div className='my-4'>
-              <label
-                htmlFor="images"
-                className="space-x-2 p-2 text-sm text-gray-100 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 cursor-pointer"
-              > 
-                <FontAwesomeIcon icon={faImages} className="ml-2" />
-                <span>Upload images</span>
-              </label>
-              <input
-                type="file"
-                id="images"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
+            <div className='flex items-center space-x-4 text-sm'>
+              {/* Image Upload Button */}
+              <div className='my-4'>
+                <label
+                  htmlFor="images"
+                  className="flex items-center space-x-2 px-3 py-2 h-full text-xs sm:text-sm text-gray-100 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 cursor-pointer"
+                > 
+                  <FontAwesomeIcon icon={faImages} className="mr-1" />
+                  <span>Upload images</span>
+                </label>
+                <input
+                  type="file"
+                  id="images"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
+              
+              {/* Giphy Upload Button */}
+              <div className="my-4">
+                <button
+                  type="button"
+                  onClick={() => setGifModalOpen(true)}
+                  className="flex items-center space-x-2 px-3 py-2 text-xs sm:text-sm text-gray-100 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faSmile} className="mr-1"/>
+                  <span>Search for a GIF</span>
+                </button>
+              </div>
             </div>
-            {fileError && <p className="text-center text-red-500">{fileError}</p>}
+
+
+            {/* Giphy Search Modal */}
+            <GiphyModal
+              isOpen={isGifModalOpen}
+              onClose={() => setGifModalOpen(false)}
+              onGifSelect={handleGifSelect}
+            />
           </div>
 
           <div className='border-t border-gray-700 my-6'></div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-xs sm:text-sm">
             <button
               type="button"
               onClick={(e) => handleSubmit(e, false)}

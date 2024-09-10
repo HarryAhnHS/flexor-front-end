@@ -4,7 +4,7 @@ import ImageViewer from "../components/modals/ImageViewer";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faBoxArchive, faEllipsis, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 const DraftPreview = ({ postId, posts, setPosts }) => {
@@ -25,7 +25,8 @@ const DraftPreview = ({ postId, posts, setPosts }) => {
         fetchPost();
     }, [postId]);
 
-    const handleImageClick = (imageUrl) => {
+    const handleImageClick = (e, imageUrl) => {
+        e.stopPropagation();
         setSelectedImage(imageUrl);
     };
 
@@ -63,9 +64,15 @@ const DraftPreview = ({ postId, posts, setPosts }) => {
     return (
         <div 
             key={post?.id} 
-            className="post-item mb-6 bg-gray-800 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer relative"
+            className="relative mb-6 bg-gray-800 text-white px-6 pb-6 rounded-lg shadow-md transition-shadow duration-300 cursor-pointer group"
             onClick={handleEditClick}
         >
+            {/* Draft Badge */}
+            <div className="pt-6 mb-2 text-gray-400 font-bold text-sm space-x-1">
+                <FontAwesomeIcon icon={faBoxArchive} />
+                <span>Draft</span>
+            </div>
+
             {/* Author and Metadata Section */}
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -90,28 +97,30 @@ const DraftPreview = ({ postId, posts, setPosts }) => {
                         </h3>
                         <div className="flex items-center">
                             <p className="text-sm text-gray-400">
-                                {post?.createdAt && formatTime(post?.createdAt)} on
+                                {post?.createdAt && formatTime(post?.createdAt)}
                             </p>
-                            <div className="flex items-center ml-2">
-                                <img 
-                                    src={post?.realm?.realmPictureUrl} 
-                                    alt={`${post?.realm?.name} realm picture`} 
-                                    className="w-6 h-6 rounded-lg object-cover cursor-pointer"
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        navigate(`/realms/${post?.realmId}`);
-                                    }} 
-                                />
-                                <span 
-                                    className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        navigate(`/realms/${post?.realmId}`);
-                                    }}
-                                >
-                                    {post?.realm?.name}
-                                </span>
-                            </div>
+                            {post?.realm &&
+                                <div className="flex items-center ml-2">
+                                    <img 
+                                        src={post?.realm?.realmPictureUrl} 
+                                        alt={`${post?.realm?.name} realm picture`} 
+                                        className="w-6 h-6 rounded-lg object-cover cursor-pointer"
+                                        onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            navigate(`/realms/${post?.realmId}`);
+                                        }} 
+                                    />
+                                    <span 
+                                        className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
+                                        onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            navigate(`/realms/${post?.realmId}`);
+                                        }}
+                                    >
+                                        {post?.realm?.name}
+                                    </span>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
