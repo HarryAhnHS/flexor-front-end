@@ -155,9 +155,6 @@ const PostForm = () => {
     }
 
     setLoading(true); // Set loading state to true
-    console.log(postImages);
-    console.log(postImages.filter((image) => image.file));
-    console.log(postImages.filter((image) => image.isGif));
     try {
       // Upload new files if any
       await Promise.all(

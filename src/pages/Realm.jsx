@@ -77,8 +77,6 @@ const Realm = () => {
         }
     };
 
-    console.log(realm);
-
     if (loading) {
         return (
           <div className="flex justify-center items-center h-full">

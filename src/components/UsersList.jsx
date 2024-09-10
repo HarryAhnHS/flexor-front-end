@@ -17,7 +17,6 @@ const UsersList = ({ sourceId, scenario }) => {
   }, []);
 
   useEffect(() => {
-    console.log("UsersList: Reset useeffect running")
     resetUsers();
     
   }, [sourceId, scenario, resetUsers]);

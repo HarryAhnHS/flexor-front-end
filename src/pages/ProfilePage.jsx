@@ -72,8 +72,6 @@ const ProfilePage = () => {
     }
   };
 
-  console.log(profileMeta);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">

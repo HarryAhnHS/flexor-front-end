@@ -19,7 +19,6 @@ const RealmsList = ( {type} ) => {
     }, []);
 
     useEffect(() => {
-        console.log("RealmsList: Reset useeffect running")
         resetRealms();
         
     }, [type, resetRealms]);
