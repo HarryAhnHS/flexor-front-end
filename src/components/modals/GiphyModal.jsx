@@ -93,13 +93,14 @@ const GiphyModal = ({ isOpen, onClose, onGifSelect }) => {
             placeholder="Search for a GIF"
             className="w-full p-2 border border-gray-700 rounded-lg mb-4 bg-gray-900 text-gray-200"
           />
-          <div className="gif-grid grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-            {isLoadingGifs ? (
-              <div className="flex justify-center items-center h-full">
+          {isLoadingGifs ? (
+              <div className="flex justify-center items-center h-full w-full">
                 <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
               </div>
-            ) : (
-              gifs.map((gif) => (
+            ) 
+            : (
+            <div className="gif-grid grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+              {gifs.map((gif) => (
                 <div
                   key={gif.id}
                   onClick={() => handleGifSelect(gif)}
@@ -111,9 +112,9 @@ const GiphyModal = ({ isOpen, onClose, onGifSelect }) => {
                     className="rounded-lg w-full"
                   />
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+        )}
           <button
             className="absolute top-0 right-5 mt-4 text-white"
             onClick={handleClose}

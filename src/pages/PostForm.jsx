@@ -22,6 +22,8 @@ const PostForm = () => {
   const [publishError, setPublishError] = useState(null);
   const [realmError, setRealmError] = useState(null);
   const [isGifModalOpen, setGifModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const userId = localStorage.getItem('userId');
   const isEditing = !!postId;
@@ -152,11 +154,11 @@ const PostForm = () => {
       return;
     }
 
+    setLoading(true); // Set loading state to true
     console.log(postImages);
     console.log(postImages.filter((image) => image.file));
     console.log(postImages.filter((image) => image.isGif));
     try {
-
       // Upload new files if any
       await Promise.all(
         postImages
@@ -198,6 +200,8 @@ const PostForm = () => {
       navigate(`/profile/${userId}`);
     } catch (error) {
       console.error('Error saving post:', error);
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -207,6 +211,11 @@ const PostForm = () => {
 
   return (
     <div className="bg-gray-900 min-h-screen p-6">
+      {loading ? ( // Conditionally render the loading spinner
+        <div className="flex justify-center items-center h-screen">
+          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+        </div>
+      ) : (
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-white mb-6">{isEditing ? (formData.published ? 'Edit Post' : 'Edit Draft') : 'Create Post'}</h2>
         <div className='border-t border-gray-700 my-6'></div>
@@ -430,6 +439,7 @@ const PostForm = () => {
           {publishError && <p className="text-red-500 text-sm mt-2">{publishError}</p>}
         </form>
       </div>
+    )}
     </div>
   );
 };
