@@ -90,7 +90,7 @@ const RealmPreview = ({ realmId, setRealms }) => {
         >
             {loading 
             ? 
-                <div className="flex justify-center items-center h-full">
+                <div className="flex justify-center items-center h-full w-full">
                     <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
                 </div>
             :
