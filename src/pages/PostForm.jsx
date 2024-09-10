@@ -211,7 +211,7 @@ const PostForm = () => {
 
   return (
     <div className="bg-gray-900 min-h-screen p-6">
-      {loading ? ( // Conditionally render the loading spinner
+      {loading ? (
         <div className="flex justify-center items-center h-screen">
           <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
         </div>
