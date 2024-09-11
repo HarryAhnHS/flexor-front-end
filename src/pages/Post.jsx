@@ -5,8 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import CommentsList from "../components/CommentsList";
 import { formatTime } from "../utils/formatters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis, faHeart as faHeartSolid, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { faComment, faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faEllipsis, faHeart as faHeartFilled, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faHeart } from "@fortawesome/free-regular-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { PuffLoader } from 'react-spinners';
 
@@ -164,35 +164,46 @@ const PostPage = () => {
                                 </div>
                             </div>
                         </div>
-                        {userId === post?.authorId && 
-                                <div className="flex items-center px-3 text-gray-400">
-                                <Menu as="div" className="relative">
-                                    <MenuButton onClick={(e) => e.stopPropagation()}>
-                                        <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
-                                    </MenuButton>
-                                    <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
-                                        <MenuItem>
-                                                <button
-                                                    onClick={handleEditClick}
-                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                                >
-                                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                                    <span>Edit</span>
-                                                </button>
-                                        </MenuItem>
-                                        <MenuItem>
-                                                <button
-                                                    onClick={handleDeleteClick}
-                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                                >
-                                                    <FontAwesomeIcon icon={faTrashCan} />
-                                                    <span>Delete</span>
-                                                </button>
-                                        </MenuItem>
-                                    </MenuItems>
-                                </Menu>
-                            </div>
-                        }
+                            <div className="flex items-center px-3 text-gray-400">
+                            <Menu as="div" className="relative">
+                                <MenuButton onClick={(e) => e.stopPropagation()}>
+                                    <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
+                                </MenuButton>
+                                <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                {userId === post?.authorId && 
+                                    <>
+                                    <MenuItem>
+                                            <button
+                                                onClick={handleEditClick}
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                            >
+                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                                <span>Edit</span>
+                                            </button>
+                                    </MenuItem>
+                                    <MenuItem>
+                                            <button
+                                                onClick={handleDeleteClick}
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                            >
+                                                <FontAwesomeIcon icon={faTrashCan} />
+                                                <span>Delete</span>
+                                            </button>
+                                    </MenuItem>
+                                    </>
+                                    }
+                                    <MenuItem>
+                                    <button
+                                        onClick={() => navigate(`/posts/${postId}/liked`)}
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                    >
+                                        <FontAwesomeIcon icon={faHeartFilled} />
+                                        <span>Liked Users</span>
+                                    </button>
+                                    </MenuItem>
+                                </MenuItems>
+                            </Menu>
+                        </div>
                     </div>
 
                     {/* Post Content */}
@@ -226,10 +237,10 @@ const PostPage = () => {
                         <span className="flex items-center space-x-1">
                             <FontAwesomeIcon 
                                 onClick={(e) => handleLikeClick(e)} 
-                                icon={liked ? faHeartSolid : faHeartRegular} 
+                                icon={liked ? faHeartFilled : faHeart} 
                                 className={`text-xl cursor-pointer ${liked ? 'text-red-500' : 'text-gray-400'}`} 
                             />
-                            <span className="ml-1">{post._count.likes}</span>
+                            <span className="ml-1 cursor-pointer" onClick={() => navigate(`/posts/${postId}/liked`)}>{post._count.likes}</span>
                         </span>
                         <span className="flex items-center space-x-1">
                             <FontAwesomeIcon icon={faComment} className="text-xl" />

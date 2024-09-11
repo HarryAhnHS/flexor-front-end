@@ -131,13 +131,17 @@ const Realm = () => {
                                         <span className="font-semibold text-2xl">{realm?.name}</span>
                                     </div>
                                     {/* Edit Button */}
-                                    {isCreator && (
                                         <div className="flex items-center px-3 text-gray-400">
                                             <Menu as="div" className="relative">
                                                 <MenuButton onClick={(e) => e.stopPropagation()}>
                                                     <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
                                                 </MenuButton>
-                                                <MenuItems className="absolute right-0 mt-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-md w-40">
+                                                <MenuItems 
+                                                    className="absolute right-0 mt-2 bg-gray-800 text-gray-200 border border-gray-700 rounded-md w-40" 
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                {isCreator && 
+                                                    <>
                                                     <MenuItem>
                                                         <button
                                                             onClick={(e) => handleEditRealm(e, realmId)}
@@ -156,10 +160,20 @@ const Realm = () => {
                                                             <span>Delete</span>
                                                         </button>
                                                     </MenuItem>
+                                                    </>
+                                                }
+                                                <MenuItem>
+                                                    <button
+                                                        onClick={() => navigate(`/realms/${realmId}/joined`)}
+                                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                    >
+                                                        <FontAwesomeIcon icon={faUsers} />
+                                                        <span>Joined Users</span>
+                                                    </button>
+                                                </MenuItem>
                                                 </MenuItems>
                                             </Menu>
                                         </div>
-                                    )}
                                 </div>
                                 <div className='max-w-3/4'>
                                     <p className="text-gray-400 mb-2 overflow-wrap-break-word break-all">

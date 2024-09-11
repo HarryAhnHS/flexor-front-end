@@ -119,35 +119,50 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
                     <div className="mb-2 flex justify-between">
                         <span className="font-semibold text-2xl overflow-wrap-break-word break-all line-clamp-1">{realm?.name}</span>
                         {/* Edit Button */}
-                        {isCreator && (
                             <div className="flex items-center px-3 text-gray-400">
                                 <Menu as="div" className="relative">
                                     <MenuButton onClick={(e) => e.stopPropagation()}>
                                         <FontAwesomeIcon icon={faEllipsis} className="hover:text-gray-300"/>
                                     </MenuButton>
-                                    <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
+                                    <MenuItems 
+                                        className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {isCreator && 
+                                            <>
+                                            <MenuItem>
+                                                    <button
+                                                        onClick={(e) => handleEditRealm(e, realmId)}
+                                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                    >
+                                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                                        <span>Edit</span>
+                                                    </button>
+                                            </MenuItem>
+                                            <MenuItem>
+                                                    <button
+                                                        onClick={(e) => handleDeleteRealm(e, realmId)}
+                                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrashCan} />
+                                                        <span>Delete</span>
+                                                    </button>
+                                            </MenuItem>
+                                            </>
+                                        }
                                         <MenuItem>
-                                                <button
-                                                    onClick={(e) => handleEditRealm(e, realmId)}
-                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                                >
-                                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                                    <span>Edit</span>
-                                                </button>
+                                            <button
+                                                onClick={() => navigate(`/realms/${realmId}/joined`)}
+                                                className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                            >
+                                                <FontAwesomeIcon icon={faUsers} />
+                                                <span>Joined Users</span>
+                                            </button>
                                         </MenuItem>
-                                        <MenuItem>
-                                                <button
-                                                    onClick={(e) => handleDeleteRealm(e, realmId)}
-                                                    className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
-                                                >
-                                                    <FontAwesomeIcon icon={faTrashCan} />
-                                                    <span>Delete</span>
-                                                </button>
-                                        </MenuItem>
+
                                     </MenuItems>
                                 </Menu>
                             </div>
-                        )}
                     </div>
                     <p className="text-gray-400 mt-2 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-2">
                         {realm?.description}
@@ -155,7 +170,10 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
 
                     <div className="flex justify-between items-center">
                         <div className="flex space-x-4 text-base">
-                            <div className="text-gray-400 space-x-2">
+                            <div className="text-gray-400 space-x-2" onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/realms/${realmId}/joined`)
+                            }}>
                                 <FontAwesomeIcon icon={faUsers} />
                                 <span className="text-sm">{realm._count?.joined} Joined</span>
                             </div>

@@ -305,13 +305,22 @@ const Comment = ({ comment, commentId, setTotalCommentsCount, siblings, setSibli
                                 <MenuItems className="absolute right-0 mt-2 bg-gray-700 text-gray-200 border border-gray-600 rounded-md w-40">
                                     <MenuItem>
                                         <button
+                                            onClick={() => navigate(`/comments/${comment?.id}/liked`)}
+                                            className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        >
+                                            <FontAwesomeIcon icon={faHeartFilled} />
+                                            <span>Liked Users</span>
+                                        </button>
+                                    </MenuItem>
+                                    <MenuItem>
+                                        <button
                                             onClick={handleReplyClick}
                                             className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
                                         >
                                             <FontAwesomeIcon icon={faReply} />
                                             <span>Reply</span>
                                         </button>
-                                </MenuItem>
+                                    </MenuItem>
                                     {isCreator &&
                                         <>
                                         <MenuItem>
