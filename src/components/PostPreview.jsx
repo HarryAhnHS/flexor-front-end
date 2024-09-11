@@ -8,8 +8,7 @@ import { faComment, faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faEllipsis, faHeart as faHeartFilled, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
-const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
-    const [post, setPost] = useState(null);
+const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
     const [liked, setLiked] = useState(false);
     const [commentsCount, setCommentsCount] = useState(0);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -19,14 +18,6 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
 
     useEffect(() => {
         setLoading(true);
-        const fetchPost = async () => {
-            try {
-                const response = await api.get(`/posts/${postId}`);
-                setPost(response.data.post);
-            } catch (error) {
-                console.error('Error getting post', error);
-            }
-        };
 
         const fetchLikedState = async () => {
             try {
@@ -50,7 +41,7 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
             }
         };
 
-        fetchPost();
+        // fetchPost();
         fetchLikedState();
         fetchPostCommentsCount();
     }, [postId, userId]);
@@ -69,16 +60,28 @@ const PostPreview = ({ postId, isEditable, posts, setPosts }) => {
         try {
             if (liked) {
                 await api.delete(`/posts/${postId}/like`);
-                setPost(prevPost => ({
-                    ...prevPost,
-                    _count: { ...prevPost._count, likes: prevPost._count.likes - 1 }
-                }));
+                setPosts(prevPosts =>
+                    prevPosts.map((p) =>
+                        p.id === postId
+                            ? {
+                                  ...p,
+                                  _count: { ...p._count, likes: p._count.likes - 1 },
+                              }
+                            : p
+                    )
+                );
             } else {
                 await api.post(`/posts/${postId}/like`);
-                setPost(prevPost => ({
-                    ...prevPost,
-                    _count: { ...prevPost._count, likes: prevPost._count.likes + 1 }
-                }));
+                setPosts(prevPosts =>
+                    prevPosts.map((p) =>
+                        p.id === postId
+                            ? {
+                                  ...p,
+                                  _count: { ...p._count, likes: p._count.likes + 1 },
+                              }
+                            : p
+                    )
+                );
             }
             setLiked(prevLiked => !prevLiked);
         } catch (error) {

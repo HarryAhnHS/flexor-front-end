@@ -162,6 +162,7 @@ const PostsList = ({ sourceId, type }) => {
         posts.map(post =>
           type === 'user_drafts' ? (
             <DraftPreview
+              post={post}
               postId={post.id}
               posts={posts}
               setPosts={setPosts}
@@ -169,6 +170,7 @@ const PostsList = ({ sourceId, type }) => {
             />
           ) : (
             <PostPreview
+              post={post}
               postId={post.id}
               isEditable={post.authorId === loggedInUserId}
               posts={posts}
