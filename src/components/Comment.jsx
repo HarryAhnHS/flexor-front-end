@@ -7,15 +7,15 @@ import { faPaperPlane, faHeart as faHeartFilled, faEllipsis, faPenToSquare, faTr
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
-const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sortField, sortOrder, setParentNestedCount }) => {
+const Comment = ({ comment, commentId, setTotalCommentsCount, siblings, setSiblings, sortField, sortOrder, isRoot = false }) => {
     const navigate = useNavigate();
-    const [comment, setComment] = useState({});
+    // const [comment, setComment] = useState({});
     const [commentLiked, setCommentLiked] = useState(null);
     const [showReplyInput, setShowReplyInput] = useState(false);
     const [reply, setReply] = useState("");
     const [nestedComments, setNestedComments] = useState(null);
     const [showNestedComments, setShowNestedComments] = useState(false);
-    const [nestedCommentsCount, setNestedCommentsCount] = useState(0);
+    // const [nestedCommentsCount, setNestedCommentsCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [nestedLoading, setNestedLoading] = useState(false);
     const [page, setPage] = useState(1); // Track the current page
@@ -30,15 +30,15 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
     // Fetch main comment data
     useEffect(() => {
         setLoading(true);
-        async function fetchComment() {
-            try {
-                const response = await api.get(`/comments/${commentId}`);
-                setComment(response.data.comment);
-                setNestedCommentsCount(response.data.comment._count?.nestedComments);
-            } catch (error) {
-                console.error("Error fetching comment data:", error);
-            }
-        }
+        // async function fetchComment() {
+        //     try {
+        //         const response = await api.get(`/comments/${commentId}`);
+        //         setComment(response.data.comment);
+        //         setNestedCommentsCount(response.data.comment._count?.nestedComments);
+        //     } catch (error) {
+        //         console.error("Error fetching comment data:", error);
+        //     }
+        // }
 
         const fetchLikeStatus = async () => {
             try {
@@ -49,11 +49,11 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                 console.error("Error fetching like status:", error);
             }
             finally {
-                setLoading(false)
+                setLoading(false);
             }
         };
 
-        fetchComment();
+        // fetchComment();
         fetchLikeStatus();
     }, [commentId, userId]);
 
@@ -93,14 +93,34 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
         try {
             if (commentLiked) {
                 await api.delete(`/comments/${commentId}/like`);
-                const updatedComment = { ...comment };
-                updatedComment._count.likes--;
-                setComment(updatedComment);
+                // const updatedComment = { ...comment };
+                // updatedComment._count.likes--;
+                // setComment(updatedComment);
+                setSiblings(prevComments =>
+                    prevComments.map((c) =>
+                        c.id === commentId
+                            ? {
+                                  ...c,
+                                  _count: { ...c._count, likes: c._count.likes - 1 },
+                              }
+                            : c
+                    )
+                );
             } else {
                 await api.post(`/comments/${commentId}/like`);
-                const updatedComment = { ...comment };
-                updatedComment._count.likes++;
-                setComment(updatedComment);
+                // const updatedComment = { ...comment };
+                // updatedComment._count.likes++;
+                // setComment(updatedComment);
+                setSiblings(prevComments =>
+                    prevComments.map((c) =>
+                        c.id === commentId
+                            ? {
+                                  ...c,
+                                  _count: { ...c._count, likes: c._count.likes + 1 },
+                              }
+                            : c
+                    )
+                );
             }
             setCommentLiked(prevLiked => !prevLiked);
         } catch (error) {
@@ -128,8 +148,18 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
             setNestedComments(prevNestedComments => [...prevNestedComments || [], response.data.comment]);
 
             // Increment counts
-            setNestedCommentsCount(prev => prev + 1);
+            // setNestedCommentsCount(prev => prev + 1);
             setTotalCommentsCount(prev => prev + 1);
+            setSiblings(prevComments =>
+                prevComments.map((c) =>
+                    c.id === commentId
+                        ? {
+                              ...c,
+                              _count: { ...c._count, nestedComments: c._count.nestedComments + 1 },
+                          }
+                        : c
+                )
+            );
 
             // Reset reply state
             setReply("");
@@ -172,7 +202,17 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
             const response = await api.put(`/comments/${commentId}`, {
                 comment: editedComment,
             });
-            setComment(response.data.comment);
+            // setComment(response.data.comment);
+            setSiblings(prevComments =>
+                prevComments.map((c) =>
+                    c.id === commentId
+                        ? {
+                              ...c,
+                              comment: response.data.comment
+                          }
+                        : c
+                )
+            );
             setEditMode(false);
         } catch (error) {
             console.error("Error editing comment:", error);
@@ -196,8 +236,18 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
             setSiblings(siblings.filter((comment) => comment.id !== commentId));
 
             // Update the parent nested comment count, if not root
-            if (setParentNestedCount) setParentNestedCount(prev => prev - totalCommentsToRemove);
+            // if (setParentNestedCount) setParentNestedCount(prev => prev - totalCommentsToRemove);
             setTotalCommentsCount(prev => prev - totalCommentsToRemove);
+            setSiblings(prevComments =>
+                prevComments.map((c) =>
+                    c.id === commentId
+                        ? {
+                              ...c,
+                              _count: { ...c._count, nestedComments: c._count.nestedComments - totalCommentsToRemove},
+                          }
+                        : c
+                )
+            );
 
             // Finally, delete comment from db
             await api.delete(`/comments/${commentId}`);
@@ -209,7 +259,7 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
 
     return (
         <div key={commentId} className="flex-1 comment text-white py-4 pl-2 border-b border-gray-700">
-            {loading 
+            {isRoot && loading
             ? 
                 <div className="flex justify-center items-center h-full">
                     <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
@@ -328,14 +378,14 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                             <span>Reply</span>
                         </button>
                         {/* Show Replies Button */}
-                        {nestedCommentsCount > 0 && (
+                        {comment._count?.nestedComments > 0 && (
                             <button
                                 onClick={handleShowRepliesClick}
                                 className="text-blue-400 text-sm mt-2 hover:underline"
                             >
                                 {showNestedComments
                                     ? `Hide replies`
-                                    : `Show ${nestedCommentsCount} replies`}
+                                    : `Show ${comment._count?.nestedComments} replies`}
                             </button>
                         )}
                     </div>
@@ -371,13 +421,14 @@ const Comment = ({ commentId, setTotalCommentsCount, siblings, setSiblings, sort
                                     </div>
                                 </div>
                                 <Comment
+                                    comment={nestedComment}
                                     commentId={nestedComment.id}
                                     setTotalCommentsCount={setTotalCommentsCount}
                                     siblings={nestedComments}
                                     setSiblings={setNestedComments}
                                     sortField={sortField}
                                     sortOrder={sortOrder}
-                                    setParentNestedCount={setNestedCommentsCount}
+                                    isRoot={false}
                                 />
                             </div>
                         ))}

@@ -149,12 +149,14 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
                         comments.map((comment) => (
                             <Comment
                                 key={comment.id}
+                                comment={comment}
                                 commentId={comment.id}
                                 setTotalCommentsCount={setTotalCommentsCount}
                                 siblings={comments}
                                 setSiblings={setComments}
                                 sortField={sortField}
                                 sortOrder={sortOrder}
+                                isRoot={true}
                             />
                         ))
                     ) : (

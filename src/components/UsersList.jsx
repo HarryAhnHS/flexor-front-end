@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 
 const UsersList = ({ sourceId, scenario }) => {
-  const [userIds, setUserIds] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1); // Track the current page
   const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
@@ -11,7 +11,7 @@ const UsersList = ({ sourceId, scenario }) => {
 
   const resetUsers = useCallback(() => {
     // Clear posts when sourceId or type changes
-    setUserIds([]);
+    setUsers([]);
     setPage(1);
     setHasMore(true);
   }, []);
@@ -51,7 +51,7 @@ const UsersList = ({ sourceId, scenario }) => {
           setHasMore(false); // No more users to load
         }
 
-        setUserIds(prevUsers => [...prevUsers, ...response.data.users.map(user => user.id)]); // Append new users
+        setUsers(prevUsers => [...prevUsers, ...response.data.users]); // Append new users
       } 
       catch (error) {
         console.error('Error fetching users:', error);
@@ -76,12 +76,15 @@ const UsersList = ({ sourceId, scenario }) => {
 
   return (
     <div className="user-list space-y-4">
-      {userIds.length > 0 
+      {users.length > 0 
       ?
-      userIds.map((userId) => (
+      users.map((user) => (
         <UserPreview 
-          key={userId} 
-          userId={userId} 
+          key={user.id} 
+          user={user}
+          userId={user.id} 
+          users={users}
+          setUsers={setUsers}
         />
       ))
       :
