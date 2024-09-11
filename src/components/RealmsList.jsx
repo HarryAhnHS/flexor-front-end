@@ -20,7 +20,6 @@ const RealmsList = ( {type} ) => {
 
     useEffect(() => {
         resetRealms();
-        
     }, [type, resetRealms]);
 
     useEffect(() => {
@@ -76,6 +75,7 @@ const RealmsList = ( {type} ) => {
                 ?
                 realms.map((realm) => (
                     <RealmPreview 
+                        realm={realm}
                         realmId={realm.id} 
                         setRealms={setRealms}
                         key={realm.id} 

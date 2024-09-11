@@ -6,10 +6,8 @@ import { faArrowRightToBracket, faCheck, faEllipsis, faPenToSquare, faTrashCan, 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { faMicroblog } from "@fortawesome/free-brands-svg-icons";
 
-const RealmPreview = ({ realmId, setRealms }) => {
+const RealmPreview = ({ realm, realmId, setRealms }) => {
     const navigate = useNavigate();
-    const [realm, setRealm] = useState({});
-    const [realmMembers, setRealmMembers] = useState(0);
     const [joined, setJoined] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -18,15 +16,6 @@ const RealmPreview = ({ realmId, setRealms }) => {
 
     useEffect(() => {
         setLoading(true);
-        async function fetchRealm() {
-            try {
-                const response = await api.get(`/realms/${realmId}`);
-                setRealm(response.data.realm);
-                setRealmMembers(response.data.realm._count?.joined);
-            } catch (error) {
-                console.error("Error fetching realm", error);
-            }
-        }
 
         async function fetchJoinedStatus() {
             try {
@@ -40,20 +29,38 @@ const RealmPreview = ({ realmId, setRealms }) => {
                 setLoading(false);
             }
         }
-
-        fetchRealm();
         fetchJoinedStatus();
     }, [realmId, userId]);
 
-    const handleJoinRealm = async (e, realmId) => {
+    const handleJoinRealm = async (e) => {
         e.stopPropagation();
         try {
             if (!joined) {
                 await api.post(`/realms/${realmId}/join`);
-                setRealmMembers(prev => prev + 1);
+                setRealms(prevRealms =>
+                    prevRealms.map((r) => 
+                    r.id == realmId 
+                    ? {
+                        ...r,
+                        _count: { ...r._count, joined: r._count.joined + 1}
+                    }
+                    : 
+                        r
+                    )
+                );    
             } else {
                 await api.delete(`/realms/${realmId}/join`);
-                setRealmMembers(prev => prev - 1);
+                setRealms(prevRealms =>
+                    prevRealms.map((r) => 
+                    r.id == realmId 
+                    ? {
+                        ...r,
+                        _count: { ...r._count, joined: r._count.joined - 1}
+                    }
+                    : 
+                        r
+                    )
+                );
             }
             setJoined(prev => !prev);
         } catch (error) {
@@ -149,7 +156,7 @@ const RealmPreview = ({ realmId, setRealms }) => {
                         <div className="flex space-x-4 text-base">
                             <div className="text-gray-400 space-x-2">
                                 <FontAwesomeIcon icon={faUsers} />
-                                <span className="text-sm">{realmMembers} Joined</span>
+                                <span className="text-sm">{realm._count?.joined} Joined</span>
                             </div>
                             <div className="text-gray-400 space-x-2">
                                 <FontAwesomeIcon icon={faMicroblog} />
@@ -158,7 +165,7 @@ const RealmPreview = ({ realmId, setRealms }) => {
                         </div>
                         {/* Join Button */}
                         <button
-                            onClick={(e) => handleJoinRealm(e, realmId)}
+                            onClick={(e) => handleJoinRealm(e)}
                             className={`px-4 py-2 rounded-lg text-white transition-colors ${
                                 joined ? 'bg-gray-600 hover:bg-gray-500' : 'bg-indigo-600 hover:bg-indigo-700'
                             }`}
