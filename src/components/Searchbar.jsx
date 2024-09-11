@@ -18,6 +18,8 @@ const SearchBar = () => {
     const limit = 10;
 
     const fetchResults = useCallback(async () => {
+        if (query.length <= 1) return; // Do not fetch if query is too short
+
         setLoading(true);
 
         try {
@@ -30,12 +32,15 @@ const SearchBar = () => {
                 }
             });
 
-            setResults(prevResults => ([
-                ...prevResults || [],
-                ...data.results
-            ]));
+            setResults(prevResults => {
+                if (page === 1) {
+                    return data.results;
+                } else {
+                    return [...prevResults, ...data.results];
+                }
+            });
 
-            setHasMore(data.results.length > 0);
+            setHasMore(data.results.length >= limit);
         } catch (error) {
             console.error('Error fetching search results:', error);
         } finally {
@@ -138,7 +143,7 @@ const SearchBar = () => {
                 </div>
                 
             </div>
-            {query.length > 0 && (
+            {query.length > 1 && (
                 <div className={`absolute left-0 right-0 mt-2 bg-gray-800 border-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto z-[99999] ${dropdownDisplay ? '' : 'hidden'}`}>
                     {loading && 
                         <div className="flex justify-center items-center h-full">
@@ -173,4 +178,3 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
-
