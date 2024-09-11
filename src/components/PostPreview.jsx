@@ -259,7 +259,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                         <FontAwesomeIcon 
                             onClick={(e) => handleLikeClick(e)} 
                             icon={liked ? faHeartFilled : faHeart} 
-                            className={`text-xl ${liked ? 'text-red-500' : 'text-gray-400'}`} 
+                            className={`text-xl cursor-pointer ${liked ? 'text-red-500 hover:text-red-600 active:text-red-700 animate-pulse' : 'text-gray-400 hover:text-gray-500 active:text-gray-600'}`} 
                         />
                         <span onClick={(e) => {
                             e.stopPropagation();

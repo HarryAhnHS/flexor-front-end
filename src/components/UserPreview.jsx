@@ -72,7 +72,7 @@ const UserPreview = ({ user, userId, setUsers }) => {
     >
       {loading 
       ? 
-          <div className="flex justify-center items-center w-full h-[150px]">
+          <div className="flex justify-center items-center w-full h-[100px]">
               <PuffLoader color="#5C6BC0" size={60} />
           </div>
       :

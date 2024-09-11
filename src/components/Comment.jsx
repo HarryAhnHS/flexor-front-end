@@ -287,11 +287,11 @@ const Comment = ({ comment, commentId, setTotalCommentsCount, siblings, setSibli
                             &#40;Edited&#41;	
                         </span>
                     )}
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-2">
                         <FontAwesomeIcon 
                                 onClick={(e) => handleLikeClick(e)} 
                                 icon={commentLiked ? faHeartFilled : faHeart} 
-                                className={`cursor-pointer text-xl ${commentLiked ? 'text-red-500' : 'text-gray-400'}`} 
+                                className={`text-xl cursor-pointer ${commentLiked ? 'text-red-500 hover:text-red-600 active:text-red-700 animate-pulse' : 'text-gray-400 hover:text-gray-500 active:text-gray-600'}`} 
                             />
                         <span className="text-sm text-gray-400 cursor-pointer ml-2" onClick={() => navigate(`/comments/${comment?.id}/liked`)}>
                             {comment._count?.likes}

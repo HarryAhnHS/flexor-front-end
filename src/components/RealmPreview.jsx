@@ -98,7 +98,7 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
         >
             {loading 
             ? 
-                <div className="flex justify-center items-center h-[250px] w-full">
+                <div className="flex justify-center items-center h-[120px] w-full">
                     <PuffLoader color="#5C6BC0" size={60} />
                 </div>
             :

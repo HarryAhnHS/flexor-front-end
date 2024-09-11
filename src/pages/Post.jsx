@@ -234,15 +234,15 @@ const PostPage = () => {
 
                     {/* Post Meta */}
                     <div className="post-meta text-gray-400 flex items-center space-x-6">
-                        <span className="flex items-center space-x-1">
+                        <span className="flex items-center space-x-2">
                             <FontAwesomeIcon 
                                 onClick={(e) => handleLikeClick(e)} 
                                 icon={liked ? faHeartFilled : faHeart} 
-                                className={`text-xl cursor-pointer ${liked ? 'text-red-500' : 'text-gray-400'}`} 
+                                className={`text-xl cursor-pointer ${liked ? 'text-red-500 hover:text-red-600 active:text-red-700 animate-pulse' : 'text-gray-400 hover:text-gray-500 active:text-gray-600'}`} 
                             />
                             <span className="ml-1 cursor-pointer" onClick={() => navigate(`/posts/${postId}/liked`)}>{post._count.likes}</span>
                         </span>
-                        <span className="flex items-center space-x-1">
+                        <span className="flex items-center space-x-2">
                             <FontAwesomeIcon icon={faComment} className="text-xl" />
                             <span className="ml-1">{commentsCount}</span>
                         </span>
