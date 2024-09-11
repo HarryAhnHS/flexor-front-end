@@ -30,6 +30,7 @@ const PostForm = () => {
   const isEditing = !!postId;
 
   useEffect(() => {
+    setLoading(true);
     async function initializePost() {
       if (isEditing) {
         try {
@@ -66,6 +67,9 @@ const PostForm = () => {
       } catch (error) {
         console.error("Error fetching user's joined realms:", error);
         setRealmError('Failed to load realms');
+      }
+      finally {
+        setLoading(false);
       }
     }
 

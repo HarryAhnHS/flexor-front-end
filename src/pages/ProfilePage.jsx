@@ -14,7 +14,7 @@ const ProfilePage = () => {
   const [followed, setFollowed] = useState(null);
   const [selectedTab, setSelectedTab] = useState('user_posts');
   const [cakeDay, setCakeDay] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { userId } = useParams();
@@ -25,6 +25,7 @@ const ProfilePage = () => {
   const handleModalClose = () => setIsModalOpen(false);
 
   useEffect(() => {
+    setLoading(true);
     const fetchMetaData = async () => {
       try {
         const response = await api.get(`/users/${userId}`);
@@ -73,17 +74,16 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-          <PuffLoader color="#5C6BC0" size={60} />
-      </div>
-  )}
-
   return (
     <>
       <div className="profile-page container mx-auto p-6 min-h-screen text-white">
         {/* Loading Indicator */}
+        {loading ? 
+        <div className="flex justify-center items-center w-full h-full">
+          <PuffLoader color="#5C6BC0" size={60} />
+        </div>
+        :
+        <>
         {/* Profile Header */}
         <div className="profile-header flex flex-col sm:flex-row items-center sm:items-start sm:justify-between mb-4">
           <div className='flex flex-col sm:flex-row items-center sm:items-start space-x-0 sm:space-x-4'>
@@ -214,6 +214,8 @@ const ProfilePage = () => {
         <section>
           <PostsList sourceId={userId} type={selectedTab} />
         </section>
+        </>
+      }
       </div>
     </>
   );
