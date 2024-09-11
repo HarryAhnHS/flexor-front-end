@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { PuffLoader } from 'react-spinners';
 
 const UserPreview = ({ user, userId, setUsers }) => {
   const [followed, setFollowed] = useState(null);
@@ -71,8 +72,8 @@ const UserPreview = ({ user, userId, setUsers }) => {
     >
       {loading 
       ? 
-          <div className="flex justify-center items-center h-full">
-              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
+          <div className="flex justify-center items-center w-full h-[150px]">
+              <PuffLoader color="#5C6BC0" size={60} />
           </div>
       :
       <>

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-regular-svg-icons";
 import { faEllipsis, faHeart as faHeartFilled, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { PuffLoader } from 'react-spinners';
 
 const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
     const [liked, setLiked] = useState(false);
@@ -125,8 +126,8 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
         >
             {loading 
             ? 
-                <div className="flex justify-center items-center h-full">
-                    <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
+                <div className="flex justify-center items-center h-[350px]">
+                    <PuffLoader color="#5C6BC0" size={60} />
                 </div>
             :
             <>

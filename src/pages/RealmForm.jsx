@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk, faImages, faLayerGroup, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { PuffLoader } from 'react-spinners';
 
 const RealmForm = () => {
     const navigate = useNavigate();
@@ -155,7 +156,7 @@ const RealmForm = () => {
 
                 {loading ? (
                     <div className="flex justify-center items-center h-full">
-                        <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                        <PuffLoader color="#5C6BC0" size={60} />
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit}>

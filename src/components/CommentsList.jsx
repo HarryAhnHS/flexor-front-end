@@ -3,6 +3,7 @@ import api from "../services/api";
 import Comment from "../components/Comment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { PuffLoader } from 'react-spinners';
 
 const CommentsList = ({ postId, setTotalCommentsCount }) => {
     const [comments, setComments] = useState([]);
@@ -164,7 +165,7 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
                     )}
                     {loading && 
                         <div className="flex justify-center items-center h-full">
-                            <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                            <PuffLoader color="#5C6BC0" size={60} />
                         </div>
                     }
                 </div>

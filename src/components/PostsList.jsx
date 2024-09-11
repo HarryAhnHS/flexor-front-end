@@ -4,6 +4,7 @@ import PostPreview from './PostPreview';
 import DraftPreview from './DraftPreview';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowsRotate, faArrowUp, faSort } from '@fortawesome/free-solid-svg-icons';
+import { PuffLoader } from 'react-spinners';
 
 const PostsList = ({ sourceId, type }) => {
   const [posts, setPosts] = useState([]);
@@ -185,7 +186,7 @@ const PostsList = ({ sourceId, type }) => {
 
       {loading && 
         <div className="flex justify-center items-center h-full">
-          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          <PuffLoader color="#5C6BC0" size={60} />
         </div>
       }
     </>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import giphyClient from '../../services/giphyClient';
+import { PuffLoader } from 'react-spinners';
 
 // Debounce function to limit API calls while typing
 const useDebounce = (callback, delay) => {
@@ -34,7 +35,7 @@ const GiphyModal = ({ isOpen, onClose, onGifSelect }) => {
   const fetchGifs = async (searchTerm) => {
     setIsLoadingGifs(true);
     try {
-      const { data } = await giphyClient.search(searchTerm, { limit: 10 });
+      const { data } = await giphyClient.search(searchTerm, { limit: 6 });
       setGifs(data);
     } catch (error) {
       console.error('Error fetching GIFs:', error);
@@ -83,8 +84,7 @@ const GiphyModal = ({ isOpen, onClose, onGifSelect }) => {
         >
           <h3 className="text-lg font-bold mb-2">Search Giphy</h3>
           <div className='text-sm mb-4 font-gray-200'>
-            <p>Credits to Giphy API</p>
-            <p className='text-xs text-indigo-500'>&#40;I&#39;m on the free plan... Don&#39;t spam this&#41;</p>
+            <p className='text-xs text-indigo-500'>Credits to Giphy SDK</p>
           </div>
           <input
             type="text"
@@ -95,7 +95,7 @@ const GiphyModal = ({ isOpen, onClose, onGifSelect }) => {
           />
           {isLoadingGifs ? (
               <div className="flex justify-center items-center h-full w-full">
-                <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                <PuffLoader color="#5C6BC0" size={60} />
               </div>
             ) 
             : (

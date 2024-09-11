@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightToBracket, faCheck, faEllipsis, faPenToSquare, faTrashCan, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { faMicroblog } from "@fortawesome/free-brands-svg-icons";
+import { PuffLoader } from 'react-spinners';
 
 const RealmPreview = ({ realm, realmId, setRealms }) => {
     const navigate = useNavigate();
@@ -97,8 +98,8 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
         >
             {loading 
             ? 
-                <div className="flex justify-center items-center h-full w-full">
-                    <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin p-6"></div>
+                <div className="flex justify-center items-center h-[250px] w-full">
+                    <PuffLoader color="#5C6BC0" size={60} />
                 </div>
             :
             <>

@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis, faHeart as faHeartSolid, faImage, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faComment, faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { PuffLoader } from 'react-spinners';
 
 const PostPage = () => {
     const navigate = useNavigate();
@@ -118,7 +119,7 @@ const PostPage = () => {
     if (loading) {
         return (
           <div className="flex justify-center items-center h-full">
-              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+              <PuffLoader color="#5C6BC0" size={60} />
           </div>
     )}
 

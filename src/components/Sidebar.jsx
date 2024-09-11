@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons'; // Import GitHub icon
 import api from '../services/api';
+import { PuffLoader } from 'react-spinners';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Sidebar = () => {
     <nav className='hidden lg:flex bg-gray-900 text-white flex-col h-full py-6 px-4 border-l border-gray-700'>
       {loading || suggestedLoading ? (
         <div className="flex justify-center items-center h-full w-[230px]">
-          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          <PuffLoader color="#5C6BC0" size={60} />
         </div>
       ) : (
         <>

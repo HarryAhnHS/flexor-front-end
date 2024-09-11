@@ -3,6 +3,7 @@ import { useUser } from '../../contexts/UserContext';
 import api from '../../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { PuffLoader } from 'react-spinners';
 
 const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta }) => {
   const [formData, setFormData] = useState({ username: '', bio: '' });
@@ -115,7 +116,7 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
         <form onSubmit={handleFormSubmit}>
           {loading ? (
             <div className="flex justify-center items-center h-full">
-              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+              <PuffLoader color="#5C6BC0" size={60} />
             </div>
           ) : (
             <>

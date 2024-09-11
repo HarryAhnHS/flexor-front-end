@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { formatTimeNoSuffix } from '../utils/formatters';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faUserPen, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { PuffLoader } from 'react-spinners';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
-          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          <PuffLoader color="#5C6BC0" size={60} />
       </div>
   )}
 

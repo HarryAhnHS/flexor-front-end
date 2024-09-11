@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicroblog } from "@fortawesome/free-brands-svg-icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { formatDate } from "../utils/formatters";
+import { PuffLoader } from 'react-spinners';
 
 const Realm = () => {
     const navigate = useNavigate();
@@ -80,7 +81,7 @@ const Realm = () => {
     if (loading) {
         return (
           <div className="flex justify-center items-center h-full">
-              <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+              <PuffLoader color="#5C6BC0" size={60} />
           </div>
     )}
 

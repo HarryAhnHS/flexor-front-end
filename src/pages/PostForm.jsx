@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudArrowUp, faFloppyDisk, faImages, faXmark, faSmile } from '@fortawesome/free-solid-svg-icons';
 import GiphyModal from '../components/modals/GiphyModal';
+import { PuffLoader } from 'react-spinners';
 
 const PostForm = () => {
   const navigate = useNavigate();
@@ -210,7 +211,7 @@ const PostForm = () => {
     <div className="bg-gray-900 min-h-screen p-6">
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+          <PuffLoader color="#5C6BC0" size={60} />
         </div>
       ) : (
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">

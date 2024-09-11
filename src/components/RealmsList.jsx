@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import RealmPreview from "../components/RealmPreview";
+import { PuffLoader } from 'react-spinners';
 
 const RealmsList = ( {type} ) => {
     const [realms, setRealms] = useState([]);
@@ -86,7 +87,7 @@ const RealmsList = ( {type} ) => {
                 }
                 {loading && 
                     <div className="flex justify-center items-center h-full">
-                        <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+                        <PuffLoader color="#5C6BC0" size={60} />
                     </div>
                 }
             </div>
