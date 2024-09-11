@@ -9,7 +9,7 @@ const SignUp = () => {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState(''); // State to hold the error message
+  const [error, setError] = useState(null); // State to hold the error message
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -70,12 +70,12 @@ const SignUp = () => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg">
+    <div className="p-6 max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-white">Sign Up</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Form fields for email, username, password, and confirmPassword */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
             Email
           </label>
           <input
@@ -89,7 +89,7 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
             Username
           </label>
           <input
@@ -103,7 +103,7 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
             Password
           </label>
           <input
@@ -117,7 +117,7 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
             Confirm Password
           </label>
           <input

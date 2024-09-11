@@ -92,11 +92,14 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
       handleModalClose();
     } catch (error) {
       console.error('Error submitting form:', error);
-      if (error.response?.data?.error === 'Username is already taken') {
+      if (error.response?.data?.errors) {
+        setUsernameError(error.response.data.errors[0].msg);
+      }
+      if (error.response?.data?.error) {
         setUsernameError(error.response.data.error);
       }
       if (error.response?.data?.message === 'Invalid file type') {
-        setFileError('Invalid file type - only png, jpeg, gif, webp, svg, bmp allowed');
+        setFileError("Invalid file type - only PNG, JPEG, and GIF allowed.");
       }
     } finally {
       setLoading(false);
