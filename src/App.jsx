@@ -17,6 +17,7 @@ import { NotificationsProvider } from './contexts/NotificationsContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthenticatedLayout from './contexts/AuthenticatedLayout';
+import { UserProvider } from './contexts/UserContext';
 
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
     return <div className='h-screen w-screen bg-gray-900'>
       <div className="flex justify-center items-center h-full">
         <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
+        <div className='text-white'>Free plan... Server is waking up...</div>
       </div>
     </div>;
   }
@@ -46,7 +48,9 @@ const App = () => {
           <Route 
             element={
               <NotificationsProvider>
-                <AuthenticatedLayout />
+                <UserProvider>
+                  <AuthenticatedLayout />
+                </UserProvider>
               </NotificationsProvider>
             }
           >

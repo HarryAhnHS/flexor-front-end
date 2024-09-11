@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons'; // Import GitHub icon
@@ -8,36 +9,27 @@ import api from '../services/api';
 const Sidebar = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
-  const [loggedUser, setLoggedUser] = useState({});
+  const { sidebarUser: loggedUser, loading } = useUser();
   const [suggestedRealms, setSuggestedRealms] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [suggestedLoading, setSuggestedLoading] = useState(true);
   const take = 3;
 
   useEffect(() => {
-    const fetchMetaData = async () => {
-      try {
-        const response = await api.get(`/users/${userId}`);
-        setLoggedUser(response.data.user);
-      } catch (error) {
-        console.error('Error fetching profile meta', error);
-      }
-    };
-
     const fetchSuggestedData = async () => {
       try {
         const response = await api.get(`/users/${userId}/suggest`, { params: { take } });
         setSuggestedUsers(response.data.users);
         setSuggestedRealms(response.data.realms);
-        setLoading(false); // Data fetched, set loading to false
+        setSuggestedLoading(false);
       } catch (error) {
         console.error('Error fetching suggested details', error);
       }
     };
-
-    fetchMetaData();
-    fetchSuggestedData();
-  }, [userId]);
+    if (loggedUser.id) {
+      fetchSuggestedData();
+    }
+  }, [userId, loggedUser.id]);
 
   const handleUserNavigate = (e, id) => {
     e.stopPropagation();
@@ -51,7 +43,7 @@ const Sidebar = () => {
 
   return (
     <nav className='hidden lg:flex bg-gray-900 text-white flex-col h-full py-6 px-4 border-l border-gray-700'>
-      {loading ? (
+      {loading || suggestedLoading ? (
         <div className="flex justify-center items-center h-full w-[230px]">
           <div className="w-16 h-16 border-t-4 border-indigo-600 border-solid rounded-full animate-spin"></div>
         </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useUser } from '../../contexts/UserContext';
 import api from '../../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +11,8 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
   const [loading, setLoading] = useState(false);
   const [usernameError, setUsernameError] = useState('');
   const [fileError, setFileError] = useState('');
+  const { updateSidebarUser } = useUser();
+
 
   const modalRef = useRef(null); // Ref for the modal container
   const isDemoUser = user?.username === 'demo'; // Check if the logged user is "demo"
@@ -83,6 +86,7 @@ const EditProfileModal = ({ open, handleModalClose, user, userId, setProfileMeta
         });
       }
       const response = await api.put(`/users/${userId}`, formData);
+      updateSidebarUser(response.data.user); // Update the user context with the new data
       setProfileMeta(response.data.user);
       handleModalClose();
     } catch (error) {
