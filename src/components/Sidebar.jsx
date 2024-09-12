@@ -14,7 +14,7 @@ const Sidebar = () => {
   const [suggestedRealms, setSuggestedRealms] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [suggestedLoading, setSuggestedLoading] = useState(true);
-  const take = 3;
+  const take = 4;
 
   useEffect(() => {
     const fetchSuggestedData = async () => {
@@ -72,7 +72,7 @@ const Sidebar = () => {
           <div className="border-t border-gray-700 my-4"></div>
 
           {/* Suggested */}
-          <div className='mb-4 flex-1'>
+          <div className='mb-4 flex-1 overflow-y-scroll'>
             <div className='font-bold text-gray-300 mb-4'>Suggested for you</div>
             
             {/* Suggested Users */}
