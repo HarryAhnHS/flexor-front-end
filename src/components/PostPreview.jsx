@@ -256,7 +256,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                 </div>
 
                 {/* Post Meta */}
-                <div className="post-meta text-gray-400 flex items-center justify-end space-x-6 text-sm sm:text-base">
+                <div className="post-meta text-gray-400 flex items-center space-x-6 text-sm sm:text-base">
                     <span className="flex items-center space-x-2">
                         <FontAwesomeIcon 
                             onClick={(e) => handleLikeClick(e)} 
