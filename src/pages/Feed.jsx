@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import PostsList from '../components/PostsList';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const FeedPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('posts_all'); // State to track the active tab
 
   return (
@@ -24,6 +28,13 @@ const FeedPage = () => {
             >
               Following
             </button>
+            <div className="border-l border-gray-700 mx-4 my-2"></div>
+              <button onClick={() => navigate('/submit-post')}
+                  className={`px-4 py-2 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500`}
+              >
+                  <FontAwesomeIcon icon={faPlus} className="text-sm mr-2"/>
+                  New Post
+              </button>
           </div>
         </div>
 

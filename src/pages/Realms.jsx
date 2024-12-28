@@ -1,7 +1,11 @@
 import { useState } from "react";
 import RealmsList from "../components/RealmsList";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Realms = () => {
+    const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState('all');
 
     return (
@@ -29,6 +33,13 @@ const Realms = () => {
                             className={`px-4 py-2 rounded-lg transition-colors ${selectedTab === 'created' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
                         >
                             Created
+                        </button>
+                        <div className="border-l border-gray-700 mx-4 my-2"></div>
+                        <button onClick={() => navigate('/submit-realm')}
+                            className={`px-4 py-2 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500`}
+                        >
+                            <FontAwesomeIcon icon={faPlus} className="text-sm mr-2"/>
+                            New Realm
                         </button>
                     </div>
                 </div>
