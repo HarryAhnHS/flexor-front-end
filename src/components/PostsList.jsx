@@ -124,7 +124,7 @@ const PostsList = ({ sourceId, type }) => {
           <div className="relative">
             {/* Sort Dropdown */}
               <select
-              className="block w-full bg-gray-800 border border-gray-700 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
+              className="text-sm block w-full bg-gray-800 border border-gray-700 text-gray-300 py-2 px-4 pr-8 rounded-lg appearance-none focus:outline-none"
               value={type === 'user_drafts' ? 'New' : sortField}
               onChange={handleSortChange}
               disabled={type === 'user_drafts'}

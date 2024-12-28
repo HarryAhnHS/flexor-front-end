@@ -145,7 +145,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                         />
                         <div>
                             <h3 
-                                className="text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
+                                className="text-sm sm:text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
                                 onClick={(e) => { 
                                     e.stopPropagation(); 
                                     navigate(`/profile/${post?.authorId}`); 
@@ -154,7 +154,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                                 @{post?.author?.username}
                             </h3>
                             <div className="flex items-center">
-                                <p className="text-sm text-gray-400">
+                                <p className="text-xs sm:text-sm text-gray-400">
                                     {post?.createdAt && formatTime(post?.createdAt)} on
                                 </p>
                                 <div className="flex items-center ml-2">
@@ -168,7 +168,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                                         }} 
                                     />
                                     <span 
-                                        className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
+                                        className="ml-1 text-xs sm:text-sm font-semibold cursor-pointer hover:underline"
                                         onClick={(e) => { 
                                             e.stopPropagation(); 
                                             navigate(`/realms/${post?.realmId}`);
@@ -228,9 +228,11 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
 
                 {/* Post Content */}
                 <div className="mb-4">
-                    <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
+                    <h3 className="text-lg sm:text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">
+                        {post?.title}
+                    </h3>
                     {post?.text && (
-                        <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
+                        <p className="text-sm sm:text-base text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
                             {post?.text}
                         </p>
                     )}
@@ -254,7 +256,7 @@ const PostPreview = ({ post, postId, isEditable, posts, setPosts }) => {
                 </div>
 
                 {/* Post Meta */}
-                <div className="post-meta text-gray-400 flex items-center space-x-6">
+                <div className="post-meta text-gray-400 flex items-center justify-end space-x-6 text-sm sm:text-base">
                     <span className="flex items-center space-x-2">
                         <FontAwesomeIcon 
                             onClick={(e) => handleLikeClick(e)} 

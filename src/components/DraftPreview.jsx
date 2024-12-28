@@ -55,7 +55,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
             onClick={handleEditClick}
         >
             {/* Draft Badge */}
-            <div className="pt-6 mb-2 text-gray-400 font-bold text-sm space-x-1">
+            <div className="pt-6 mb-2 text-gray-400 font-bold text-xs sm:text-sm space-x-1">
                 <FontAwesomeIcon icon={faBoxArchive} />
                 <span>Draft</span>
             </div>
@@ -74,7 +74,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                     />
                     <div>
                         <h3 
-                            className="text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
+                            className="text-sm sm:text-lg font-semibold text-blue-400 cursor-pointer hover:underline"
                             onClick={(e) => { 
                                 e.stopPropagation(); 
                                 navigate(`/profile/${post?.authorId}`); 
@@ -83,7 +83,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                             @{post?.author?.username}
                         </h3>
                         <div className="flex items-center">
-                            <p className="text-sm text-gray-400">
+                            <p className="text-xs sm:text-sm text-gray-400">
                                 {post?.createdAt && formatTime(post?.createdAt)}
                             </p>
                             {post?.realm &&
@@ -98,7 +98,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                                         }} 
                                     />
                                     <span 
-                                        className="ml-1 text-sm font-semibold cursor-pointer hover:underline"
+                                        className="ml-1 text-xs sm:text-sm font-semibold cursor-pointer hover:underline"
                                         onClick={(e) => { 
                                             e.stopPropagation(); 
                                             navigate(`/realms/${post?.realmId}`);
@@ -121,7 +121,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                                 <MenuItem>
                                     <button
                                         onClick={handleEditClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-xs sm:text-sm hover:bg-gray-600'
                                     >
                                         <FontAwesomeIcon icon={faPenToSquare} />
                                         <span>Edit</span>
@@ -130,7 +130,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                                 <MenuItem>
                                     <button
                                         onClick={handleDeleteClick}
-                                        className='pl-6 text-left space-x-3 w-full py-2 text-sm hover:bg-gray-600'
+                                        className='pl-6 text-left space-x-3 w-full py-2 text-xs sm:text-sm hover:bg-gray-600'
                                     >
                                         <FontAwesomeIcon icon={faTrashCan} />
                                         <span>Delete</span>
@@ -144,9 +144,9 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
 
             {/* Post Content */}
             <div className="mb-4">
-                <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
+                <h3 className="text-lg sm:text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-1">{post?.title}</h3>
                 {post?.text && (
-                    <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
+                    <p className="text-sm sm:text-base text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-5">
                         {post?.text}
                     </p>
                 )}
@@ -164,7 +164,7 @@ const DraftPreview = ({ post, postId, posts, setPosts }) => {
                                 />
                             ))}
                         </div>
-                    </> 
+                    </>
                 )}
             </div>
 

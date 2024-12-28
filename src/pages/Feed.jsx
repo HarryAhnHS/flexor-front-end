@@ -12,10 +12,10 @@ const FeedPage = () => {
     <div className="bg-gray-900 text-white min-h-screen p-6">
       {/* Page Title and Tabs */}
       <div className="container mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">Feed</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Feed</h1>
           {/* Tabs for All and Following */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-xs sm:text-base">
             <button
               className={`px-4 py-2 rounded-lg transition-colors ${activeTab === 'posts_all' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
               onClick={() => setActiveTab('posts_all')}
@@ -32,7 +32,7 @@ const FeedPage = () => {
               <button onClick={() => navigate('/submit-post')}
                   className={`px-4 py-2 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500`}
               >
-                  <FontAwesomeIcon icon={faPlus} className="text-sm mr-2"/>
+                  <FontAwesomeIcon icon={faPlus} className="mr-2"/>
                   New Post
               </button>
           </div>

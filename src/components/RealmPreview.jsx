@@ -117,7 +117,7 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
                 {/* Realm Details */}
                 <div className="flex-1">
                     <div className="mb-2 flex justify-between">
-                        <span className="font-semibold text-2xl overflow-wrap-break-word break-all line-clamp-1">{realm?.name}</span>
+                        <span className="font-semibold text-lg sm:text-2xl overflow-wrap-break-word break-all line-clamp-1">{realm?.name}</span>
                         {/* Edit Button */}
                             <div className="flex items-center px-3 text-gray-400">
                                 <Menu as="div" className="relative">
@@ -164,38 +164,38 @@ const RealmPreview = ({ realm, realmId, setRealms }) => {
                                 </Menu>
                             </div>
                     </div>
-                    <p className="text-gray-400 mt-2 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-2">
+                    <p className="text-sm sm:text-base text-gray-400 mt-2 overflow-hidden text-ellipsis overflow-wrap-break-word break-all line-clamp-2">
                         {realm?.description}
                     </p>
 
                     <div className="flex justify-between items-center">
-                        <div className="flex space-x-4 text-base">
-                            <div className="text-gray-400 space-x-2" onClick={(e) => {
+                        <div className="flex space-x-3 text-xs sm:text-sm">
+                            <div className="text-gray-400 space-x-1" onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/realms/${realmId}/joined`)
                             }}>
                                 <FontAwesomeIcon icon={faUsers} />
-                                <span className="text-sm">{realm._count?.joined} Joined</span>
+                                <span>{realm._count?.joined} Joined</span>
                             </div>
-                            <div className="text-gray-400 space-x-2">
+                            <div className="text-gray-400 space-x-1">
                                 <FontAwesomeIcon icon={faMicroblog} />
-                                <span className="text-sm">{realm._count?.posts} Posts</span>
+                                <span>{realm._count?.posts} Posts</span>
                             </div>
                         </div>
                         {/* Join Button */}
                         <button
                             onClick={(e) => handleJoinRealm(e)}
-                            className={`px-4 py-2 rounded-lg text-white transition-colors ${
+                            className={`text-xs sm:text-sm px-3 py-2 rounded-lg text-white transition-colors ${
                                 joined ? 'bg-gray-600 hover:bg-gray-500' : 'bg-indigo-600 hover:bg-indigo-700'
                             }`}
                         >
                             {joined ? 
-                            <div className="space-x-2 text-sm">
+                            <div className="space-x-2">
                                 <FontAwesomeIcon icon={faCheck} />
                                 <span>Joined</span>
                             </div>
                             : 
-                            <div className="space-x-2 text-sm">
+                            <div className="space-x-2">
                                 <FontAwesomeIcon icon={faArrowRightToBracket}/>
                                 <span>Join</span>
                             </div>
