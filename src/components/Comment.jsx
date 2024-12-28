@@ -209,7 +209,7 @@ const Comment = ({ comment, commentId, setTotalCommentsCount, siblings, setSibli
                     c.id === commentId
                         ? {
                               ...c,
-                              comment: response.data.comment
+                              comment: response.data.comment.comment
                           }
                         : c
                 )

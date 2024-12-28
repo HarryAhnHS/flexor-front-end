@@ -10,10 +10,10 @@ const CommentsList = ({ postId, setTotalCommentsCount }) => {
     const [newComment, setNewComment] = useState("");
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1); // Track the current page
-    const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
+    const [hasMore, setHasMore] = useState(true); // Track if there are more comments to load
     const [sortField, setSortField] = useState('createdAt'); // Default sort field (newest)
     const [sortOrder, setSortOrder] = useState('desc'); // Default sort order (descending)
-    const limit = 10; // Number of posts per page
+    const limit = 10; // Number of comments per page
 
     const userId = localStorage.getItem("userId");
 
