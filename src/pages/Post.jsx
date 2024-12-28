@@ -210,10 +210,13 @@ const PostPage = () => {
                     <div className="mb-4">
                         <h3 className="text-2xl font-bold mb-2 text-gray-100 overflow-hidden text-ellipsis overflow-wrap-break-word break-all">{post?.title}</h3>
                         {post?.text && (
-                            <p className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all">
+                            <p 
+                                className="text-gray-300 mb-4 overflow-hidden text-ellipsis overflow-wrap-break-word break-all whitespace-pre-wrap"
+                            >
                                 {post?.text}
                             </p>
                         )}
+
                         {post.images && post.images.length > 0 && (
                             <>
                                 <FontAwesomeIcon icon={faImage} className="mb-2 text-gray-300"/>
