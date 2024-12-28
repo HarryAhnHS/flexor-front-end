@@ -26,7 +26,7 @@ const FeedPage = () => {
               className={`px-4 py-2 rounded-lg transition-colors ${activeTab === 'posts_following' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400'} hover:bg-indigo-700`}
               onClick={() => setActiveTab('posts_following')}
             >
-              Following
+              For You
             </button>
             <div className="border-l border-gray-700 mx-4 my-2"></div>
               <button onClick={() => navigate('/submit-post')}
