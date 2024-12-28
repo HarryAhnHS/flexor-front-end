@@ -224,7 +224,9 @@ const PostForm = () => {
         <form onSubmit={(e) => handleSubmit(e, false)}>
           <div className="mb-4">
             <label htmlFor="realm" className="block text-sm font-medium text-gray-300">
-              Choose a realm to post under:
+              <span className='text-red-600 text-lg mr-1'>*</span>
+              <span>Choose a realm to post under:</span>
+              <span className='ml-2 text-xs text-indigo-500'>You must join realms to post within them!</span>
             </label>
             <Select
               value={selectedRealm}
@@ -303,6 +305,7 @@ const PostForm = () => {
           </div>    
           <div className="mb-4">
             <label htmlFor="title" className="block text-sm font-medium text-gray-300">
+              <span className='text-red-600 text-lg mr-1'>*</span>
               Title:
             </label>
             <input

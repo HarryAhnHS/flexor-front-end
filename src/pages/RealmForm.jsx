@@ -127,7 +127,7 @@ const RealmForm = () => {
                     });
                 }
             }
-            navigate(-1);
+            navigate('/realms');
         } catch (error) {
             console.error('Error submitting form:', error);
             if (error.response.data.error === "Realm name is already taken") {
@@ -148,7 +148,7 @@ const RealmForm = () => {
     return (
         <div className="bg-gray-900 min-h-screen p-6">
             <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                <h2 className="text-2xl font-bold text-white mb-6">
                     {realmId ? 'Edit Realm' : 'Create a New Realm'}
                 </h2>
 
@@ -189,6 +189,7 @@ const RealmForm = () => {
 
                         <div className="mb-4">
                             <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+                                <span className='text-red-600 text-lg mr-1'>*</span>
                                 Realm Name:
                             </label>
                             <input
@@ -204,6 +205,7 @@ const RealmForm = () => {
 
                         <div className="mb-4">
                             <label htmlFor="description" className="block text-sm font-medium text-gray-300">
+                                <span className='text-red-600 text-lg mr-1'>*</span>
                                 Description:
                             </label>
                             <textarea
