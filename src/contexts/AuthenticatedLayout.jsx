@@ -3,8 +3,11 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import SearchBar from '../components/Searchbar';
 import Sidebar from '../components/Sidebar';
+import { useRef } from 'react';
 
 const AuthenticatedLayout = () => {
+  const scrollableRef = useRef(null);
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -18,8 +21,10 @@ const AuthenticatedLayout = () => {
         </div>
 
         {/* Scrollable Content */}
-        <div className='bg-gray-900 flex-1 rounded-lg overflow-y-auto'>
-          <Outlet />
+        <div 
+          ref={scrollableRef}
+          className='bg-gray-900 flex-1 rounded-lg overflow-y-auto'>
+          <Outlet context={{scrollableRef}}/>
         </div>
       </div>
 

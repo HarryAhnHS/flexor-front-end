@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import RealmPreview from "../components/RealmPreview";
 import { PuffLoader } from 'react-spinners';
+import { useOutletContext } from 'react-router-dom'; // Import useOutletContext for scrollevent to paginate
 
 const RealmsList = ( {type} ) => {
     const [realms, setRealms] = useState([]);
@@ -9,6 +10,8 @@ const RealmsList = ( {type} ) => {
     const [page, setPage] = useState(1); // Track the current page
     const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
     const limit = 10; // Number of posts per page
+
+    const { scrollableRef } = useOutletContext();
 
     const userId = localStorage.getItem('userId');
 
@@ -59,15 +62,28 @@ const RealmsList = ( {type} ) => {
     }, [type, page, userId]);
 
     useEffect(() => {
-        const handleScroll = () => {
-          if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !loading) {
-            setPage(prevPage => prevPage + 1);
-          }
-        };
-    
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [hasMore, loading]);
+    const handleScroll = () => {
+      if (
+        scrollableRef.current &&
+        scrollableRef.current.scrollTop + scrollableRef.current.clientHeight >=
+          scrollableRef.current.scrollHeight - 100 &&
+        hasMore &&
+        !loading
+      ) {
+        setPage(prevPage => prevPage + 1);
+      }
+    };
+
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (scrollableElement) {
+        scrollableElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [scrollableRef, hasMore, loading]);
 
     return (
         <>

@@ -2,6 +2,7 @@ import UserPreview from './UserPreview';
 import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 import { PuffLoader } from 'react-spinners';
+import { useOutletContext } from 'react-router-dom'; 
 
 const UsersList = ({ sourceId, scenario }) => {
   const [users, setUsers] = useState([]);
@@ -9,6 +10,8 @@ const UsersList = ({ sourceId, scenario }) => {
   const [page, setPage] = useState(1); // Track the current page
   const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
   const limit = 10; // Number of posts per page
+
+  const { scrollableRef } = useOutletContext();
 
   const resetUsers = useCallback(() => {
     // Clear posts when sourceId or type changes
@@ -66,14 +69,27 @@ const UsersList = ({ sourceId, scenario }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100 && hasMore && !loading) {
+      if (
+        scrollableRef.current &&
+        scrollableRef.current.scrollTop + scrollableRef.current.clientHeight >=
+          scrollableRef.current.scrollHeight - 100 &&
+        hasMore &&
+        !loading
+      ) {
         setPage(prevPage => prevPage + 1);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, loading]);
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (scrollableElement) {
+        scrollableElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [scrollableRef, hasMore, loading]);
 
   return (
     <div className="user-list space-y-4">

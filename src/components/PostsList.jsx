@@ -5,6 +5,7 @@ import DraftPreview from './DraftPreview';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowsRotate, faArrowUp, faSort } from '@fortawesome/free-solid-svg-icons';
 import { PuffLoader } from 'react-spinners';
+import { useOutletContext } from 'react-router-dom'; // Import useOutletContext for scrollevent to paginate
 
 const PostsList = ({ sourceId, type }) => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +17,8 @@ const PostsList = ({ sourceId, type }) => {
   const [sortOrder, setSortOrder] = useState('desc');
   const loggedInUserId = localStorage.getItem('userId');
   const limit = 10;
+
+  const { scrollableRef } = useOutletContext();
 
   const resetPost = useCallback(() => {
     setPosts([]);
@@ -91,8 +94,9 @@ const PostsList = ({ sourceId, type }) => {
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
+        scrollableRef.current &&
+        scrollableRef.current.scrollTop + scrollableRef.current.clientHeight >=
+          scrollableRef.current.scrollHeight - 100 &&
         hasMore &&
         !loading
       ) {
@@ -100,9 +104,16 @@ const PostsList = ({ sourceId, type }) => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, loading]);
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (scrollableElement) {
+        scrollableElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [scrollableRef, hasMore, loading]);
 
   const handleRefresh = () => {
     resetPost();
@@ -111,10 +122,13 @@ const PostsList = ({ sourceId, type }) => {
 
   const handleSortChange = (e) => {
     setSortField(e.target.value);
+    setPage(1); // Reset the page number when sort field changes
+
   };
 
   const toggleSortOrder = () => {
     setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    setPage(1); // Reset the page number when sort field changes
   };
 
   return (
@@ -158,37 +172,36 @@ const PostsList = ({ sourceId, type }) => {
           </button>
         </div>
       </div>
-
-      {posts.length > 0 ? (
-        posts.map(post =>
-          type === 'user_drafts' ? (
-            <DraftPreview
-              post={post}
-              postId={post.id}
-              posts={posts}
-              setPosts={setPosts}
-              key={post.id}
-            />
-          ) : (
-            <PostPreview
-              post={post}
-              postId={post.id}
-              isEditable={post.authorId === loggedInUserId}
-              posts={posts}
-              setPosts={setPosts}
-              key={post.id}
-            />
+        {posts.length > 0 ? (
+          posts.map(post =>
+            type === 'user_drafts' ? (
+              <DraftPreview
+                post={post}
+                postId={post.id}
+                posts={posts}
+                setPosts={setPosts}
+                key={post.id}
+              />
+            ) : (
+              <PostPreview
+                post={post}
+                postId={post.id}
+                isEditable={post.authorId === loggedInUserId}
+                posts={posts}
+                setPosts={setPosts}
+                key={post.id}
+              />
+            )
           )
-        )
-      ) : (
-        !loading && <p className="text-gray-500 text-center mt-8">No posts available.</p>
-      )}
+        ) : (
+          !loading && <p className="text-gray-500 text-center mt-8">No posts available.</p>
+        )}
 
-      {loading && 
-        <div className="flex justify-center items-center h-full">
-          <PuffLoader color="#5C6BC0" size={60} />
-        </div>
-      }
+        {loading && 
+          <div className="flex justify-center items-center h-full">
+            <PuffLoader color="#5C6BC0" size={60} />
+          </div>
+        }
     </>
   );
 };

@@ -6,6 +6,7 @@ import api from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { PuffLoader } from 'react-spinners';
+import { useOutletContext } from 'react-router-dom'; // Import useOutletContext for scrollevent to paginate
 
 const NotificationsList = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const NotificationsList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true); // Track if there are more posts to load
   const limit = 10;
+
+  const { scrollableRef } = useOutletContext();
 
   const resetNotifications = useCallback(() => {
     setPage(1);
@@ -68,18 +71,26 @@ const NotificationsList = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
+        scrollableRef.current &&
+        scrollableRef.current.scrollTop + scrollableRef.current.clientHeight >=
+          scrollableRef.current.scrollHeight - 100 &&
         hasMore &&
         !loading
       ) {
-        setPage((prevPage) => prevPage + 1);
+        setPage(prevPage => prevPage + 1);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, loading]);
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (scrollableElement) {
+        scrollableElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [scrollableRef, hasMore, loading]);
 
   const handleProfileNavigate = (e, notification) => {
     e.stopPropagation(); // Prevents navigation on click

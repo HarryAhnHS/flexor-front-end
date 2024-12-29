@@ -9,7 +9,7 @@ const FeedPage = () => {
   const [activeTab, setActiveTab] = useState('posts_all'); // State to track the active tab
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6">
+    <div className="bg-gray-900 text-white p-6">
       {/* Page Title and Tabs */}
       <div className="container mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
